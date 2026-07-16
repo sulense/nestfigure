@@ -96,6 +96,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body.is-embed {
+  background: var(--color-pure-white);
+}
+
+body.is-embed main {
+  min-height: 100vh;
+}
+
 img {
   max-width: 100%;
   height: auto;

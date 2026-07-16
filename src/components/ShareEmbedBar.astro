@@ -1,0 +1,230 @@
+---
+interface Props {
+  /** Path on this site, e.g. /cd-calculator/ */
+  path: string;
+  title: string;
+  /** Path for iframe embed (no site chrome) */
+  embedPath?: string;
+}
+const { path, title, embedPath = path } = Astro.props;
+const site = Astro.site ?? new URL('https://nestfigure.com');
+const pageUrl = new URL(path, site).toString();
+const embedUrl = new URL(embedPath, site).toString();
+const embedCode = `<iframe src="${embedUrl}" title="${title.replace(/"/g, '')}" width="100%" height="780" loading="lazy" style="border:0;border-radius:8px;max-width:100%;background:#fff;" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+---
+
+<div
+  class="share-embed card"
+  data-share-embed
+  data-page-url={pageUrl}
+  data-share-title={title}
+  data-embed-code={embedCode}
+>
+  <div class="share-embed-row">
+    <div class="share-group" role="group" aria-label="Share">
+      <span class="group-label">Share</span>
+      <button type="button" class="btn btn-secondary btn-sm" data-action="copy-link">Copy link</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-action="native-share" hidden>Share…</button>
+      <a class="btn btn-secondary btn-sm" data-action="x" href="#" target="_blank" rel="noopener noreferrer">X</a>
+      <a class="btn btn-secondary btn-sm" data-action="linkedin" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a class="btn btn-secondary btn-sm" data-action="facebook" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+    </div>
+    <div class="embed-group">
+      <button type="button" class="btn btn-primary btn-sm" data-action="toggle-embed" aria-expanded="false">
+        Embed
+      </button>
+    </div>
+  </div>
+
+  <div class="embed-panel" data-embed-panel hidden>
+    <p class="embed-help">Paste this HTML to embed the calculator on your site (no login required).</p>
+    <textarea class="embed-code" data-embed-code-field readonly rows="4" aria-label="Embed code"></textarea>
+    <div class="embed-actions">
+      <button type="button" class="btn btn-primary btn-sm" data-action="copy-embed">Copy embed code</button>
+      <a class="btn btn-secondary btn-sm" data-embed-preview href={embedPath} target="_blank" rel="noopener noreferrer"
+        >Preview embed</a
+      >
+    </div>
+  </div>
+
+  <p class="share-status" data-status role="status" hidden></p>
+</div>
+
+<style>
+  .share-embed {
+    margin: 20px 0 0;
+    padding: 16px 18px;
+  }
+
+  .share-embed-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+  }
+
+  .share-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .group-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-iron);
+    margin-right: 4px;
+  }
+
+  .btn-sm {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+
+  .embed-panel {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-pale-slate);
+  }
+
+  .embed-help {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: var(--color-iron);
+    line-height: 1.45;
+  }
+
+  .embed-code {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--color-ink);
+    background: #f8fafc;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 12px;
+    resize: vertical;
+    outline: none;
+  }
+
+  .embed-code:focus {
+    border-color: var(--color-iris-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .embed-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .share-status {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #14532d;
+  }
+</style>
+
+<script>
+  function status(root: HTMLElement, msg: string) {
+    const el = root.querySelector<HTMLElement>('[data-status]');
+    if (!el) return;
+    if (!msg) {
+      el.hidden = true;
+      el.textContent = '';
+      return;
+    }
+    el.hidden = false;
+    el.textContent = msg;
+    window.setTimeout(() => {
+      el.hidden = true;
+      el.textContent = '';
+    }, 2500);
+  }
+
+  async function copyText(text: string) {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+
+  function bind(root: HTMLElement) {
+    const pageUrl = root.dataset.pageUrl || location.href;
+    const shareTitle = root.dataset.shareTitle || document.title;
+    const embedCode = root.dataset.embedCode || '';
+    const encUrl = encodeURIComponent(pageUrl);
+    const encTitle = encodeURIComponent(shareTitle);
+
+    const x = root.querySelector<HTMLAnchorElement>('[data-action="x"]');
+    const li = root.querySelector<HTMLAnchorElement>('[data-action="linkedin"]');
+    const fb = root.querySelector<HTMLAnchorElement>('[data-action="facebook"]');
+    if (x) x.href = `https://twitter.com/intent/tweet?url=${encUrl}&text=${encTitle}`;
+    if (li) li.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encUrl}`;
+    if (fb) fb.href = `https://www.facebook.com/sharer/sharer.php?u=${encUrl}`;
+
+    const nativeBtn = root.querySelector<HTMLButtonElement>('[data-action="native-share"]');
+    if (nativeBtn && typeof navigator.share === 'function') {
+      nativeBtn.hidden = false;
+      nativeBtn.addEventListener('click', async () => {
+        try {
+          await navigator.share({ title: shareTitle, url: pageUrl, text: shareTitle });
+        } catch {
+          /* user cancelled */
+        }
+      });
+    }
+
+    root.querySelector('[data-action="copy-link"]')?.addEventListener('click', async () => {
+      try {
+        await copyText(pageUrl);
+        status(root, 'Link copied.');
+      } catch {
+        status(root, 'Could not copy link.');
+      }
+    });
+
+    const panel = root.querySelector<HTMLElement>('[data-embed-panel]');
+    const field = root.querySelector<HTMLTextAreaElement>('[data-embed-code-field]');
+    const toggle = root.querySelector<HTMLButtonElement>('[data-action="toggle-embed"]');
+    if (field) field.value = embedCode;
+
+    toggle?.addEventListener('click', () => {
+      if (!panel || !toggle) return;
+      const open = panel.hasAttribute('hidden');
+      if (open) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open && field) {
+        field.focus();
+        field.select();
+      }
+    });
+
+    root.querySelector('[data-action="copy-embed"]')?.addEventListener('click', async () => {
+      try {
+        await copyText(embedCode);
+        status(root, 'Embed code copied.');
+      } catch {
+        status(root, 'Could not copy embed code.');
+      }
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-share-embed]').forEach(bind);
+</script>

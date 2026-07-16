@@ -6,6 +6,8 @@ interface Props {
   description: string;
   canonicalPath?: string;
   ogImage?: string;
+  /** Minimal chrome for iframe embeds */
+  embed?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -14,6 +16,7 @@ const {
   description,
   canonicalPath = Astro.url.pathname,
   ogImage = '/images/og-default.webp',
+  embed = false,
   jsonLd,
 } = Astro.props;
 
@@ -34,7 +37,10 @@ const jsonLdItems = jsonLd
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <meta name="google-site-verification" content="dh8GEJtu_kK4o3hw2RlBDIbnNo1MHc17lX8iFet6Q-Y" />
+    {!embed && (
+      <meta name="google-site-verification" content="dh8GEJtu_kK4o3hw2RlBDIbnNo1MHc17lX8iFet6Q-Y" />
+    )}
+    {embed && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
     <!-- Analytics only (fonts are self-hosted) -->
@@ -89,50 +95,72 @@ const jsonLdItems = jsonLd
       ))
     }
   </head>
-  <body>
-    <header class="site-header">
-      <div class="container inner">
-        <a class="logo" href="/" aria-label="Nestfigure home">
-          <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
-          <span class="logo-text">Nest<span>figure</span></span>
-        </a>
-        <nav class="nav" aria-label="Primary">
-          <a class="hide-sm" href="/">Home</a>
-          <a href="/cd-calculator/">CD Calculator</a>
-          <a class="hide-sm" href="/guides/">Guides</a>
-          <a class="hide-sm" href="/about/">About</a>
-          <a class="hide-sm" href="/contact/">Contact</a>
-          <a class="btn btn-primary" href="/cd-calculator/">Open tool</a>
-        </nav>
-      </div>
-    </header>
+  <body class:list={[{ 'is-embed': embed }]}>
+    {
+      !embed && (
+        <header class="site-header">
+          <div class="container inner">
+            <a class="logo" href="/" aria-label="Nestfigure home">
+              <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
+              <span class="logo-text">
+                Nest<span>figure</span>
+              </span>
+            </a>
+            <nav class="nav" aria-label="Primary">
+              <a class="hide-sm" href="/">
+                Home
+              </a>
+              <a href="/cd-calculator/">CD Calculator</a>
+              <a class="hide-sm" href="/guides/">
+                Guides
+              </a>
+              <a class="hide-sm" href="/about/">
+                About
+              </a>
+              <a class="hide-sm" href="/contact/">
+                Contact
+              </a>
+              <a class="btn btn-primary" href="/cd-calculator/">
+                Open tool
+              </a>
+            </nav>
+          </div>
+        </header>
+      )
+    }
 
     <main>
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <div class="container inner">
-        <div>
-          <a class="logo" href="/" aria-label="Nestfigure home">
-            <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
-            <span class="logo-text">Nest<span>figure</span></span>
-          </a>
-          <p style="margin-top: 12px;">
-            Free personal finance calculators for take-home pay, CDs, and debt.
-            Results are estimates for education only — not financial advice.
-          </p>
-        </div>
-        <div class="footer-links">
-          <a href="/cd-calculator/">CD Calculator</a>
-          <a href="/guides/">Guides</a>
-          <a href="/guides/how-cd-interest-works/">How CD interest works</a>
-          <a href="/guides/cd-vs-savings/">CD vs savings</a>
-          <a href="/about/">About & methodology</a>
-          <a href="/contact/">Contact</a>
-          <a href="/privacy/">Privacy</a>
-        </div>
-      </div>
-    </footer>
+    {
+      !embed && (
+        <footer class="site-footer">
+          <div class="container inner">
+            <div>
+              <a class="logo" href="/" aria-label="Nestfigure home">
+                <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
+                <span class="logo-text">
+                  Nest<span>figure</span>
+                </span>
+              </a>
+              <p style="margin-top: 12px;">
+                Free personal finance calculators for take-home pay, CDs, and debt. Results are estimates for education
+                only — not financial advice.
+              </p>
+            </div>
+            <div class="footer-links">
+              <a href="/cd-calculator/">CD Calculator</a>
+              <a href="/guides/">Guides</a>
+              <a href="/guides/how-cd-interest-works/">How CD interest works</a>
+              <a href="/guides/cd-vs-savings/">CD vs savings</a>
+              <a href="/about/">About & methodology</a>
+              <a href="/contact/">Contact</a>
+              <a href="/privacy/">Privacy</a>
+            </div>
+          </div>
+        </footer>
+      )
+    }
   </body>
 </html>
