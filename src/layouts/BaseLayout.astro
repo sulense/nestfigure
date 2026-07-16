@@ -36,7 +36,10 @@ const jsonLdItems = jsonLd
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nestfigure" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -57,7 +60,10 @@ const jsonLdItems = jsonLd
   <body>
     <header class="site-header">
       <div class="container inner">
-        <a class="logo" href="/">Nest<span>figure</span></a>
+        <a class="logo" href="/" aria-label="Nestfigure home">
+          <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
+          <span class="logo-text">Nest<span>figure</span></span>
+        </a>
         <nav class="nav" aria-label="Primary">
           <a class="hide-sm" href="/">Home</a>
           <a href="/cd-calculator/">CD Calculator</a>
@@ -75,7 +81,10 @@ const jsonLdItems = jsonLd
     <footer class="site-footer">
       <div class="container inner">
         <div>
-          <a class="logo" href="/">Nest<span>figure</span></a>
+          <a class="logo" href="/" aria-label="Nestfigure home">
+            <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
+            <span class="logo-text">Nest<span>figure</span></span>
+          </a>
           <p style="margin-top: 12px;">
             Free personal finance calculators for take-home pay, CDs, and debt.
             Results are estimates for education only — not financial advice.

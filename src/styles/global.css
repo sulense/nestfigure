@@ -485,19 +485,30 @@ table.data tr:last-child td {
 }
 
 .logo {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-weight: 600;
   color: var(--color-ink);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   text-decoration: none;
+  line-height: 1;
 }
 
 .logo:hover {
   text-decoration: none;
 }
 
-.logo span {
+.logo-mark {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.logo-text span {
   color: var(--color-cobalt);
 }
 
