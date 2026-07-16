@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import TextToSpeech from '../components/TextToSpeech.astro';
 
 interface Props {
   title: string;
@@ -114,7 +115,10 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
       </div>
     </section>
     <section class="section" style="padding-top:0;">
-      <div class="container prose guide-body" itemprop="articleBody">
+      <div class="container">
+        <TextToSpeech targetSelector="[data-tts-content]" label="Listen to this guide" />
+      </div>
+      <div class="container prose guide-body" itemprop="articleBody" data-tts-content>
         <p class="ymyl-notice">
           <strong>YMYL notice:</strong> This page is for education only. It is not financial, tax, or investment
           advice. Nestfigure is not a bank, credit union, broker, or fiduciary. Product terms vary—always read your
