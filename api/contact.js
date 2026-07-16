@@ -125,7 +125,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'Spam check failed. Please refresh and try again.' });
   }
 
-  const to = 'info@nestfigure.com';
+  const to = process.env.CONTACT_TO || process.env.RESEND_TO;
+  if (!to) {
+    console.error('CONTACT_TO is not set');
+    return res.status(500).json({ ok: false, error: 'Email service is not configured' });
+  }
   // Hard-coded From — domain must be verified in Resend for delivery.
   const from = 'Nestfigure <info@nestfigure.com>';
 
