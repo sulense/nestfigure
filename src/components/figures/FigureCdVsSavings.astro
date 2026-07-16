@@ -1,0 +1,143 @@
+---
+/** Side-by-side comparison matching guide table content. */
+---
+
+<figure class="content-figure data-figure">
+  <div class="fig-inner" role="img" aria-label="Comparison of certificate of deposit versus high-yield savings account">
+    <p class="fig-title">CD vs high-yield savings</p>
+    <div class="cols">
+      <div class="card-col cd">
+        <div class="head">
+          <span class="badge lock">Locked term</span>
+          <h3>Certificate of deposit</h3>
+        </div>
+        <ul>
+          <li><strong>Rate</strong> Often fixed for the full term</li>
+          <li><strong>Access</strong> Limited until maturity; early exit usually costs a penalty</li>
+          <li><strong>Best for</strong> Money you won’t need until a known date</li>
+          <li><strong>Predictability</strong> High if held to maturity</li>
+        </ul>
+      </div>
+      <div class="card-col hy">
+        <div class="head">
+          <span class="badge flex">Flexible</span>
+          <h3>High-yield savings</h3>
+        </div>
+        <ul>
+          <li><strong>Rate</strong> Variable — bank can change APY</li>
+          <li><strong>Access</strong> Easy transfers and withdrawals (product rules apply)</li>
+          <li><strong>Best for</strong> Emergency fund & near-term goals</li>
+          <li><strong>Predictability</strong> Lower — rates move with the market</li>
+        </ul>
+      </div>
+    </div>
+    <p class="tradeoff">
+      Core tradeoff: <strong>rate certainty vs liquidity</strong>. Use the CD calculator for locked-term growth; keep
+      emergency cash liquid.
+    </p>
+  </div>
+  <figcaption>
+    General product-structure summary for education. Not a recommendation. Confirm terms and insurance with your
+    institution (FDIC or NCUA as applicable).
+  </figcaption>
+</figure>
+
+<style>
+  .fig-inner {
+    padding: 20px;
+  }
+  .fig-title {
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .card-col {
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 14px;
+    background: #fff;
+  }
+  .card-col.cd {
+    border-color: #c9daf8;
+    background: linear-gradient(180deg, #f0f5fe 0%, #fff 50%);
+  }
+  .card-col.hy {
+    border-color: #c6ebd5;
+    background: linear-gradient(180deg, #f3fcf6 0%, #fff 50%);
+  }
+  .head h3 {
+    margin: 8px 0 12px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 9999px;
+  }
+  .badge.lock {
+    background: #e8f0fe;
+    color: var(--color-midnight-iris);
+  }
+  .badge.flex {
+    background: #e6f8ee;
+    color: #1a7a45;
+  }
+  .card-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .card-col li {
+    font-size: 13px;
+    color: var(--color-iron);
+    line-height: 1.45;
+    margin: 0 0 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-pale-slate);
+  }
+  .card-col li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .card-col li strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-graphite);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .tradeoff {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: var(--color-iron);
+    line-height: 1.5;
+    padding: 12px;
+    background: #fafcfe;
+    border-radius: 6px;
+    border: 1px solid var(--color-pale-slate);
+  }
+  @media (max-width: 640px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

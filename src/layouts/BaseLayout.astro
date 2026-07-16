@@ -1,0 +1,95 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  canonicalPath = Astro.url.pathname,
+  ogImage = '/images/og-default.webp',
+  jsonLd,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://nestfigure.com');
+const canonical = new URL(canonicalPath, site).toString();
+const ogImageUrl = new URL(ogImage, site).toString();
+const jsonLdItems = jsonLd
+  ? Array.isArray(jsonLd)
+    ? jsonLd
+    : [jsonLd]
+  : [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <title>{title}</title>
+    {
+      jsonLdItems.map((item) => (
+        <script type="application/ld+json" set:html={JSON.stringify(item)} />
+      ))
+    }
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container inner">
+        <a class="logo" href="/">Nest<span>figure</span></a>
+        <nav class="nav" aria-label="Primary">
+          <a class="hide-sm" href="/">Home</a>
+          <a href="/cd-calculator/">CD Calculator</a>
+          <a class="hide-sm" href="/guides/">Guides</a>
+          <a class="hide-sm" href="/about/">About</a>
+          <a class="btn btn-primary" href="/cd-calculator/">Open tool</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container inner">
+        <div>
+          <a class="logo" href="/">Nest<span>figure</span></a>
+          <p style="margin-top: 12px;">
+            Free personal finance calculators for take-home pay, CDs, and debt.
+            Results are estimates for education only — not financial advice.
+          </p>
+        </div>
+        <div class="footer-links">
+          <a href="/cd-calculator/">CD Calculator</a>
+          <a href="/guides/">Guides</a>
+          <a href="/guides/how-cd-interest-works/">How CD interest works</a>
+          <a href="/guides/cd-vs-savings/">CD vs savings</a>
+          <a href="/about/">About & methodology</a>
+          <a href="/privacy/">Privacy</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

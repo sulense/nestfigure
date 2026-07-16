@@ -1,0 +1,308 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CdCalculator from '../components/CdCalculator.astro';
+import FigureCdFlow from '../components/figures/FigureCdFlow.astro';
+import FigureFormula from '../components/figures/FigureFormula.astro';
+import FigureWorkedExample from '../components/figures/FigureWorkedExample.astro';
+import FigureTermCompare from '../components/figures/FigureTermCompare.astro';
+import FigureCdVsSavings from '../components/figures/FigureCdVsSavings.astro';
+
+const title = 'CD Calculator — Free CD Interest & APY Estimator (2026)';
+const description =
+  'Free CD calculator. Estimate interest earned and maturity value by principal, APY, term, and compounding. Certificate of deposit calculator — no signup.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'CD Calculator',
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Any',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    description,
+    url: 'https://nestfigure.com/cd-calculator/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'How does a CD calculator work?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'A CD calculator estimates your certificate of deposit maturity value using your deposit amount, interest rate or APY, term length, and compounding frequency. It applies standard compound interest formulas to project interest earned and final balance.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What is the difference between APY and APR on a CD?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'APR (or nominal rate) is the stated annual interest rate before compounding. APY is the effective annual yield after compounding. Banks usually advertise CD rates as APY so you can compare products more easily.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How is CD interest calculated?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'For discrete compounding, A = P(1 + r/n)^(n·t), where P is principal, r is the annual nominal rate, n is compounding periods per year, and t is time in years. Continuous compounding uses A = P·e^(r·t).',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Do CDs compound daily or monthly?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Many bank and credit union CDs compound daily or monthly. Always check the product disclosure. This calculator lets you choose daily, monthly, quarterly, semi-annual, annual, or continuous compounding.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can I add money to a CD after opening it?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Traditional CDs usually lock your initial deposit for the term. Some “add-on” CDs allow extra deposits. The optional monthly deposit field models add-on behavior for planning — it may not match a standard CD.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What happens if I withdraw a CD early?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Early withdrawal typically triggers a penalty (for example, several months of interest). This tool does not model early withdrawal penalties. Confirm terms with your bank before withdrawing.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is this CD calculator free?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes. Nestfigure’s CD calculator is free to use with no signup required. Results are educational estimates, not offers from a bank.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How accurate is this certificate of deposit calculator?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'The math follows standard compound interest formulas. Real accounts may differ due to day-count conventions, rate tiers, compounding rules, fees, or promotional terms. Always verify with your financial institution.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Should I use a CD or a high-yield savings account?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'CDs often suit money you will not need until a known date; high-yield savings suit emergency funds and flexible cash. Compare rates, liquidity, and early withdrawal risk before locking funds.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How do I compare 6-month vs 12-month CD rates?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Enter your deposit and rate, then compare terms with a CD calculator term table. Longer terms only help if the rate and timeline justify locking funds; early withdrawal penalties can erase gains.',
+        },
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/cd-calculator/"
+  ogImage="/images/feature-cd-calculator.webp"
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="container hero-inner">
+      <p class="eyebrow">Free CD calculator</p>
+      <h1 class="display">
+        CD Calculator<br />
+        <span class="grad">Interest & maturity value</span>
+      </h1>
+      <p class="lead">
+        Free certificate of deposit calculator. Estimate interest earned and final balance using deposit, APY or
+        rate, term, and compounding — built for clear, no-signup planning.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="container">
+      <CdCalculator />
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container prose">
+      <h2>How this CD calculator works</h2>
+      <p>
+        A <strong>CD calculator</strong> (certificate of deposit calculator) projects what your deposit could be
+        worth at maturity. Enter your initial deposit, the APY or nominal rate, how long you’ll hold the CD, and how
+        often interest compounds. The tool returns estimated interest earned, final balance, and a period-by-period
+        schedule.
+      </p>
+      <p>
+        Use it as a <strong>CD rate calculator</strong> or <strong>CD interest calculator</strong> when comparing
+        terms (3-month, 6-month, 1-year, 5-year) or banks. Results are illustrative only — not a quote from any bank.
+      </p>
+
+      <FigureCdFlow />
+
+      <h2>CD interest formula</h2>
+      <p>For standard compounding, the calculator uses the formula below. If you enter <strong>APY</strong>, we convert it to the equivalent nominal rate for your chosen compounding so the effective yield matches.</p>
+      <FigureFormula />
+
+      <h2>Example</h2>
+      <p>
+        Deposit <strong>$10,000</strong> at <strong>4.50% APY</strong> for <strong>12 months</strong> with daily
+        compounding. Interest earned is <strong>$450.00</strong> and the maturity balance is
+        <strong>$10,450.00</strong>—the same defaults you can load in the tool above.
+      </p>
+      <FigureWorkedExample caption='Try these inputs in the calculator: $10,000 · 4.50% APY · 12 months · daily compounding.' />
+
+      <h2>Comparing terms at the same rate</h2>
+      <p>
+        Longer terms earn more interest at the same APY because money compounds longer—but you lock funds for longer.
+        The table uses the same deposit and APY as the example above.
+      </p>
+      <FigureTermCompare />
+
+      <h2>Tips for comparing CDs</h2>
+      <ul>
+        <li>Compare <strong>APY</strong>, not just the headline rate, so compounding is apples-to-apples.</li>
+        <li>Match the <strong>term</strong> to when you’ll need the money; early withdrawal penalties can erase gains.</li>
+        <li>Confirm FDIC or NCUA insurance limits if safety is your priority.</li>
+        <li>Use the on-page <strong>term comparison table</strong> in the calculator for your own rate and deposit.</li>
+        <li>Read <a href="/guides/cd-vs-savings/">CD vs high-yield savings</a> before locking cash you might need early.</li>
+      </ul>
+      <FigureCdVsSavings />
+
+      <h2>Learn more</h2>
+      <ul>
+        <li><a href="/guides/how-cd-interest-works/">How CD interest works</a> — APY, compounding, and formulas</li>
+        <li><a href="/guides/cd-vs-savings/">CD vs savings</a> — liquidity vs locked rates</li>
+        <li><a href="/about/">Methodology</a> — exact assumptions we use</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow" style="text-align:center;">FAQ</p>
+      <h2 class="heading" style="text-align:center; margin-bottom: 32px;">CD calculator questions</h2>
+      <div class="faq" style="max-width: 720px; margin: 0 auto;">
+        <details open>
+          <summary>How does a CD calculator work?</summary>
+          <p>
+            It estimates your certificate of deposit maturity value from deposit amount, interest rate or APY, term,
+            and compounding frequency using standard compound interest math.
+          </p>
+        </details>
+        <details>
+          <summary>What is the difference between APY and APR on a CD?</summary>
+          <p>
+            APR (nominal rate) is the stated annual rate before compounding. APY is the effective annual yield after
+            compounding. Banks usually advertise CDs with APY for easier comparison.
+          </p>
+        </details>
+        <details>
+          <summary>How is CD interest calculated?</summary>
+          <p>
+            Discrete compounding: A = P(1 + r/n)^(n·t). Continuous: A = P·e^(r·t). This tool supports both, plus an
+            optional monthly deposit for add-on style planning.
+          </p>
+        </details>
+        <details>
+          <summary>Do CDs compound daily or monthly?</summary>
+          <p>
+            Many institutions compound daily or monthly. Check your product terms. You can select daily, monthly,
+            quarterly, semi-annual, annual, or continuous here.
+          </p>
+        </details>
+        <details>
+          <summary>Can I add money to a CD after opening it?</summary>
+          <p>
+            Most traditional CDs do not allow add-on deposits. Some products do. The monthly deposit field is optional
+            modeling — not a guarantee your bank allows it.
+          </p>
+        </details>
+        <details>
+          <summary>What happens if I withdraw a CD early?</summary>
+          <p>
+            Early withdrawals usually incur a penalty (often months of interest). This calculator does not model
+            penalties. Review your bank’s disclosure before withdrawing.
+          </p>
+        </details>
+        <details>
+          <summary>Is this certificate of deposit calculator free?</summary>
+          <p>Yes — free, no signup. Educational estimates only, not a bank offer or financial advice.</p>
+        </details>
+        <details>
+          <summary>How accurate are the results?</summary>
+          <p>
+            Formulas are standard. Day-count methods, fees, tiered rates, and promotions can change real payouts.
+            Always confirm with your institution. See our <a href="/about/">methodology</a> for full assumptions.
+          </p>
+        </details>
+        <details>
+          <summary>Should I use a CD or a high-yield savings account?</summary>
+          <p>
+            CDs often suit money you won’t need until a known date; savings suit emergency funds and flexible cash.
+            Compare approaches in our <a href="/guides/cd-vs-savings/">CD vs savings guide</a>.
+          </p>
+        </details>
+        <details>
+          <summary>How do I compare 6-month vs 12-month CD rates?</summary>
+          <p>
+            Enter your deposit and rate, then use the term comparison table on this page (or term presets). Longer terms
+            only win if the rate and your timeline justify locking funds — penalties can erase gains if you exit early.
+          </p>
+        </details>
+      </div>
+
+      <p class="disclaimer container" style="max-width: 720px; margin-left: auto; margin-right: auto;">
+        <strong>Disclaimer:</strong> Nestfigure provides educational tools only. CD rates, APYs, compounding, and
+        penalties vary by institution and product. This is not financial, tax, or investment advice. Last updated:
+        July 2026.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container" style="text-align:center;">
+      <p class="eyebrow">Coming next</p>
+      <h2 class="heading">More personal finance tools</h2>
+      <p class="lead" style="margin: 0 auto 24px;">
+        Paycheck, raise, overtime, and credit payoff calculators — same niche, tightly connected.
+      </p>
+      <a class="btn btn-secondary" href="/about/">About our methodology</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-inner .lead {
+    margin-bottom: 0;
+  }
+
+  code {
+    font-family: var(--font-mono);
+  }
+</style>

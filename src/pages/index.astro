@@ -1,0 +1,363 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Nestfigure — Free Personal Finance Calculators';
+const description =
+  'Free personal finance calculators for CDs, take-home pay, raises, and debt payoff. Start with our free CD calculator — no signup.';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/"
+  ogImage="/images/og-default.webp"
+>
+  <section class="hero">
+    <div class="container hero-center">
+      <p class="eyebrow">Personal finance calculators</p>
+      <h1 class="display">
+        Clear numbers for<br />
+        <span class="grad">money decisions</span>
+      </h1>
+      <p class="lead">
+        Free tools to estimate CD growth, take-home pay, raises, and debt payoff. Fast, mobile-friendly, no signup —
+        built to rank on usefulness.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
+        <a class="btn btn-secondary" href="/about/">How we calculate</a>
+      </div>
+      <div class="hero-visual">
+        <img
+          src="/images/hero-product.webp"
+          alt="Nestfigure calculator product preview with growth chart and clean inputs"
+          width="1600"
+          height="900"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow" style="text-align:center;">Live now</p>
+      <h2 class="heading" style="text-align:center;">Flagship tool</h2>
+      <a class="tool-card card-elevated" href="/cd-calculator/">
+        <div class="tool-media data-card">
+          <p class="data-card-label">Example · 12 mo CD</p>
+          <p class="data-card-line"><span>Deposit</span><strong>$10,000</strong></p>
+          <p class="data-card-line"><span>APY</span><strong>4.50%</strong></p>
+          <p class="data-card-line"><span>Interest</span><strong>+$450</strong></p>
+          <p class="data-card-line total"><span>Maturity</span><strong>$10,450</strong></p>
+        </div>
+        <div class="tool-body">
+          <div class="tool-card-top">
+            <span class="pill">Live</span>
+            <span class="muted" style="font-size:12px;">Certificate of deposit</span>
+          </div>
+          <h3 class="heading-sm">CD Calculator</h3>
+          <p>
+            Estimate certificate of deposit interest and maturity value. APY or APR, any term, flexible compounding,
+            optional monthly deposits, and a full growth schedule.
+          </p>
+          <span class="tool-link">Open free CD calculator →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <p class="eyebrow" style="text-align:center;">Roadmap</p>
+      <h2 class="heading" style="text-align:center;">Same niche, next tools</h2>
+      <div class="grid-3">
+        <div class="card">
+          <span class="pill pill-neutral">Soon</span>
+          <h3 class="heading-sm" style="margin-top:12px;">Paycheck calculator</h3>
+          <p class="muted">State-by-state take-home pay estimates — high intent, high CPC.</p>
+        </div>
+        <div class="card">
+          <span class="pill pill-neutral">Soon</span>
+          <h3 class="heading-sm" style="margin-top:12px;">Raise & overtime</h3>
+          <p class="muted">See how a raise or OT hours change your net pay.</p>
+        </div>
+        <div class="card">
+          <span class="pill pill-neutral">Soon</span>
+          <h3 class="heading-sm" style="margin-top:12px;">Credit card payoff</h3>
+          <p class="muted">Plan payoff timelines and interest costs after you grow savings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow" style="text-align:center;">Guides</p>
+      <h2 class="heading" style="text-align:center;">Learn the money basics</h2>
+      <div class="guide-home-grid">
+        <a class="card guide-home-card" href="/guides/how-cd-interest-works/">
+          <div class="guide-home-media">
+            <code>A = P(1 + r/n)<sup>n·t</sup></code>
+            <span>Formula · APY · compounding</span>
+          </div>
+          <div class="guide-home-body">
+            <span class="pill pill-neutral">Guide</span>
+            <h3 class="heading-sm" style="margin-top:12px;">How CD interest works</h3>
+            <p class="muted">APY vs APR, n = compounds/year, and a $10k worked example.</p>
+          </div>
+        </a>
+        <a class="card guide-home-card" href="/guides/cd-vs-savings/">
+          <div class="guide-home-media alt">
+            <span class="pair"><strong>CD</strong> fixed rate · locked term</span>
+            <span class="pair"><strong>HYSA</strong> variable · flexible</span>
+          </div>
+          <div class="guide-home-body">
+            <span class="pill pill-neutral">Guide</span>
+            <h3 class="heading-sm" style="margin-top:12px;">CD vs savings</h3>
+            <p class="muted">Rate certainty vs liquidity—with a sample term table.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container prose" style="margin: 0 auto; text-align: center;">
+      <h2 style="text-align:center;">Why Nestfigure</h2>
+      <p style="margin-left:auto;margin-right:auto;">
+        We stay in <strong>personal finance</strong> only — earn, grow, and pay off. Every calculator is free,
+        transparent about formulas, and designed with a calm product UI so you can decide faster.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-center {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+
+  .hero-visual {
+    width: min(100%, 880px);
+    margin-top: 40px;
+    border-radius: 6px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    background: var(--color-pure-white);
+  }
+
+  .hero-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .tool-card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 0;
+    max-width: 880px;
+    margin: 32px auto 0;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    padding: 0;
+    transition: transform 0.15s ease;
+  }
+
+  .tool-card:hover {
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .tool-media {
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+    min-height: 200px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid var(--color-pale-slate);
+  }
+
+  .data-card-label {
+    margin: 0 0 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  .data-card-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--color-iron);
+  }
+
+  .data-card-line strong {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .data-card-line.total {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-pale-slate);
+  }
+
+  .data-card-line.total strong {
+    font-size: 18px;
+    color: var(--color-cobalt);
+  }
+
+  .tool-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .tool-card p {
+    color: var(--color-iron);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 16px;
+  }
+
+  .tool-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .tool-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-cobalt);
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .grid-3 p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .guide-home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 880px;
+    margin: 32px auto 0;
+  }
+
+  .guide-home-card {
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    padding: 0;
+    transition: border-color 0.15s ease;
+  }
+
+  .guide-home-card:hover {
+    text-decoration: none;
+    border-color: var(--color-dove-gray);
+  }
+
+  .guide-home-media {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    min-height: 120px;
+    padding: 20px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--color-pale-slate);
+  }
+
+  .guide-home-media code {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-ink);
+    background: #fff;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .guide-home-media > span:not(.pair) {
+    font-size: 12px;
+    color: var(--color-graphite);
+  }
+
+  .guide-home-media.alt {
+    gap: 8px;
+  }
+
+  .guide-home-media .pair {
+    font-size: 13px;
+    color: var(--color-iron);
+    background: #fff;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .guide-home-media .pair strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-cobalt);
+    margin-bottom: 2px;
+  }
+
+  .guide-home-body {
+    padding: 16px;
+  }
+
+  .guide-home-body p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 800px) {
+    .grid-3,
+    .guide-home-grid,
+    .tool-card {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-media img {
+      height: 200px;
+    }
+  }
+</style>

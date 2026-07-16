@@ -1,0 +1,209 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import FigureWorkedExample from '../../components/figures/FigureWorkedExample.astro';
+import FigureFormula from '../../components/figures/FigureFormula.astro';
+import FigureCdFlow from '../../components/figures/FigureCdFlow.astro';
+
+const title = 'How CD Interest Works: APY, Compounding & Formulas | Nestfigure';
+const description =
+  'How certificate of deposit interest is calculated under U.S. Truth in Savings rules: APY vs interest rate, compounding, and a transparent worked example.';
+
+const faqs = [
+  {
+    question: 'What is a certificate of deposit (CD)?',
+    answer:
+      'According to the Consumer Financial Protection Bureau (CFPB), a certificate of deposit is a type of savings account offered by banks and credit unions. You generally agree to keep money in the CD for a set length of time; withdrawing early typically means paying a penalty fee to the institution.',
+  },
+  {
+    question: 'What does APY mean on a CD?',
+    answer:
+      'Under Regulation DD (Truth in Savings), annual percentage yield (APY) is a percentage rate that reflects the total interest paid on an account based on the interest rate and how often interest compounds, calculated for a 365-day period using Appendix A to 12 CFR Part 1030. It is designed so consumers can compare deposit products more fairly.',
+  },
+  {
+    question: 'What is the difference between interest rate and APY?',
+    answer:
+      'Regulation DD defines the interest rate as the annual rate of interest paid on an account that does not reflect compounding. APY reflects both the interest rate and compounding frequency. Deposit advertisements that state a rate of return must state it as an annual percentage yield; the interest rate may also be shown, but not more conspicuously than the APY.',
+  },
+  {
+    question: 'How does Nestfigure calculate a sample CD balance?',
+    answer:
+      'Nestfigure uses standard compound-interest math for education. For an APY input over a full year at a constant effective annual yield of 4.50%, principal grows by 4.50% (for example, $10,000 becomes $10,450). Real bank results can differ because of day-count conventions, fees, penalties, and product rules. See the methodology page for full assumptions.',
+  },
+  {
+    question: 'Are early withdrawals from CDs penalized?',
+    answer:
+      'Often yes. The CFPB states that withdrawing money from a CD early means paying a penalty fee to the bank. Regulation DD requires time-account disclosures to describe early withdrawal penalties. Exact amounts depend on the product agreement—not on this website.',
+  },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  canonicalPath="/guides/how-cd-interest-works/"
+  eyebrow="CDs & savings · Educational"
+  headline="How CD interest works"
+  updated="July 17, 2026"
+  datePublished="2026-07-17"
+  dateModified="2026-07-17"
+  ogImage="/images/og-default.webp"
+  faqs={faqs}
+>
+  <p>
+    <strong>Direct answer:</strong> A certificate of deposit (CD) pays interest when you agree to leave funds on
+    deposit for a stated term. In the United States, banks and credit unions must disclose rates under the Truth in
+    Savings Act (Regulation DD). The figure used for comparison shopping is usually the
+    <strong>annual percentage yield (APY)</strong>, which already reflects compounding. Nestfigure’s free
+    <a href="/cd-calculator/">CD calculator</a> applies standard compound-interest formulas for education—it is not a
+    bank quote.
+  </p>
+
+  <FigureCdFlow />
+
+  <h2>What is a certificate of deposit?</h2>
+  <p>
+    The
+    <a
+      href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+      rel="noopener noreferrer"
+      target="_blank">CFPB’s consumer explainer</a
+    >
+    describes a CD as a type of savings account from a bank or credit union. You generally agree not to withdraw for a
+    set period. The CFPB notes that withdrawing early means paying a penalty fee to the bank, and it advises comparing
+    term length, interest rate, and the early-withdrawal penalty when shopping.
+  </p>
+
+  <h2>APY under Truth in Savings (Regulation DD)</h2>
+  <p>
+    <strong>Annual percentage yield</strong> is defined in federal Truth in Savings rules (12 CFR Part 1030,
+    Regulation DD). Per the regulation’s definitions and
+    <a
+      href="https://www.consumerfinance.gov/rules-policy/regulations/1030/A"
+      rel="noopener noreferrer"
+      target="_blank">Appendix A</a
+    >, APY measures total interest paid based on the interest rate and compounding frequency, expressed as an
+    annualized rate on a 365-day year (institutions may use 365 or 366 days in a leap year as allowed).
+  </p>
+  <p>
+    The official definition states that APY is “a percentage rate reflecting the total amount of interest paid on an
+    account, based on the interest rate and the frequency of compounding for a 365-day period and calculated according
+    to the rules in appendix A” of Part 1030 (
+    <a href="https://www.ecfr.gov/current/title-12/chapter-X/part-1030" rel="noopener noreferrer" target="_blank"
+      >eCFR text of 12 CFR Part 1030</a
+    >).
+  </p>
+
+  <h2>Interest rate vs APY</h2>
+  <p>
+    Regulation DD defines the <strong>interest rate</strong> as the annual rate of interest paid on an account that
+    <em>does not</em> reflect compounding. For account disclosures, that rate may also be called the “annual percentage
+    rate,” but it is still distinct from APY.
+  </p>
+  <p>
+    Advertising rules under
+    <a
+      href="https://www.consumerfinance.gov/rules-policy/regulations/1030/8"
+      rel="noopener noreferrer"
+      target="_blank">12 CFR 1030.8</a
+    >
+    require that if an advertisement states a rate of return, it must state the rate as an “annual percentage yield”
+    (the abbreviation “APY” may be used if the full term appears at least once). The interest rate may appear with the
+    APY but must not be more conspicuous than the APY. That is why shopping by APY is the usual consumer approach.
+  </p>
+
+  <h2>Compounding frequency</h2>
+  <p>
+    Compounding means earned interest is added to principal so later interest can be calculated on a larger balance.
+    Institutions disclose how often they compound (for example daily or monthly). More frequent compounding increases
+    yield at the same stated interest rate; APY is meant to put different compounding schedules on a comparable
+    annualized footing.
+  </p>
+  <p>
+    Nestfigure’s calculator lets you choose common compounding frequencies for illustrations (daily, monthly,
+    quarterly, semi-annually, annually, or continuous). Continuous compounding is a mathematical limiting case; many
+    retail CDs use discrete schedules instead.
+  </p>
+
+  <h2>Compound-interest formula (educational model)</h2>
+  <p>
+    For discrete compounding at a constant nominal annual rate <em>r</em>, with <em>n</em> compounding periods per year
+    and time <em>t</em> in years, the future value of a single deposit is:
+  </p>
+  <FigureFormula />
+  <p>
+    This is a standard identity used in textbooks and calculators. It is <strong>not</strong> a substitute for a bank’s
+    exact day-count method, leap-year handling, or promotional terms. When you enter APY in Nestfigure, the tool
+    converts APY to an equivalent nominal rate for the selected compounding mode so a one-year horizon aligns with the
+    stated APY under that model—see
+    <a href="/about/">methodology</a>.
+  </p>
+
+  <h2>Worked example (transparent assumptions)</h2>
+  <p>
+    <strong>Assumptions:</strong> principal $10,000; constant effective annual yield of 4.50% (that is, a full-year
+    growth factor of 1.045); term of exactly one year; no fees, no early withdrawal, no taxes withheld.
+  </p>
+  <p>
+    Under those assumptions only: interest = $10,000 × 0.045 = <strong>$450.00</strong>; ending balance =
+    <strong>$10,450.00</strong>. That arithmetic is exact for the assumptions. It does not claim any specific bank pays
+    4.50% APY today.
+  </p>
+  <FigureWorkedExample
+    caption="Illustrative only. Open the <a href='/cd-calculator/'>CD calculator</a> to change principal, rate, term, or compounding."
+  />
+
+  <h2>Early withdrawal and other real-world frictions</h2>
+  <p>
+    The CFPB states that early withdrawal from a CD generally triggers a penalty. Regulation DD requires disclosures for
+    time accounts to explain early withdrawal penalties and related features. Nestfigure’s calculator does
+    <strong>not</strong> model penalties, bonuses, tiered rates, or taxes.
+  </p>
+  <ul>
+    <li>Early withdrawal penalties (product-specific)</li>
+    <li>Promotional or step-up rates</li>
+    <li>Account fees and minimum balances</li>
+    <li>Tax on interest income (depends on your situation and tax law)</li>
+    <li>Issuer day-count conventions (for example, how partial periods are treated)</li>
+  </ul>
+
+  <h2>Sources</h2>
+  <ul class="sources">
+    <li>
+      Consumer Financial Protection Bureau — “What is a certificate of deposit (CD)?” —
+      <a
+        href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+        rel="noopener noreferrer"
+        target="_blank">consumerfinance.gov</a
+      >
+    </li>
+    <li>
+      12 CFR Part 1030 (Regulation DD — Truth in Savings), including definitions of APY and interest rate —
+      <a href="https://www.ecfr.gov/current/title-12/chapter-X/part-1030" rel="noopener noreferrer" target="_blank"
+        >eCFR</a
+      >
+      /
+      <a href="https://www.consumerfinance.gov/rules-policy/regulations/1030/" rel="noopener noreferrer" target="_blank"
+        >CFPB regulation hub</a
+      >
+    </li>
+    <li>
+      Appendix A to Part 1030 — Annual Percentage Yield Calculation —
+      <a
+        href="https://www.consumerfinance.gov/rules-policy/regulations/1030/A"
+        rel="noopener noreferrer"
+        target="_blank">CFPB Appendix A</a
+      >
+    </li>
+    <li>
+      Nestfigure calculation assumptions —
+      <a href="/about/">About & methodology</a>
+    </li>
+  </ul>
+
+  <h2>Related Nestfigure pages</h2>
+  <ul>
+    <li><a href="/guides/cd-vs-savings/">CD vs high-yield savings</a></li>
+    <li><a href="/cd-calculator/">Free CD calculator</a></li>
+    <li><a href="/about/">Methodology</a></li>
+  </ul>
+</GuideLayout>
