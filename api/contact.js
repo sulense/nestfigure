@@ -125,9 +125,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'Spam check failed. Please refresh and try again.' });
   }
 
-  const to = process.env.CONTACT_TO || 'info@nestfigure.com';
-  // Use a verified Resend domain in production. onboarding@resend.dev works for testing.
-  const from = process.env.RESEND_FROM || 'Nestfigure <onboarding@resend.dev>';
+  const to = 'info@nestfigure.com';
+  // Hard-coded From — domain must be verified in Resend for delivery.
+  const from = 'Nestfigure <info@nestfigure.com>';
 
   const text = [
     `New contact form message from nestfigure.com`,
