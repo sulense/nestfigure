@@ -132,9 +132,10 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
           <div class="result-mid" id="out-term">—</div>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary" id="copy-results" style="align-self: flex-start;">
-        Copy results
-      </button>
+      <div class="result-actions">
+        <button type="button" class="btn btn-secondary" id="copy-results">Copy results</button>
+        <button type="button" class="btn btn-secondary" id="export-pdf">Export PDF</button>
+      </div>
       <p class="result-note" id="copy-status" hidden></p>
       <p class="result-note">
         Illustrative estimate only. Actual bank CD rates, compounding, and early withdrawal penalties vary.
@@ -308,6 +309,13 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     font-size: 16px;
     font-weight: 500;
     color: var(--color-ink);
+  }
+
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
   }
 
   .result-note {
@@ -776,40 +784,108 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     renderCompare(principal, ratePercent, rateIsApy, compounding, termMonths, monthlyDeposit, result.finalBalance);
   }
 
-  async function copyResults() {
+  function resultLines(): string[] {
     const s = lastSummary;
-    const text = [
+    return [
       'Nestfigure CD Calculator results',
       `Deposit: ${formatMoney(s.principal)}`,
       `Rate: ${s.ratePercent.toFixed(2)}% ${s.rateIsApy ? 'APY' : 'nominal APR'}`,
       `Term: ${termLabel(s.termMonths)}`,
       `Compounding: ${s.compounding}`,
-      s.monthlyDeposit > 0 ? `Monthly deposit: ${formatMoney(s.monthlyDeposit)}` : null,
+      s.monthlyDeposit > 0 ? `Monthly deposit: ${formatMoney(s.monthlyDeposit)}` : '',
       `Final balance: ${formatMoney(s.balance)}`,
       `Interest earned: ${formatMoney(s.interest)}`,
       `Total deposited: ${formatMoney(s.deposits)}`,
       `Effective APY: ${formatPercent(s.apy)}`,
       'Estimates only — not a bank quote.',
       'https://nestfigure.com/cd-calculator/',
-    ]
-      .filter(Boolean)
-      .join('\n');
+    ].filter((line) => line.length > 0);
+  }
 
+  function setActionStatus(message: string, ms = 2000) {
     const status = document.getElementById('copy-status');
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+    window.setTimeout(() => {
+      status.hidden = true;
+    }, ms);
+  }
+
+  async function copyResults() {
+    const text = resultLines().join('\n');
     try {
       await navigator.clipboard.writeText(text);
-      if (status) {
-        status.hidden = false;
-        status.textContent = 'Copied to clipboard.';
-        setTimeout(() => {
-          status.hidden = true;
-        }, 2000);
-      }
+      setActionStatus('Copied to clipboard.');
     } catch {
-      if (status) {
-        status.hidden = false;
-        status.textContent = 'Could not copy — select and copy manually.';
-      }
+      setActionStatus('Could not copy — select and copy manually.', 4000);
+    }
+  }
+
+  /** Minimal one-page text PDF — no external library (keeps page weight unchanged). */
+  function buildTextPdf(lines: string[]): Blob {
+    const toPdfText = (value: string) =>
+      value
+        .replace(/[—–−]/g, '-')
+        .replace(/[^\x20-\x7E]/g, '')
+        .replace(/\\/g, '\\\\')
+        .replace(/\(/g, '\\(')
+        .replace(/\)/g, '\\)');
+
+    const content: string[] = [
+      'BT',
+      '/F1 16 Tf',
+      '50 760 Td',
+      `(${toPdfText(lines[0] || 'Results')}) Tj`,
+      '/F1 11 Tf',
+    ];
+    for (let i = 1; i < lines.length; i++) {
+      content.push('0 -18 Td', `(${toPdfText(lines[i])}) Tj`);
+    }
+    content.push('ET');
+    const stream = content.join('\n');
+
+    const objects: string[] = [];
+    objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+    objects.push(
+      '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n',
+    );
+    objects.push(`4 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`);
+    objects.push('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
+
+    let pdf = '%PDF-1.4\n';
+    const offsets = [0];
+    for (const obj of objects) {
+      offsets.push(pdf.length);
+      pdf += obj;
+    }
+    const xrefStart = pdf.length;
+    pdf += `xref\n0 ${objects.length + 1}\n`;
+    pdf += '0000000000 65535 f \n';
+    for (let i = 1; i < offsets.length; i++) {
+      pdf += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
+    }
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+    return new Blob([pdf], { type: 'application/pdf' });
+  }
+
+  function exportPdf() {
+    try {
+      const blob = buildTextPdf(resultLines());
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `nestfigure-cd-results-${stamp}.pdf`;
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setActionStatus('PDF downloaded.');
+    } catch {
+      setActionStatus('Could not create PDF. Try Copy results instead.', 4000);
     }
   }
 
@@ -827,6 +903,7 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
       });
     });
     document.getElementById('copy-results')?.addEventListener('click', copyResults);
+    document.getElementById('export-pdf')?.addEventListener('click', exportPdf);
     calculate();
   }
 
