@@ -23,4 +23,5 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
+Sitemap: https://nestfigure.com/sitemap.xml
 Sitemap: https://nestfigure.com/sitemap-index.xml
