@@ -36,6 +36,16 @@ const jsonLdItems = jsonLd
     <meta name="generator" content={Astro.generator} />
     <meta name="google-site-verification" content="dh8GEJtu_kK4o3hw2RlBDIbnNo1MHc17lX8iFet6Q-Y" />
     <link rel="canonical" href={canonical} />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RLC6KSL57V" is:inline></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-RLC6KSL57V');
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
