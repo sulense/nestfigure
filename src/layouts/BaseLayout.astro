@@ -37,15 +37,41 @@ const jsonLdItems = jsonLd
     <meta name="google-site-verification" content="dh8GEJtu_kK4o3hw2RlBDIbnNo1MHc17lX8iFet6Q-Y" />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RLC6KSL57V" is:inline></script>
+    <!-- Faster third-party connections (fonts + analytics) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <!-- Google Analytics: load after page is interactive (better LCP) -->
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag('js', new Date());
-      gtag('config', 'G-RLC6KSL57V');
+      window.gtag = gtag;
+      function loadGtag() {
+        if (window.__gtagLoaded) return;
+        window.__gtagLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RLC6KSL57V';
+        s.onload = function () {
+          gtag('js', new Date());
+          gtag('config', 'G-RLC6KSL57V', { anonymize_ip: true });
+        };
+        document.head.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGtag, { timeout: 3500 });
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(loadGtag, 1);
+        });
+      }
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />

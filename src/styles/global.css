@@ -1,5 +1,5 @@
-/* Nestfigure — DESIGN.md tokens (Reworkd daylight system) */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Nestfigure — DESIGN.md tokens (Reworkd daylight system)
+   Fonts load via <link> in BaseLayout (preconnect + display=swap) — not @import. */
 
 :root {
   --color-iris-blue: #3161df;
@@ -20,9 +20,10 @@
   --color-lavender-mist: #f0f5fe;
   --color-pale-slate: #e3e8ea;
   --color-dove-gray: #a6b4ba;
-  --color-iron: #526068;
-  --color-graphite: #60737a;
-  --color-slate-mist: #7b8e95;
+  /* Darkened slightly for WCAG contrast on white */
+  --color-iron: #3d4a52;
+  --color-graphite: #4a5a61;
+  --color-slate-mist: #5c6d75;
 
   --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --font-ui: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -94,11 +95,28 @@ img {
 }
 
 a {
-  color: var(--color-iris-blue);
-  text-decoration: none;
+  color: var(--color-midnight-iris);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
 
 a:hover {
+  color: var(--color-iris-blue);
+}
+
+/* Nav/logo/buttons keep cleaner chrome without always-on underline */
+.nav a,
+.logo,
+.btn,
+.footer-links a,
+.tool-link,
+.linkish {
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.nav a:hover {
   text-decoration: underline;
 }
 
