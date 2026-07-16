@@ -147,23 +147,44 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
       <h3 class="heading-sm" style="margin:0">Balance over time</h3>
       <span class="muted" style="font-size:12px">Growth chart</span>
     </div>
-    <div class="chart-wrap" aria-hidden="true">
-      <svg id="growth-chart" viewBox="0 0 640 200" preserveAspectRatio="none" role="img" aria-label="CD balance growth chart">
-        <defs>
-          <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#3e79ea" stop-opacity="0.28" />
-            <stop offset="100%" stop-color="#3e79ea" stop-opacity="0.02" />
-          </linearGradient>
-        </defs>
-        <line class="grid" x1="40" y1="20" x2="40" y2="170" />
-        <line class="grid" x1="40" y1="170" x2="620" y2="170" />
-        <path id="chart-area" fill="url(#areaFill)" />
-        <path id="chart-line" fill="none" stroke="#3e79ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        <text id="chart-y-max" class="chart-label" x="36" y="24" text-anchor="end">—</text>
-        <text id="chart-y-min" class="chart-label" x="36" y="170" text-anchor="end">—</text>
-        <text id="chart-x-start" class="chart-label" x="40" y="190">Start</text>
-        <text id="chart-x-end" class="chart-label" x="620" y="190" text-anchor="end">Maturity</text>
-      </svg>
+    <div class="chart-wrap" role="img" aria-label="CD balance growth chart">
+      <div class="chart-y-axis" aria-hidden="true">
+        <span id="chart-y-max">—</span>
+        <span id="chart-y-mid">—</span>
+        <span id="chart-y-min">—</span>
+      </div>
+      <div class="chart-main">
+        <svg
+          id="growth-chart"
+          viewBox="0 0 800 280"
+          preserveAspectRatio="xMidYMid meet"
+          shape-rendering="geometricPrecision"
+        >
+          <defs>
+            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3e79ea" stop-opacity="0.22" />
+              <stop offset="100%" stop-color="#3e79ea" stop-opacity="0.02" />
+            </linearGradient>
+          </defs>
+          <g id="chart-grid"></g>
+          <path id="chart-area" fill="url(#areaFill)" />
+          <path
+            id="chart-line"
+            fill="none"
+            stroke="#3e79ea"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            vector-effect="non-scaling-stroke"
+          />
+          <g id="chart-dots"></g>
+        </svg>
+        <div class="chart-x-axis" aria-hidden="true">
+          <span>Start</span>
+          <span id="chart-x-mid"></span>
+          <span>Maturity</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -311,27 +332,60 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
   }
 
   .chart-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 10px;
     border: 1px solid var(--color-pale-slate);
     border-radius: 6px;
-    padding: 12px 8px 4px;
+    padding: 16px 16px 12px;
     background: var(--color-pure-white);
   }
 
-  .chart-wrap svg {
-    width: 100%;
-    height: 200px;
-    display: block;
-  }
-
-  .chart-wrap .grid {
-    stroke: var(--color-pale-slate);
-    stroke-width: 1;
-  }
-
-  .chart-label {
+  .chart-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 4px 0 28px;
+    min-width: 4.5rem;
     font-family: var(--font-mono);
-    font-size: 10px;
-    fill: var(--color-graphite);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-graphite);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .chart-main {
+    min-width: 0;
+  }
+
+  .chart-main svg {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 800 / 280;
+    display: block;
+    overflow: visible;
+  }
+
+  .chart-x-axis {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding: 0 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-graphite);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (max-width: 520px) {
+    .chart-y-axis {
+      min-width: 3.25rem;
+      font-size: 10px;
+    }
   }
 
   tr.is-current td {
@@ -521,45 +575,110 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     };
   }
 
+  function formatAxisMoney(n: number): string {
+    if (!Number.isFinite(n)) return '—';
+    const abs = Math.abs(n);
+    if (abs >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+    if (abs >= 10_000) return `$${Math.round(n).toLocaleString('en-US')}`;
+    return formatMoney(n);
+  }
+
+  /** Downsample long series so the path stays smooth and crisp. */
+  function samplePoints(points: number[], maxPoints = 96): number[] {
+    if (points.length <= maxPoints) return points;
+    const out: number[] = [];
+    const last = points.length - 1;
+    for (let i = 0; i < maxPoints; i++) {
+      const idx = Math.round((i / (maxPoints - 1)) * last);
+      out.push(points[idx]);
+    }
+    return out;
+  }
+
   function renderChart(points: number[]) {
     const line = document.getElementById('chart-line') as SVGPathElement | null;
     const area = document.getElementById('chart-area') as SVGPathElement | null;
+    const grid = document.getElementById('chart-grid');
+    const dots = document.getElementById('chart-dots');
     const yMaxEl = document.getElementById('chart-y-max');
+    const yMidEl = document.getElementById('chart-y-mid');
     const yMinEl = document.getElementById('chart-y-min');
-    if (!line || !area || !yMaxEl || !yMinEl) return;
+    if (!line || !area || !grid || !dots || !yMaxEl || !yMidEl || !yMinEl) return;
 
     if (!points.length) {
       line.setAttribute('d', '');
       area.setAttribute('d', '');
+      grid.innerHTML = '';
+      dots.innerHTML = '';
       return;
     }
 
-    const padL = 40;
-    const padR = 20;
-    const padT = 20;
-    const padB = 30;
-    const w = 640 - padL - padR;
-    const h = 200 - padT - padB;
-    const min = Math.min(...points);
-    const max = Math.max(...points);
-    const span = max - min || 1;
+    const series = samplePoints(points);
+    const padL = 8;
+    const padR = 12;
+    const padT = 16;
+    const padB = 16;
+    const w = 800 - padL - padR;
+    const h = 280 - padT - padB;
+    let min = Math.min(...series);
+    let max = Math.max(...series);
+    // Small padding so a flat line isn't glued to the edge
+    if (max === min) {
+      min = min * 0.98;
+      max = max * 1.02 || 1;
+    } else {
+      const pad = (max - min) * 0.08;
+      min -= pad;
+      max += pad;
+    }
+    const span = max - min;
 
-    const coords = points.map((p, i) => {
-      const x = padL + (i / Math.max(points.length - 1, 1)) * w;
+    // Horizontal grid (4 bands)
+    const gridLines: string[] = [];
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (h * i) / 4;
+      gridLines.push(
+        `<line x1="${padL}" y1="${y.toFixed(2)}" x2="${(padL + w).toFixed(2)}" y2="${y.toFixed(2)}" stroke="#e3e8ea" stroke-width="1" vector-effect="non-scaling-stroke" />`,
+      );
+    }
+    // Left baseline
+    gridLines.push(
+      `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${(padT + h).toFixed(2)}" stroke="#e3e8ea" stroke-width="1" vector-effect="non-scaling-stroke" />`,
+    );
+    grid.innerHTML = gridLines.join('');
+
+    const coords = series.map((p, i) => {
+      const x = padL + (i / Math.max(series.length - 1, 1)) * w;
       const y = padT + h - ((p - min) / span) * h;
       return [x, y] as const;
     });
 
-    const lineD = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c[0].toFixed(1)},${c[1].toFixed(1)}`).join(' ');
+    // Smooth-looking polyline with high precision (no non-uniform stretch)
+    const lineD = coords
+      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c[0].toFixed(2)},${c[1].toFixed(2)}`)
+      .join(' ');
+    const baseY = (padT + h).toFixed(2);
     const areaD =
       lineD +
-      ` L${coords[coords.length - 1][0].toFixed(1)},${(padT + h).toFixed(1)}` +
-      ` L${coords[0][0].toFixed(1)},${(padT + h).toFixed(1)} Z`;
+      ` L${coords[coords.length - 1][0].toFixed(2)},${baseY}` +
+      ` L${coords[0][0].toFixed(2)},${baseY} Z`;
 
     line.setAttribute('d', lineD);
     area.setAttribute('d', areaD);
-    yMaxEl.textContent = formatMoney(max).replace('.00', '');
-    yMinEl.textContent = formatMoney(min).replace('.00', '');
+
+    const start = coords[0];
+    const end = coords[coords.length - 1];
+    dots.innerHTML = `
+      <circle cx="${start[0].toFixed(2)}" cy="${start[1].toFixed(2)}" r="4" fill="#ffffff" stroke="#3e79ea" stroke-width="2" vector-effect="non-scaling-stroke" />
+      <circle cx="${end[0].toFixed(2)}" cy="${end[1].toFixed(2)}" r="4.5" fill="#3e79ea" stroke="#ffffff" stroke-width="2" vector-effect="non-scaling-stroke" />
+    `;
+
+    const dataMin = Math.min(...points);
+    const dataMax = Math.max(...points);
+    const dataMid = (dataMin + dataMax) / 2;
+    yMaxEl.textContent = formatAxisMoney(dataMax);
+    yMidEl.textContent = formatAxisMoney(dataMid);
+    yMinEl.textContent = formatAxisMoney(dataMin);
   }
 
   function renderCompare(
