@@ -320,7 +320,7 @@ export default async function handler(req, res) {
       console.error('Resend error', r.status, data);
       return res.status(502).json({
         ok: false,
-        error: 'Could not send email right now. Please try again later or email info@nestfigure.com directly.',
+        error: 'Could not send email right now. Please try again later.',
       });
     }
 
@@ -330,7 +330,7 @@ export default async function handler(req, res) {
     console.error('Contact handler error', err);
     return res.status(500).json({
       ok: false,
-      error: 'Could not send email right now. Please try again later or email info@nestfigure.com directly.',
+      error: 'Could not send email right now. Please try again later.',
     });
   }
 }

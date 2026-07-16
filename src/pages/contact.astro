@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const title = 'Contact Nestfigure';
 const description =
-  'Contact Nestfigure about calculators, guides, corrections, or privacy. Send a message via the form or email info@nestfigure.com.';
+  'Contact Nestfigure about calculators, guides, corrections, or privacy using our secure contact form.';
 ---
 
 <BaseLayout title={title} description={description} canonicalPath="/contact/">
@@ -20,11 +20,8 @@ const description =
   <section class="section" style="padding-top:0;">
     <div class="container contact-grid">
       <div class="card contact-side">
-        <h2 class="heading-sm">Email</h2>
-        <p>
-          Prefer email?
-          <a href="mailto:info@nestfigure.com">info@nestfigure.com</a>
-        </p>
+        <h2 class="heading-sm">How to reach us</h2>
+        <p>Send a message with the form. We reply to the email address you provide.</p>
         <h2 class="heading-sm" style="margin-top:24px;">What to expect</h2>
         <ul>
           <li>Calculator questions and bug reports</li>
@@ -268,7 +265,7 @@ const description =
         status.hidden = false;
         status.className = 'form-status err';
         status.textContent =
-          err instanceof Error ? err.message : 'Could not send. Email info@nestfigure.com instead.';
+          err instanceof Error ? err.message : 'Could not send. Please try again in a moment.';
         setupChallenge();
       } finally {
         btn.disabled = false;
