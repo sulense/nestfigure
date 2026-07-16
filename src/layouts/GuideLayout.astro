@@ -115,8 +115,8 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
       </div>
     </section>
     <section class="section" style="padding-top:0;">
-      <div class="container">
-        <TextToSpeech targetSelector="[data-tts-content]" label="Listen" />
+      <div class="container tts-host">
+        <TextToSpeech targetSelector="[data-tts-content]" />
       </div>
       <div class="container prose guide-body" itemprop="articleBody" data-tts-content>
         <p class="ymyl-notice">
@@ -162,6 +162,14 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
 </BaseLayout>
 
 <style>
+  .tts-host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+
   .guide-body {
     margin: 0 auto;
   }
