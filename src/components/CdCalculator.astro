@@ -419,6 +419,14 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     | 'continuous';
 
   type Row = { label: string; deposit: number; interest: number; balance: number };
+  type CompareRow = {
+    months: number;
+    term: string;
+    balance: number;
+    interest: number;
+    deltaLabel: string;
+    isCurrent: boolean;
+  };
 
   const N: Record<Exclude<Compounding, 'continuous'>, number> = {
     daily: 365,
@@ -430,7 +438,16 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
 
   const COMPARE_TERMS = [3, 6, 12, 24, 36, 60];
 
-  let lastSummary = {
+  const COMPOUNDING_LABEL: Record<Compounding, string> = {
+    daily: 'Daily',
+    monthly: 'Monthly',
+    quarterly: 'Quarterly',
+    semiannually: 'Semi-annually',
+    annually: 'Annually',
+    continuous: 'Continuous',
+  };
+
+  let lastExport = {
     principal: 0,
     ratePercent: 0,
     rateIsApy: true,
@@ -441,6 +458,10 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     interest: 0,
     deposits: 0,
     apy: 0,
+    points: [] as number[],
+    scheduleRows: [] as Row[],
+    scheduleNote: 'By period',
+    compareRows: [] as CompareRow[],
   };
 
   function nominalRate(ratePercent: number, rateIsApy: boolean, compounding: Compounding): number {
@@ -746,7 +767,28 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
         ? Math.pow(result.finalBalance / result.totalDeposits, 1 / years) - 1
         : 0;
 
-    lastSummary = {
+    const scheduleNote =
+      result.rows.length && result.rows[0].label.startsWith('Year') ? 'Yearly summary' : 'Monthly schedule';
+
+    const terms = [...new Set([...COMPARE_TERMS, Math.round(termMonths)].filter((t) => t > 0))].sort(
+      (a, b) => a - b,
+    );
+    const compareRows: CompareRow[] = terms.map((months) => {
+      const r = project(principal, ratePercent, rateIsApy, compounding, months, monthlyDeposit);
+      const delta = r.finalBalance - result.finalBalance;
+      const deltaLabel =
+        Math.abs(delta) < 0.005 ? 'Current' : delta > 0 ? `+${formatMoney(delta)}` : formatMoney(delta);
+      return {
+        months,
+        term: termLabel(months),
+        balance: r.finalBalance,
+        interest: r.totalInterest,
+        deltaLabel,
+        isCurrent: months === Math.round(termMonths),
+      };
+    });
+
+    lastExport = {
       principal,
       ratePercent,
       rateIsApy,
@@ -757,12 +799,16 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
       interest: result.totalInterest,
       deposits: result.totalDeposits,
       apy: Math.max(0, effectiveApy),
+      points: result.points,
+      scheduleRows: result.rows,
+      scheduleNote,
+      compareRows,
     };
 
     (document.getElementById('out-balance') as HTMLElement).textContent = formatMoney(result.finalBalance);
     (document.getElementById('out-interest') as HTMLElement).textContent = formatMoney(result.totalInterest);
     (document.getElementById('out-deposits') as HTMLElement).textContent = formatMoney(result.totalDeposits);
-    (document.getElementById('out-apy') as HTMLElement).textContent = formatPercent(lastSummary.apy);
+    (document.getElementById('out-apy') as HTMLElement).textContent = formatPercent(lastExport.apy);
     (document.getElementById('out-term') as HTMLElement).textContent = termLabel(termMonths);
 
     const tbody = document.getElementById('schedule-body') as HTMLElement;
@@ -777,27 +823,26 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
       )
       .join('');
 
-    (document.getElementById('schedule-note') as HTMLElement).textContent =
-      result.rows.length && result.rows[0].label.startsWith('Year') ? 'Yearly summary' : 'Monthly schedule';
+    (document.getElementById('schedule-note') as HTMLElement).textContent = scheduleNote;
 
     renderChart(result.points);
     renderCompare(principal, ratePercent, rateIsApy, compounding, termMonths, monthlyDeposit, result.finalBalance);
   }
 
   function resultLines(): string[] {
-    const s = lastSummary;
+    const s = lastExport;
     return [
       'Nestfigure CD Calculator results',
       `Deposit: ${formatMoney(s.principal)}`,
       `Rate: ${s.ratePercent.toFixed(2)}% ${s.rateIsApy ? 'APY' : 'nominal APR'}`,
       `Term: ${termLabel(s.termMonths)}`,
-      `Compounding: ${s.compounding}`,
+      `Compounding: ${COMPOUNDING_LABEL[s.compounding]}`,
       s.monthlyDeposit > 0 ? `Monthly deposit: ${formatMoney(s.monthlyDeposit)}` : '',
       `Final balance: ${formatMoney(s.balance)}`,
       `Interest earned: ${formatMoney(s.interest)}`,
       `Total deposited: ${formatMoney(s.deposits)}`,
       `Effective APY: ${formatPercent(s.apy)}`,
-      'Estimates only — not a bank quote.',
+      'Estimates only - not a bank quote.',
       'https://nestfigure.com/cd-calculator/',
     ].filter((line) => line.length > 0);
   }
@@ -822,9 +867,20 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     }
   }
 
-  /** Minimal one-page text PDF — no external library (keeps page weight unchanged). */
-  function buildTextPdf(lines: string[]): Blob {
-    const toPdfText = (value: string) =>
+  /** Vector multi-page report PDF (chart + tables) — no external library. */
+  function buildReportPdf(): Blob {
+    const PAGE_W = 612;
+    const PAGE_H = 792;
+    const M = 40;
+    const BLUE = [0.145, 0.388, 0.922] as const; // #2563eb
+    const INK = [0.102, 0.122, 0.141] as const;
+    const MUTED = [0.36, 0.42, 0.46] as const;
+    const LINE = [0.89, 0.91, 0.92] as const;
+    const LAVENDER = [0.941, 0.961, 0.996] as const;
+    const WHITE = [1, 1, 1] as const;
+    const ZEBRA = [0.98, 0.985, 0.99] as const;
+
+    const pdfText = (value: string) =>
       value
         .replace(/[—–−]/g, '-')
         .replace(/[^\x20-\x7E]/g, '')
@@ -832,47 +888,411 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
         .replace(/\(/g, '\\(')
         .replace(/\)/g, '\\)');
 
-    const content: string[] = [
-      'BT',
-      '/F1 16 Tf',
-      '50 760 Td',
-      `(${toPdfText(lines[0] || 'Results')}) Tj`,
-      '/F1 11 Tf',
-    ];
-    for (let i = 1; i < lines.length; i++) {
-      content.push('0 -18 Td', `(${toPdfText(lines[i])}) Tj`);
-    }
-    content.push('ET');
-    const stream = content.join('\n');
+    const pages: string[] = [];
+    let ops: string[] = [];
+    let yTop = M;
 
-    const objects: string[] = [];
-    objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
-    objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
-    objects.push(
-      '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n',
+    const flushPage = () => {
+      const pageNo = pages.length + 1;
+      ops.push(
+        `${MUTED[0]} ${MUTED[1]} ${MUTED[2]} rg`,
+        'BT',
+        '/F1 8 Tf',
+        `1 0 0 1 ${M} 22 Tm`,
+        `(nestfigure.com/cd-calculator  |  Educational estimate only - not a bank quote) Tj`,
+        'ET',
+        'BT',
+        '/F1 8 Tf',
+        `1 0 0 1 ${PAGE_W - M - 50} 22 Tm`,
+        `(Page ${pageNo}) Tj`,
+        'ET',
+      );
+      pages.push(ops.join('\n'));
+      ops = [];
+      yTop = M + 8;
+    };
+
+    const ensure = (need: number) => {
+      if (yTop + need > PAGE_H - 40) flushPage();
+    };
+
+    const py = (top: number) => PAGE_H - top; // convert top-down to PDF y
+
+    const fillRect = (x: number, top: number, w: number, h: number, c: readonly [number, number, number]) => {
+      ops.push(`${c[0]} ${c[1]} ${c[2]} rg`, `${x.toFixed(2)} ${(py(top) - h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re`, 'f');
+    };
+
+    const strokeRect = (
+      x: number,
+      top: number,
+      w: number,
+      h: number,
+      c: readonly [number, number, number],
+      lw = 0.75,
+    ) => {
+      ops.push(
+        `${c[0]} ${c[1]} ${c[2]} RG`,
+        `${lw} w`,
+        `${x.toFixed(2)} ${(py(top) - h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re`,
+        'S',
+      );
+    };
+
+    const line = (
+      x1: number,
+      top1: number,
+      x2: number,
+      top2: number,
+      c: readonly [number, number, number],
+      lw = 0.75,
+    ) => {
+      ops.push(
+        `${c[0]} ${c[1]} ${c[2]} RG`,
+        `${lw} w`,
+        `${x1.toFixed(2)} ${py(top1).toFixed(2)} m`,
+        `${x2.toFixed(2)} ${py(top2).toFixed(2)} l`,
+        'S',
+      );
+    };
+
+    const textAt = (
+      str: string,
+      x: number,
+      top: number,
+      size: number,
+      opts: {
+        bold?: boolean;
+        color?: readonly [number, number, number];
+        align?: 'left' | 'right' | 'center';
+        maxWidth?: number;
+      } = {},
+    ) => {
+      const font = opts.bold ? '/F2' : '/F1';
+      const color = opts.color || INK;
+      let drawX = x;
+      // Approximate Helvetica width ~0.5 * size per char for alignment
+      const approxW = pdfText(str).length * size * 0.5;
+      if (opts.align === 'right') drawX = x - approxW;
+      if (opts.align === 'center') drawX = x - approxW / 2;
+      ops.push(
+        `${color[0]} ${color[1]} ${color[2]} rg`,
+        'BT',
+        `${font} ${size} Tf`,
+        `1 0 0 1 ${drawX.toFixed(2)} ${(py(top) - size * 0.8).toFixed(2)} Tm`,
+        `(${pdfText(str)}) Tj`,
+        'ET',
+      );
+    };
+
+    const s = lastExport;
+    const contentW = PAGE_W - M * 2;
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    // —— Header band ——
+    fillRect(0, 0, PAGE_W, 56, BLUE);
+    textAt('Nestfigure', M, 22, 14, { bold: true, color: WHITE });
+    textAt('CD Calculator Report', M, 40, 10, { color: WHITE });
+    textAt(dateStr, PAGE_W - M, 32, 9, { color: WHITE, align: 'right' });
+    yTop = 72;
+
+    // —— Title + inputs ——
+    textAt('Your CD estimate', M, yTop, 16, { bold: true });
+    yTop += 22;
+    const inputBits = [
+      `Deposit ${formatMoney(s.principal)}`,
+      `${s.ratePercent.toFixed(2)}% ${s.rateIsApy ? 'APY' : 'nominal APR'}`,
+      termLabel(s.termMonths),
+      `${COMPOUNDING_LABEL[s.compounding]} compounding`,
+    ];
+    if (s.monthlyDeposit > 0) inputBits.push(`+${formatMoney(s.monthlyDeposit)}/mo`);
+    textAt(inputBits.join('  ·  '), M, yTop, 9, { color: MUTED });
+    yTop += 18;
+
+    // —— Metric cards ——
+    const cardH = 48;
+    const gap = 8;
+    // Big balance card
+    fillRect(M, yTop, contentW, 56, LAVENDER);
+    strokeRect(M, yTop, contentW, 56, LINE, 0.6);
+    textAt('FINAL BALANCE', M + 14, yTop + 16, 8, { color: MUTED, bold: true });
+    textAt(formatMoney(s.balance), M + 14, yTop + 36, 20, { bold: true, color: BLUE });
+    yTop += 56 + gap;
+
+    const miniW = (contentW - gap * 3) / 4;
+    const minis = [
+      { label: 'INTEREST EARNED', value: formatMoney(s.interest) },
+      { label: 'TOTAL DEPOSITED', value: formatMoney(s.deposits) },
+      { label: 'EFFECTIVE APY', value: formatPercent(s.apy) },
+      { label: 'TERM', value: termLabel(s.termMonths) },
+    ];
+    minis.forEach((card, i) => {
+      const x = M + i * (miniW + gap);
+      fillRect(x, yTop, miniW, cardH, WHITE);
+      strokeRect(x, yTop, miniW, cardH, LINE, 0.6);
+      textAt(card.label, x + 10, yTop + 14, 7, { color: MUTED, bold: true });
+      textAt(card.value, x + 10, yTop + 32, 11, { bold: true });
+    });
+    yTop += cardH + 20;
+
+    // —— Growth chart ——
+    ensure(210);
+    textAt('Balance over time', M, yTop, 12, { bold: true });
+    yTop += 6;
+    textAt('Projected balance from start to maturity', M, yTop + 12, 8, { color: MUTED });
+    yTop += 24;
+
+    const chartH = 160;
+    const chartPadL = 52;
+    const chartPadR = 12;
+    const chartPadT = 10;
+    const chartPadB = 22;
+    const chartBoxW = contentW;
+    const chartBoxH = chartH;
+    fillRect(M, yTop, chartBoxW, chartBoxH, WHITE);
+    strokeRect(M, yTop, chartBoxW, chartBoxH, LINE, 0.7);
+
+    const plotX = M + chartPadL;
+    const plotTop = yTop + chartPadT;
+    const plotW = chartBoxW - chartPadL - chartPadR;
+    const plotH = chartBoxH - chartPadT - chartPadB;
+    const pts = s.points.length ? s.points : [s.principal, s.balance];
+    const minV = Math.min(...pts);
+    const maxV = Math.max(...pts);
+    const span = Math.max(maxV - minV, 1);
+
+    // grid + y labels
+    for (let g = 0; g <= 4; g++) {
+      const t = g / 4;
+      const gy = plotTop + plotH * t;
+      line(plotX, gy, plotX + plotW, gy, LINE, 0.5);
+      const val = maxV - span * t;
+      textAt(formatMoney(val), plotX - 6, gy + 3, 7, { color: MUTED, align: 'right' });
+    }
+
+    // area + line path
+    const coords = pts.map((p, i) => {
+      const x = plotX + (i / Math.max(pts.length - 1, 1)) * plotW;
+      const top = plotTop + ((maxV - p) / span) * plotH;
+      return { x, top };
+    });
+
+    if (coords.length > 1) {
+      // filled area under the curve (solid soft blue — no alpha dependency)
+      const baseTop = plotTop + plotH;
+      let area = `${coords[0].x.toFixed(2)} ${py(coords[0].top).toFixed(2)} m`;
+      for (let i = 1; i < coords.length; i++) {
+        area += ` ${coords[i].x.toFixed(2)} ${py(coords[i].top).toFixed(2)} l`;
+      }
+      area += ` ${coords[coords.length - 1].x.toFixed(2)} ${py(baseTop).toFixed(2)} l`;
+      area += ` ${coords[0].x.toFixed(2)} ${py(baseTop).toFixed(2)} l f`;
+      ops.push('0.88 0.92 0.99 rg', area);
+
+      let path = `${coords[0].x.toFixed(2)} ${py(coords[0].top).toFixed(2)} m`;
+      for (let i = 1; i < coords.length; i++) {
+        path += ` ${coords[i].x.toFixed(2)} ${py(coords[i].top).toFixed(2)} l`;
+      }
+      ops.push(`${BLUE[0]} ${BLUE[1]} ${BLUE[2]} RG`, '1.8 w', '1 J', '1 j', path, 'S');
+
+      // end dots
+      const dot = (c: { x: number; top: number }, r: number, fill: readonly [number, number, number]) => {
+        const cx = c.x;
+        const cy = py(c.top);
+        // circle via four Beziers
+        const k = 0.5522847498 * r;
+        ops.push(
+          `${fill[0]} ${fill[1]} ${fill[2]} rg`,
+          `${(cx + r).toFixed(2)} ${cy.toFixed(2)} m`,
+          `${(cx + r).toFixed(2)} ${(cy + k).toFixed(2)} ${(cx + k).toFixed(2)} ${(cy + r).toFixed(2)} ${cx.toFixed(2)} ${(cy + r).toFixed(2)} c`,
+          `${(cx - k).toFixed(2)} ${(cy + r).toFixed(2)} ${(cx - r).toFixed(2)} ${(cy + k).toFixed(2)} ${(cx - r).toFixed(2)} ${cy.toFixed(2)} c`,
+          `${(cx - r).toFixed(2)} ${(cy - k).toFixed(2)} ${(cx - k).toFixed(2)} ${(cy - r).toFixed(2)} ${cx.toFixed(2)} ${(cy - r).toFixed(2)} c`,
+          `${(cx + k).toFixed(2)} ${(cy - r).toFixed(2)} ${(cx + r).toFixed(2)} ${(cy - k).toFixed(2)} ${(cx + r).toFixed(2)} ${cy.toFixed(2)} c`,
+          'f',
+        );
+      };
+      dot(coords[0], 3, WHITE);
+      ops.push(`${BLUE[0]} ${BLUE[1]} ${BLUE[2]} RG`, '1.2 w');
+      // outline start
+      const c0 = coords[0];
+      ops.push(
+        `${(c0.x + 3).toFixed(2)} ${py(c0.top).toFixed(2)} m`,
+        `${(c0.x + 3).toFixed(2)} ${(py(c0.top) + 1.65).toFixed(2)} ${(c0.x + 1.65).toFixed(2)} ${(py(c0.top) + 3).toFixed(2)} ${c0.x.toFixed(2)} ${(py(c0.top) + 3).toFixed(2)} c`,
+        `${(c0.x - 1.65).toFixed(2)} ${(py(c0.top) + 3).toFixed(2)} ${(c0.x - 3).toFixed(2)} ${(py(c0.top) + 1.65).toFixed(2)} ${(c0.x - 3).toFixed(2)} ${py(c0.top).toFixed(2)} c`,
+        `${(c0.x - 3).toFixed(2)} ${(py(c0.top) - 1.65).toFixed(2)} ${(c0.x - 1.65).toFixed(2)} ${(py(c0.top) - 3).toFixed(2)} ${c0.x.toFixed(2)} ${(py(c0.top) - 3).toFixed(2)} c`,
+        `${(c0.x + 1.65).toFixed(2)} ${(py(c0.top) - 3).toFixed(2)} ${(c0.x + 3).toFixed(2)} ${(py(c0.top) - 1.65).toFixed(2)} ${(c0.x + 3).toFixed(2)} ${py(c0.top).toFixed(2)} c`,
+        'S',
+      );
+      dot(coords[coords.length - 1], 3.5, BLUE);
+    }
+
+    textAt('Start', plotX, yTop + chartBoxH - 8, 8, { color: MUTED });
+    textAt('Maturity', plotX + plotW, yTop + chartBoxH - 8, 8, { color: MUTED, align: 'right' });
+    yTop += chartBoxH + 22;
+
+    // —— Tables ——
+    const drawTable = (
+      title: string,
+      subtitle: string,
+      headers: string[],
+      rows: string[][],
+      colFrac: number[],
+      highlightRows: boolean[] = [],
+    ) => {
+      ensure(56);
+      textAt(title, M, yTop, 12, { bold: true });
+      yTop += 6;
+      textAt(subtitle, M, yTop + 12, 8, { color: MUTED });
+      yTop += 22;
+
+      const rowH = 18;
+      const headH = 20;
+      const widths = colFrac.map((f) => f * contentW);
+      let tableTop = yTop;
+
+      const drawHeader = () => {
+        fillRect(M, yTop, contentW, headH, BLUE);
+        let x = M;
+        headers.forEach((h, i) => {
+          textAt(h, x + 8, yTop + 13, 8, { bold: true, color: WHITE });
+          x += widths[i];
+        });
+        yTop += headH;
+      };
+
+      const closeTableBorder = (fromTop: number) => {
+        const h = yTop - fromTop;
+        if (h > 0) strokeRect(M, fromTop, contentW, h, LINE, 0.7);
+      };
+
+      drawHeader();
+
+      rows.forEach((row, ri) => {
+        if (yTop + rowH > PAGE_H - 40) {
+          closeTableBorder(tableTop);
+          flushPage();
+          textAt(`${title} (continued)`, M, yTop, 11, { bold: true });
+          yTop += 16;
+          tableTop = yTop;
+          drawHeader();
+        }
+        const hi = highlightRows[ri];
+        if (hi) fillRect(M, yTop, contentW, rowH, LAVENDER);
+        else if (ri % 2 === 1) fillRect(M, yTop, contentW, rowH, ZEBRA);
+        let x = M;
+        row.forEach((cell, i) => {
+          const isMoney = i > 0;
+          if (isMoney) {
+            textAt(cell, x + widths[i] - 8, yTop + 12, 8, { align: 'right', color: INK });
+          } else {
+            textAt(cell, x + 8, yTop + 12, 8, { bold: !!hi, color: INK });
+          }
+          x += widths[i];
+        });
+        line(M, yTop + rowH, M + contentW, yTop + rowH, LINE, 0.4);
+        yTop += rowH;
+      });
+      closeTableBorder(tableTop);
+      yTop += 18;
+    };
+
+    drawTable(
+      'Compare common CD terms',
+      'Same deposit and rate, different lengths',
+      ['Term', 'Final balance', 'Interest', 'vs your term'],
+      s.compareRows.map((r) => [r.term, formatMoney(r.balance), formatMoney(r.interest), r.deltaLabel]),
+      [0.18, 0.3, 0.26, 0.26],
+      s.compareRows.map((r) => r.isCurrent),
     );
-    objects.push(`4 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`);
-    objects.push('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
+
+    drawTable(
+      'Growth schedule',
+      s.scheduleNote,
+      ['Period', 'Deposit', 'Interest', 'Balance'],
+      s.scheduleRows.map((r) => [r.label, formatMoney(r.deposit), formatMoney(r.interest), formatMoney(r.balance)]),
+      [0.22, 0.26, 0.26, 0.26],
+    );
+
+    // Disclaimer box
+    ensure(70);
+    fillRect(M, yTop, contentW, 54, LAVENDER);
+    strokeRect(M, yTop, contentW, 54, LINE, 0.6);
+    textAt('Disclaimer', M + 12, yTop + 14, 8, { bold: true, color: MUTED });
+    textAt(
+      'Illustrative estimate only. Not financial advice. Actual bank CD rates, compounding,',
+      M + 12,
+      yTop + 28,
+      8,
+      { color: INK },
+    );
+    textAt(
+      'day-count methods, and early withdrawal penalties vary. Always read the institution disclosures.',
+      M + 12,
+      yTop + 40,
+      8,
+      { color: INK },
+    );
+    yTop += 62;
+    textAt('Generated by Nestfigure  ·  https://nestfigure.com/cd-calculator/', M, yTop, 8, { color: MUTED });
+
+    flushPage();
+
+    // Build PDF file
+    const objects: string[] = [];
+    // 1 catalog, 2 pages, 3..2+n pages, then contents, then fonts
+    const pageCount = pages.length;
+    const pageObjIds: number[] = [];
+    const contentObjIds: number[] = [];
+
+    // We'll assign IDs: 1=Catalog, 2=Pages, 3..2+pageCount=Page, then contents, then fonts
+    let nextId = 3;
+    for (let i = 0; i < pageCount; i++) pageObjIds.push(nextId++);
+    for (let i = 0; i < pageCount; i++) contentObjIds.push(nextId++);
+    const fontRegId = nextId++;
+    const fontBoldId = nextId++;
+
+    objects.push(''); // placeholder index 0 unused - we'll use map by id
+    const objMap = new Map<number, string>();
+
+    objMap.set(1, `<< /Type /Catalog /Pages 2 0 R >>`);
+    objMap.set(
+      2,
+      `<< /Type /Pages /Kids [${pageObjIds.map((id) => `${id} 0 R`).join(' ')}] /Count ${pageCount} >>`,
+    );
+
+    for (let i = 0; i < pageCount; i++) {
+      objMap.set(
+        pageObjIds[i],
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents ${contentObjIds[i]} 0 R /Resources << /Font << /F1 ${fontRegId} 0 R /F2 ${fontBoldId} 0 R >> >> >>`,
+      );
+      const stream = pages[i];
+      objMap.set(contentObjIds[i], `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+    }
+    objMap.set(fontRegId, `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>`);
+    objMap.set(fontBoldId, `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>`);
 
     let pdf = '%PDF-1.4\n';
     const offsets = [0];
-    for (const obj of objects) {
-      offsets.push(pdf.length);
-      pdf += obj;
+    const maxId = fontBoldId;
+    for (let id = 1; id <= maxId; id++) {
+      offsets[id] = pdf.length;
+      pdf += `${id} 0 obj\n${objMap.get(id)}\nendobj\n`;
     }
     const xrefStart = pdf.length;
-    pdf += `xref\n0 ${objects.length + 1}\n`;
+    pdf += `xref\n0 ${maxId + 1}\n`;
     pdf += '0000000000 65535 f \n';
-    for (let i = 1; i < offsets.length; i++) {
-      pdf += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
+    for (let id = 1; id <= maxId; id++) {
+      pdf += `${String(offsets[id]).padStart(10, '0')} 00000 n \n`;
     }
-    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+    pdf += `trailer\n<< /Size ${maxId + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
     return new Blob([pdf], { type: 'application/pdf' });
   }
 
   function exportPdf() {
     try {
-      const blob = buildTextPdf(resultLines());
+      const blob = buildReportPdf();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0, 10);
@@ -883,7 +1303,7 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
       a.click();
       a.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setActionStatus('PDF downloaded.');
+      setActionStatus('PDF report downloaded.');
     } catch {
       setActionStatus('Could not create PDF. Try Copy results instead.', 4000);
     }
