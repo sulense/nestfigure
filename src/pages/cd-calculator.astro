@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CdCalculator from '../components/CdCalculator.astro';
+import StarRating from '../components/StarRating.astro';
 import FigureCdFlow from '../components/figures/FigureCdFlow.astro';
 import FigureFormula from '../components/figures/FigureFormula.astro';
 import FigureWorkedExample from '../components/figures/FigureWorkedExample.astro';
@@ -139,6 +140,7 @@ const jsonLd = [
   <section class="section" style="padding-top: 0;">
     <div class="container">
       <CdCalculator />
+      <StarRating tool="cd-calculator" label="Rate this CD calculator" />
     </div>
   </section>
 

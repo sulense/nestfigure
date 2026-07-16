@@ -1,0 +1,268 @@
+---
+interface Props {
+  tool: string;
+  label?: string;
+}
+const { tool, label = 'Rate this tool' } = Astro.props;
+---
+
+<div class="rating card" data-star-rating data-tool={tool}>
+  <div class="rating-head">
+    <p class="rating-label">{label}</p>
+    <p class="rating-summary" data-summary>
+      <span data-average>—</span>
+      <span class="sep">·</span>
+      <span data-count>0 ratings</span>
+    </p>
+  </div>
+
+  <div class="stars" role="radiogroup" aria-label={label} data-stars>
+    {
+      [1, 2, 3, 4, 5].map((n) => (
+        <button
+          type="button"
+          class="star"
+          role="radio"
+          aria-checked="false"
+          aria-label={`${n} star${n === 1 ? '' : 's'}`}
+          data-value={n}
+        >
+          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+            <path
+              class="star-path"
+              d="M12 2.5l2.9 5.88 6.5.95-4.7 4.58 1.11 6.47L12 17.77l-5.81 3.06 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      ))
+    }
+  </div>
+
+  <!-- Honeypot -->
+  <div class="hp" aria-hidden="true">
+    <input type="text" name="website" data-hp tabindex="-1" autocomplete="off" />
+  </div>
+
+  <p class="rating-hint" data-hint>Tap a star to rate. No account needed. You can change your rating later on this device.</p>
+  <p class="rating-status" data-status role="status" hidden></p>
+</div>
+
+<style>
+  .rating {
+    margin: 28px 0 0;
+    padding: 20px 22px;
+    max-width: 520px;
+  }
+
+  .rating-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-bottom: 12px;
+  }
+
+  .rating-label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .rating-summary {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-iron);
+  }
+
+  .sep {
+    margin: 0 4px;
+    color: var(--color-dove-gray);
+  }
+
+  .stars {
+    display: flex;
+    gap: 4px;
+  }
+
+  .star {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 4px;
+    margin: 0;
+    cursor: pointer;
+    color: #d5dde2;
+    line-height: 0;
+    border-radius: 6px;
+    transition: color 0.12s ease, transform 0.12s ease;
+  }
+
+  .star:hover,
+  .star:focus-visible {
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  .star:focus-visible {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  }
+
+  .star.is-on {
+    color: #f5a524;
+  }
+
+  .star.is-preview {
+    color: #fbbf24;
+  }
+
+  .rating-hint {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: var(--color-graphite);
+    line-height: 1.45;
+  }
+
+  .rating-status {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .rating-status.ok {
+    color: #14532d;
+  }
+
+  .rating-status.err {
+    color: #7f1d1d;
+  }
+
+  .hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const STORAGE_KEY = 'nf_rating_client_id';
+
+  function clientId(): string {
+    try {
+      let id = localStorage.getItem(STORAGE_KEY);
+      if (id && /^[a-zA-Z0-9_-]{8,80}$/.test(id)) return id;
+      id =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID().replace(/-/g, '')
+          : `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(STORAGE_KEY, id);
+      return id;
+    } catch {
+      return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+    }
+  }
+
+  function paintStars(root: HTMLElement, value: number, preview = false) {
+    root.querySelectorAll<HTMLButtonElement>('.star').forEach((btn) => {
+      const n = Number(btn.dataset.value);
+      btn.classList.toggle('is-on', n <= value && !preview);
+      btn.classList.toggle('is-preview', preview && n <= value);
+      btn.setAttribute('aria-checked', n === value ? 'true' : 'false');
+    });
+  }
+
+  function setSummary(root: HTMLElement, average: number, count: number) {
+    const avgEl = root.querySelector('[data-average]');
+    const countEl = root.querySelector('[data-count]');
+    if (avgEl) {
+      avgEl.textContent = count > 0 ? `${average.toFixed(1)} / 5` : 'No ratings yet';
+    }
+    if (countEl) {
+      countEl.textContent = count === 1 ? '1 rating' : `${count} ratings`;
+    }
+  }
+
+  function setStatus(root: HTMLElement, msg: string, kind: 'ok' | 'err' | '') {
+    const el = root.querySelector<HTMLElement>('[data-status]');
+    if (!el) return;
+    if (!msg) {
+      el.hidden = true;
+      el.textContent = '';
+      el.className = 'rating-status';
+      return;
+    }
+    el.hidden = false;
+    el.textContent = msg;
+    el.className = `rating-status ${kind}`;
+  }
+
+  async function load(root: HTMLElement) {
+    const tool = root.dataset.tool || '';
+    const id = clientId();
+    try {
+      const res = await fetch(`/api/ratings?tool=${encodeURIComponent(tool)}&clientId=${encodeURIComponent(id)}`);
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to load');
+      setSummary(root, Number(data.average) || 0, Number(data.count) || 0);
+      const user = data.userRating != null ? Number(data.userRating) : 0;
+      paintStars(root, user);
+      root.dataset.userRating = user ? String(user) : '';
+    } catch {
+      setSummary(root, 0, 0);
+      setStatus(root, 'Ratings temporarily unavailable.', 'err');
+    }
+  }
+
+  async function submit(root: HTMLElement, stars: number) {
+    const tool = root.dataset.tool || '';
+    const hp = root.querySelector<HTMLInputElement>('[data-hp]');
+    setStatus(root, '');
+    paintStars(root, stars);
+    try {
+      const res = await fetch('/api/ratings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tool,
+          stars,
+          clientId: clientId(),
+          website: hp?.value || '',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Could not save rating');
+      setSummary(root, Number(data.average) || 0, Number(data.count) || 0);
+      paintStars(root, Number(data.userRating) || stars);
+      root.dataset.userRating = String(data.userRating || stars);
+      setStatus(root, 'Thanks — your rating was saved on this device.', 'ok');
+    } catch (err) {
+      const prev = Number(root.dataset.userRating || 0);
+      paintStars(root, prev);
+      setStatus(root, err instanceof Error ? err.message : 'Could not save rating.', 'err');
+    }
+  }
+
+  function bind(root: HTMLElement) {
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('.star')];
+    buttons.forEach((btn) => {
+      btn.addEventListener('mouseenter', () => {
+        paintStars(root, Number(btn.dataset.value), true);
+      });
+      btn.addEventListener('click', () => {
+        submit(root, Number(btn.dataset.value));
+      });
+    });
+    root.querySelector('[data-stars]')?.addEventListener('mouseleave', () => {
+      paintStars(root, Number(root.dataset.userRating || 0));
+    });
+    load(root);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-star-rating]').forEach(bind);
+</script>
