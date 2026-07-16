@@ -119,11 +119,6 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
         <TextToSpeech targetSelector="[data-tts-content]" />
       </div>
       <div class="container prose guide-body" itemprop="articleBody" data-tts-content>
-        <p class="ymyl-notice">
-          <strong>YMYL notice:</strong> This page is for education only. It is not financial, tax, or investment
-          advice. Nestfigure is not a bank, credit union, broker, or fiduciary. Product terms vary—always read your
-          institution’s disclosures.
-        </p>
         <slot />
 
         {
@@ -141,6 +136,12 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
             </section>
           )
         }
+
+        <p class="ymyl-notice">
+          <strong>YMYL notice:</strong> This page is for education only. It is not financial, tax, or investment
+          advice. Nestfigure is not a bank, credit union, broker, or fiduciary. Product terms vary—always read your
+          institution’s disclosures.
+        </p>
 
         <div class="guide-cta card">
           <p class="eyebrow" style="margin-bottom:8px;">Related tool</p>
@@ -175,6 +176,7 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
   }
 
   .ymyl-notice {
+    margin-top: 36px;
     font-size: 13px !important;
     line-height: 1.5 !important;
     color: var(--color-iron) !important;
