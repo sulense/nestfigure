@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import TextToSpeech from '../components/TextToSpeech.astro';
+import AuthorByline from '../components/AuthorByline.astro';
 
 interface Props {
   title: string;
@@ -45,9 +46,11 @@ const articleLd = {
   datePublished,
   dateModified,
   author: {
-    '@type': 'Organization',
-    name: 'Nestfigure',
-    url: site.toString(),
+    '@type': 'Person',
+    name: 'John Rey Balais',
+    url: 'https://nestfigure.com/about/',
+    jobTitle: 'Developer',
+    image: 'https://nestfigure.com/images/john-rey-balais.webp',
   },
   publisher: {
     '@type': 'Organization',
@@ -98,6 +101,7 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
         <p class="muted" style="font-size:13px;margin-top:8px;">
           Educational guide · Updated <time datetime={dateModified}>{updated}</time> · About 8 min read
         </p>
+        <AuthorByline variant="compact" />
         {
           heroImage && (
             <div class="guide-hero-img">
@@ -136,6 +140,8 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
             </section>
           )
         }
+
+        <AuthorByline variant="card" />
 
         <p class="ymyl-notice">
           <strong>YMYL notice:</strong> This page is for education only. It is not financial, tax, or investment

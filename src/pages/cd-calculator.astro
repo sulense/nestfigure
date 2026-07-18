@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CdCalculator from '../components/CdCalculator.astro';
 import ShareEmbedBar from '../components/ShareEmbedBar.astro';
+import AuthorByline from '../components/AuthorByline.astro';
 import FigureCdFlow from '../components/figures/FigureCdFlow.astro';
 import FigureFormula from '../components/figures/FigureFormula.astro';
 import FigureWorkedExample from '../components/figures/FigureWorkedExample.astro';
@@ -107,6 +108,17 @@ const jsonLd = [
     },
     description,
     url: 'https://nestfigure.com/cd-calculator/',
+    author: {
+      '@type': 'Person',
+      name: 'John Rey Balais',
+      url: 'https://nestfigure.com/about/',
+      jobTitle: 'Developer',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'Nestfigure',
+      url: 'https://nestfigure.com/',
+    },
   },
   {
     '@context': 'https://schema.org',
@@ -138,6 +150,7 @@ const jsonLd = [
         Free certificate of deposit calculator. Estimate interest earned and final balance using deposit, APY or
         rate, term, and compounding — built for clear, no-signup planning.
       </p>
+      <AuthorByline variant="compact" />
     </div>
   </section>
 
@@ -244,6 +257,10 @@ const jsonLd = [
         More questions:
         <a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a>
       </p>
+
+      <div style="max-width: 720px; margin: 28px auto 0;">
+        <AuthorByline variant="card" />
+      </div>
 
       <p class="disclaimer container" style="max-width: 720px; margin-left: auto; margin-right: auto;">
         <strong>Disclaimer:</strong> Nestfigure provides educational tools only. CD rates, APYs, compounding, and

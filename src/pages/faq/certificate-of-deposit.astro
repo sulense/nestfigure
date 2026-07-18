@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
 import { calculateCd } from '../../lib/cdMath';
 
 const title = 'CD FAQ: How Much Interest, Rates, Terms & Safety | Nestfigure';
@@ -364,6 +365,13 @@ const webPageLd = {
     name: 'Nestfigure',
     url: 'https://nestfigure.com/',
   },
+  author: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+    url: 'https://nestfigure.com/about/',
+    jobTitle: 'Developer',
+    image: 'https://nestfigure.com/images/john-rey-balais.webp',
+  },
 };
 ---
 
@@ -389,6 +397,7 @@ const webPageLd = {
           Reviewed <time datetime={dateModified}>{updatedLabel}</time> · {allFaqs.length} questions ·
           <a href="/about/">Methodology</a>
         </p>
+        <AuthorByline variant="compact" />
       </div>
     </section>
 
@@ -503,6 +512,8 @@ const webPageLd = {
             </section>
           ))
         }
+
+        <AuthorByline variant="card" />
 
         <section class="sources" aria-labelledby="sources-heading">
           <h2 id="sources-heading">Authoritative sources</h2>
