@@ -1,5 +1,28 @@
 ---
-import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
+import { COMPOUNDING_OPTIONS, type Compounding } from '../lib/cdMath';
+
+interface Props {
+  /** Optional SSR defaults (URL query params override these in the browser). */
+  principal?: number;
+  rate?: number;
+  rateType?: 'apy' | 'apr';
+  term?: number;
+  termUnit?: 'months' | 'years';
+  compounding?: Compounding;
+  monthlyDeposit?: number;
+}
+
+const {
+  principal = 10000,
+  rate = 4.5,
+  rateType = 'apy',
+  term = 12,
+  termUnit = 'months',
+  compounding = 'daily',
+  monthlyDeposit = 0,
+} = Astro.props;
+
+const rateDisplay = Number.isInteger(rate) ? String(rate) : rate.toFixed(2);
 ---
 
 <div class="calc card-elevated" id="cd-calculator" data-cd-calculator>
@@ -19,7 +42,7 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
           inputmode="decimal"
           min="0"
           step="100"
-          value="10000"
+          value={principal}
           required
         />
       </div>
@@ -35,15 +58,15 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
             min="0"
             max="100"
             step="0.01"
-            value="4.50"
+            value={rateDisplay}
             required
           />
         </div>
         <div class="field">
           <label for="rateType">Rate type</label>
           <select id="rateType" name="rateType">
-            <option value="apy" selected>APY</option>
-            <option value="apr">Nominal APR</option>
+            <option value="apy" selected={rateType === 'apy'}>APY</option>
+            <option value="apr" selected={rateType === 'apr'}>Nominal APR</option>
           </select>
         </div>
       </div>
@@ -59,15 +82,15 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
             min="1"
             max="600"
             step="1"
-            value="12"
+            value={term}
             required
           />
         </div>
         <div class="field">
           <label for="termUnit">Unit</label>
           <select id="termUnit" name="termUnit">
-            <option value="months" selected>Months</option>
-            <option value="years">Years</option>
+            <option value="months" selected={termUnit === 'months'}>Months</option>
+            <option value="years" selected={termUnit === 'years'}>Years</option>
           </select>
         </div>
       </div>
@@ -77,7 +100,7 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
         <select id="compounding" name="compounding">
           {
             COMPOUNDING_OPTIONS.map((o) => (
-              <option value={o.value} selected={o.value === 'daily'}>
+              <option value={o.value} selected={o.value === compounding}>
                 {o.label}
               </option>
             ))
@@ -95,7 +118,7 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
           inputmode="decimal"
           min="0"
           step="50"
-          value="0"
+          value={monthlyDeposit}
         />
         <span class="field-hint">Models a CD-like savings plan; many true CDs don’t allow add-ons.</span>
       </div>
@@ -1226,9 +1249,67 @@ import { COMPOUNDING_OPTIONS } from '../lib/cdMath';
     }
   }
 
+  /** Prefill from ?principal=&rate=&apy=&term=&termUnit=&months=&years=&compounding=&monthlyDeposit= */
+  function applyQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (![...params.keys()].length) return;
+
+    const num = (key: string): number | null => {
+      const raw = params.get(key);
+      if (raw == null || raw === '') return null;
+      const v = parseFloat(raw);
+      return Number.isFinite(v) && v >= 0 ? v : null;
+    };
+
+    const setInput = (id: string, value: number | string) => {
+      const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+      if (el) el.value = String(value);
+    };
+
+    const principal = num('principal') ?? num('deposit');
+    if (principal != null) setInput('principal', principal);
+
+    // apy= sets rate and forces APY mode; rate= uses rateType if present
+    const apy = num('apy');
+    const rate = num('rate');
+    if (apy != null) {
+      setInput('rate', apy);
+      setInput('rateType', 'apy');
+    } else if (rate != null) {
+      setInput('rate', rate);
+    }
+
+    const rateType = params.get('rateType');
+    if (rateType === 'apy' || rateType === 'apr') setInput('rateType', rateType);
+
+    const months = num('months');
+    const years = num('years');
+    if (months != null) {
+      setInput('term', Math.max(1, Math.round(months)));
+      setInput('termUnit', 'months');
+    } else if (years != null) {
+      setInput('term', Math.max(1, years));
+      setInput('termUnit', 'years');
+    } else {
+      const term = num('term');
+      if (term != null) setInput('term', Math.max(1, term));
+      const unit = params.get('termUnit');
+      if (unit === 'months' || unit === 'years') setInput('termUnit', unit);
+    }
+
+    const compounding = params.get('compounding');
+    const allowed = ['daily', 'monthly', 'quarterly', 'semiannually', 'annually', 'continuous'];
+    if (compounding && allowed.includes(compounding)) setInput('compounding', compounding);
+
+    const monthly =
+      num('monthlyDeposit') ?? num('monthly') ?? num('addOn');
+    if (monthly != null) setInput('monthlyDeposit', monthly);
+  }
+
   function bind() {
     const form = document.getElementById('cd-form');
     if (!form) return;
+    applyQueryParams();
     form.addEventListener('input', calculate);
     form.addEventListener('change', calculate);
     document.querySelectorAll('.preset').forEach((btn) => {

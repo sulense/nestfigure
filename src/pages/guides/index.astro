@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CD_SCENARIOS } from '../../lib/cdScenarios';
 
 const title = 'Guides — Nestfigure Personal Finance';
 const description =
@@ -26,6 +27,12 @@ const guides = [
       'People-also-ask style answers: how much $10k–$100k can earn, rate myths, term length, downsides, and safety.',
     preview: 'faq',
   },
+  ...CD_SCENARIOS.map((s) => ({
+    href: `/guides/${s.slug}/`,
+    title: s.cardTitle,
+    blurb: s.cardBlurb,
+    preview: 'scenario' as const,
+  })),
 ];
 ---
 
@@ -59,6 +66,11 @@ const guides = [
                   <span class="chip">$10k · 1 year · sample APY</span>
                   <span class="chip soft">Rates · terms · safety</span>
                 </>
+              ) : g.preview === 'scenario' ? (
+                <>
+                  <span class="chip">Sample APY table</span>
+                  <span class="chip soft">Prefills calculator</span>
+                </>
               ) : (
                 <>
                   <span class="chip">CD · fixed · locked</span>
@@ -67,7 +79,9 @@ const guides = [
               )}
             </div>
             <div class="guide-card-body">
-              <span class="pill pill-neutral">{g.preview === 'faq' ? 'FAQ' : 'Guide'}</span>
+              <span class="pill pill-neutral">
+                {g.preview === 'faq' ? 'FAQ' : g.preview === 'scenario' ? 'Scenario' : 'Guide'}
+              </span>
               <h2 class="heading-sm" style="margin-top:12px;">
                 {g.title}
               </h2>
