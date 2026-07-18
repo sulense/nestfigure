@@ -19,6 +19,13 @@ const guides = [
     blurb: 'Liquidity vs term deposits, FDIC/NCUA insurance basics, and how to run your own numbers.',
     preview: 'compare',
   },
+  {
+    href: '/faq/certificate-of-deposit/',
+    title: 'CD FAQ',
+    blurb:
+      'People-also-ask style answers: how much $10k–$100k can earn, rate myths, term length, downsides, and safety.',
+    preview: 'faq',
+  },
 ];
 ---
 
@@ -47,6 +54,11 @@ const guides = [
                   <code>A = P(1 + r/n)<sup>n·t</sup></code>
                   <span>$10,000 @ 4.50% APY → $10,450</span>
                 </>
+              ) : g.preview === 'faq' ? (
+                <>
+                  <span class="chip">$10k · 1 year · sample APY</span>
+                  <span class="chip soft">Rates · terms · safety</span>
+                </>
               ) : (
                 <>
                   <span class="chip">CD · fixed · locked</span>
@@ -55,7 +67,7 @@ const guides = [
               )}
             </div>
             <div class="guide-card-body">
-              <span class="pill pill-neutral">Guide</span>
+              <span class="pill pill-neutral">{g.preview === 'faq' ? 'FAQ' : 'Guide'}</span>
               <h2 class="heading-sm" style="margin-top:12px;">
                 {g.title}
               </h2>
@@ -72,9 +84,9 @@ const guides = [
 <style>
   .guide-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 16px;
-    max-width: 880px;
+    max-width: 960px;
   }
 
   .guide-card {
