@@ -1,0 +1,207 @@
+---
+/**
+ * Compact E-E-A-T byline for calculators and guides.
+ * Full bio + photo treatment lives on /about/.
+ */
+interface Props {
+  /** compact = hero/meta strip; card = fuller block before footnotes */
+  variant?: 'compact' | 'card';
+  /** Optional page-specific role line */
+  role?: string;
+}
+
+const {
+  variant = 'compact',
+  role = 'Developer · Nestfigure',
+} = Astro.props;
+
+const name = 'John Rey Balais';
+const aboutHref = '/about/';
+const photoWebp = '/images/john-rey-balais.webp';
+const photoJpg = '/images/john-rey-balais.jpg';
+---
+
+{
+  variant === 'compact' ? (
+    <div class="author-byline author-byline--compact" itemscope itemtype="https://schema.org/Person">
+      <a class="author-byline__link" href={aboutHref} aria-label={`${name} — About Nestfigure`}>
+        <picture>
+          <source srcset={photoWebp} type="image/webp" />
+          <img
+            class="author-byline__photo"
+            src={photoJpg}
+            alt=""
+            width="40"
+            height="40"
+            loading="lazy"
+            decoding="async"
+            itemprop="image"
+          />
+        </picture>
+        <span class="author-byline__text">
+          <span class="author-byline__label">Written & maintained by</span>
+          <span class="author-byline__name" itemprop="name">
+            {name}
+          </span>
+          <span class="author-byline__role" itemprop="jobTitle">
+            {role}
+          </span>
+        </span>
+      </a>
+      <meta itemprop="url" content="https://nestfigure.com/about/" />
+    </div>
+  ) : (
+    <aside class="author-byline author-byline--card card" aria-label="About the author">
+      <div class="author-byline__card-inner" itemscope itemtype="https://schema.org/Person">
+        <picture>
+          <source srcset={photoWebp} type="image/webp" />
+          <img
+            class="author-byline__photo author-byline__photo--lg"
+            src={photoJpg}
+            alt={`${name}, developer of Nestfigure`}
+            width="72"
+            height="72"
+            loading="lazy"
+            decoding="async"
+            itemprop="image"
+          />
+        </picture>
+        <div class="author-byline__body">
+          <p class="author-byline__card-label">About the author</p>
+          <p class="author-byline__name" itemprop="name">
+            {name}
+          </p>
+          <p class="author-byline__role" itemprop="jobTitle">
+            {role}
+          </p>
+          <p class="author-byline__bio" itemprop="description">
+            Developer building Nestfigure—free personal finance calculators and educational guides. Focused on clear
+            math, transparent assumptions, and no-signup tools. Nestfigure is not a bank or adviser; results are
+            educational estimates only.
+          </p>
+          <p class="author-byline__more">
+            <a href={aboutHref} itemprop="url">
+              Full bio & methodology →
+            </a>
+          </p>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  .author-byline--compact {
+    margin: 14px 0 0;
+  }
+
+  .author-byline__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    max-width: 100%;
+  }
+
+  .author-byline__link:hover .author-byline__name {
+    color: #1d4ed8;
+  }
+
+  .author-byline__photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 1px solid var(--color-pale-slate);
+    flex-shrink: 0;
+    background: #f0f5fe;
+  }
+
+  .author-byline__photo--lg {
+    width: 72px;
+    height: 72px;
+    border-radius: 6px;
+  }
+
+  .author-byline__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .author-byline__label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-graphite);
+  }
+
+  .author-byline__name {
+    font-size: 14px;
+    font-weight: 650;
+    color: var(--color-ink);
+    letter-spacing: -0.01em;
+  }
+
+  .author-byline__role {
+    font-size: 12px;
+    color: var(--color-graphite);
+  }
+
+  .author-byline--card {
+    margin: 28px 0 8px;
+    padding: 18px 20px;
+  }
+
+  .author-byline__card-inner {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .author-byline__card-label {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  .author-byline__body .author-byline__name {
+    margin: 0 0 2px;
+    font-size: 17px;
+  }
+
+  .author-byline__body .author-byline__role {
+    margin: 0 0 10px;
+  }
+
+  .author-byline__bio {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--color-iron);
+  }
+
+  .author-byline__more {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .author-byline__more a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 520px) {
+    .author-byline__card-inner {
+      grid-template-columns: 1fr;
+      justify-items: start;
+    }
+  }
+</style>

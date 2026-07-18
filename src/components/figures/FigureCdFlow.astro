@@ -1,0 +1,145 @@
+---
+/**
+ * Content diagram: what the CD calculator takes in and returns.
+ */
+---
+
+<figure class="content-figure data-figure">
+  <div class="fig-inner" role="img" aria-label="CD calculator flow: deposit, rate, term and compounding produce final balance and interest earned">
+    <p class="fig-title">What this calculator computes</p>
+    <div class="flow">
+      <div class="col">
+        <p class="col-label">You enter</p>
+        <ul>
+          <li><span>Initial deposit</span><strong>Principal (P)</strong></li>
+          <li><span>Rate type</span><strong>APY or nominal APR</strong></li>
+          <li><span>Length</span><strong>Term (months / years)</strong></li>
+          <li><span>Frequency</span><strong>Daily → annual compound</strong></li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="col mid">
+        <p class="col-label">Engine</p>
+        <div class="engine">
+          <code>A = P(1 + r/n)<sup>n·t</sup></code>
+          <span class="pill">Live estimate</span>
+        </div>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="col">
+        <p class="col-label">You get</p>
+        <ul>
+          <li><span>Maturity value</span><strong>Final balance (A)</strong></li>
+          <li><span>Growth</span><strong>Interest earned</strong></li>
+          <li><span>Yield</span><strong>Effective APY</strong></li>
+          <li><span>Detail</span><strong>Period schedule</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <figcaption>Inputs map to standard compound-interest outputs—same logic as the live tool above.</figcaption>
+</figure>
+
+<style>
+  .fig-inner {
+    padding: 20px 20px 16px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 70%);
+  }
+  .fig-title {
+    margin: 0 0 16px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+  }
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .col {
+    background: #fff;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 12px;
+  }
+  .col-label {
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-midnight-iris);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .col li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-pale-slate);
+  }
+  .col li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .col li span {
+    font-size: 11px;
+    color: var(--color-graphite);
+  }
+  .col li strong {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .mid {
+    display: flex;
+    flex-direction: column;
+  }
+  .engine {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    min-height: 120px;
+  }
+  .engine code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: #f0f5fe;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: var(--color-ink);
+  }
+  .arrow {
+    display: flex;
+    align-items: center;
+    color: var(--color-dove-gray);
+    font-size: 18px;
+    padding: 0 2px;
+  }
+  @media (max-width: 720px) {
+    .flow {
+      grid-template-columns: 1fr;
+    }
+    .arrow {
+      justify-content: center;
+      transform: rotate(90deg);
+      padding: 4px 0;
+    }
+  }
+</style>

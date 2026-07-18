@@ -1,0 +1,260 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'About & Methodology — Nestfigure';
+const description =
+  'Meet John Rey Balais, the developer behind Nestfigure. How our CD calculator math works, what we omit, and YMYL disclaimers.';
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'John Rey Balais',
+  jobTitle: 'Developer',
+  description:
+    'Developer building Nestfigure—free personal finance calculators and educational guides, starting with certificates of deposit.',
+  image: 'https://nestfigure.com/images/john-rey-balais.webp',
+  url: 'https://nestfigure.com/about/',
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Nestfigure',
+    url: 'https://nestfigure.com/',
+  },
+};
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Nestfigure',
+  url: 'https://nestfigure.com/',
+  description:
+    'Free personal finance calculators and educational guides. Estimates for education only—not bank quotes or financial advice.',
+  founder: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+  },
+  logo: 'https://nestfigure.com/logo-icon.svg',
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/about/"
+  jsonLd={[personLd, orgLd]}
+>
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Trust & methodology</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">About Nestfigure</h1>
+      <p class="lead">Transparent math. Personal finance education. Estimates—not advice or bank quotes.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container prose">
+      <h2>Who builds Nestfigure</h2>
+      <div class="founder card">
+        <picture>
+          <source srcset="/images/john-rey-balais.webp" type="image/webp" />
+          <img
+            class="founder-photo"
+            src="/images/john-rey-balais.jpg"
+            alt="John Rey Balais, developer of Nestfigure"
+            width="160"
+            height="160"
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+        <div class="founder-copy">
+          <p class="founder-name">John Rey Balais</p>
+          <p class="founder-role">Developer · Nestfigure</p>
+          <p>
+            I’m a developer building Nestfigure—free personal finance calculators and educational guides, starting with
+            certificates of deposit. I focus on clear math, transparent assumptions, and tools you can use without
+            signing up.
+          </p>
+          <p>
+            Nestfigure is not a bank, broker, or adviser. Calculator results are educational estimates under documented
+            formulas—not offers, rate quotes, or personalized advice. Report factual errors via the
+            <a href="/contact/">contact form</a>.
+          </p>
+        </div>
+      </div>
+
+      <h2>What we build</h2>
+      <p>
+        Nestfigure focuses on personal finance calculators and related guides (starting with certificates of deposit).
+        We stay in one niche so explanations and tools can stay consistent. Future tools may include paycheck, raise,
+        overtime, and debt payoff calculators—still educational estimators.
+      </p>
+
+      <h2>Who authors this content</h2>
+      <p>
+        Content is published by <strong>Nestfigure</strong> and written or reviewed by
+        <strong>John Rey Balais</strong>. We do not invent guest “expert” personas or fabricated credentials. Guides
+        and FAQs cite public U.S. sources (for example CFPB, FDIC, and NCUA materials) where deposit concepts are
+        discussed.
+      </p>
+
+      <h2>CD calculator methodology</h2>
+      <p>
+        The <a href="/cd-calculator/">CD calculator</a> estimates maturity value using standard compound-interest
+        formulas for education. U.S. deposit products must follow Truth in Savings disclosures (Regulation DD / 12 CFR
+        Part 1030) when offered by covered institutions; our tool does not replace those disclosures.
+      </p>
+
+      <h3>Discrete compounding</h3>
+      <p>
+        <code style="font-family:var(--font-mono);font-size:13px;background:#f0f5fe;padding:4px 8px;border-radius:6px;">
+          A = P × (1 + r/n)^(n×t)
+        </code>
+      </p>
+      <ul>
+        <li><strong>P</strong> — principal</li>
+        <li><strong>r</strong> — annual nominal rate (decimal)</li>
+        <li><strong>n</strong> — periods per year (365 daily, 12 monthly, 4 quarterly, 2 semi-annual, 1 annual)</li>
+        <li><strong>t</strong> — years (term months ÷ 12)</li>
+      </ul>
+
+      <h3>Continuous compounding</h3>
+      <p>
+        <code style="font-family:var(--font-mono);font-size:13px;background:#f0f5fe;padding:4px 8px;border-radius:6px;">
+          A = P × e^(r×t)
+        </code>
+      </p>
+      <p>
+        Continuous compounding is the mathematical limit of more frequent discrete compounding. It is included for
+        completeness; many retail CDs use discrete schedules.
+      </p>
+
+      <h3>APY input conversion</h3>
+      <p>
+        When you enter APY, we convert it to a nominal rate consistent with the selected compounding choice so that,
+        under this model, a one-year horizon matches the entered APY:
+      </p>
+      <ul>
+        <li>Discrete: <code>r = n × ((1 + APY)^(1/n) − 1)</code></li>
+        <li>Continuous: <code>r = ln(1 + APY)</code></li>
+      </ul>
+      <p>
+        Example: at 4.50% APY for one year with no fees, $10,000 grows by $450 to $10,450 under a pure 4.50% effective
+        annual yield. That is arithmetic under stated assumptions—not a claim about any bank’s current rates.
+      </p>
+
+      <h3>Optional monthly deposits</h3>
+      <p>
+        If you add a monthly deposit, we simulate month-by-month growth then add the deposit. Many traditional CDs do
+        not allow add-on deposits; treat this mode as a planning illustration only.
+      </p>
+
+      <h3>What we intentionally omit</h3>
+      <ul>
+        <li>Early withdrawal penalties</li>
+        <li>Promotional or step-up rates</li>
+        <li>Account fees and minimums</li>
+        <li>Tax withholding or tax advice</li>
+        <li>Issuer-specific day-count rules</li>
+      </ul>
+
+      <h2>Guides & FAQ</h2>
+      <ul>
+        <li><a href="/guides/how-cd-interest-works/">How CD interest works</a> (cites CFPB / Regulation DD)</li>
+        <li><a href="/guides/cd-vs-savings/">CD vs high-yield savings</a> (cites CFPB, FDIC, NCUA)</li>
+        <li><a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a></li>
+        <li><a href="/guides/">All guides</a></li>
+      </ul>
+
+      <h2>Primary external references we rely on</h2>
+      <ul>
+        <li>
+          <a href="https://www.consumerfinance.gov/rules-policy/regulations/1030/" rel="noopener noreferrer" target="_blank"
+            >CFPB — Regulation DD (Truth in Savings)</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+            rel="noopener noreferrer"
+            target="_blank">CFPB — What is a CD?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance"
+            rel="noopener noreferrer"
+            target="_blank">FDIC — Deposit insurance</a
+          >
+        </li>
+        <li>
+          <a href="https://ncua.gov/consumers/share-insurance-coverage" rel="noopener noreferrer" target="_blank"
+            >NCUA — Share insurance coverage</a
+          >
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>
+        Use the <a href="/contact/">contact form</a> for questions, corrections, or feedback about Nestfigure
+        calculators and guides.
+      </p>
+
+      <p class="disclaimer">Last reviewed: July 17, 2026.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .founder {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 24px;
+    align-items: start;
+    padding: 20px;
+    margin: 16px 0 28px;
+  }
+
+  .founder-photo {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--color-pale-slate);
+    background: #f0f5fe;
+  }
+
+  .founder-copy {
+    min-width: 0;
+  }
+
+  .founder-name {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+
+  .founder-role {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-graphite);
+  }
+
+  .founder-copy p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 640px) {
+    .founder {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .founder-copy p {
+      text-align: left;
+    }
+  }
+</style>

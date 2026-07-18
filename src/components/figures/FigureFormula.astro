@@ -1,0 +1,92 @@
+---
+/** Labeled compound-interest formula matching the methodology copy. */
+---
+
+<figure class="content-figure data-figure">
+  <div class="fig-inner" role="img" aria-label="Formula A equals P times open parenthesis 1 plus r over n close parenthesis to the power of n times t">
+    <p class="fig-title">Discrete compounding formula</p>
+    <div class="formula-box">
+      <span class="main">A = P × (1 + r/n)<sup>n×t</sup></span>
+    </div>
+    <div class="legend">
+      <div><span class="k">A</span><span>Maturity (final) balance</span></div>
+      <div><span class="k">P</span><span>Principal — starting deposit</span></div>
+      <div><span class="k">r</span><span>Annual nominal rate (decimal)</span></div>
+      <div><span class="k">n</span><span>Compounds per year (e.g. 365 daily)</span></div>
+      <div><span class="k">t</span><span>Time in years (months ÷ 12)</span></div>
+    </div>
+    <p class="note">
+      Continuous form: <code>A = P × e<sup>r×t</sup></code>. When you enter APY, Nestfigure converts it to the
+      matching nominal <code>r</code> for your compounding choice.
+    </p>
+  </div>
+  <figcaption>Standard retail CD math used by the Nestfigure CD calculator.</figcaption>
+</figure>
+
+<style>
+  .fig-inner {
+    padding: 20px;
+  }
+  .fig-title {
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+  }
+  .formula-box {
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+    border: 1px solid #c9daf8;
+    border-radius: 6px;
+    padding: 20px 16px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .main {
+    font-family: var(--font-mono);
+    font-size: clamp(16px, 3.5vw, 22px);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .legend {
+    display: grid;
+    gap: 8px;
+  }
+  .legend div {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    color: var(--color-iron);
+  }
+  .k {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #f0f5fe;
+    border: 1px solid var(--color-pale-slate);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-cobalt);
+  }
+  .note {
+    margin: 14px 0 0;
+    font-size: 12px;
+    color: var(--color-graphite);
+    line-height: 1.5;
+  }
+  .note code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: #f0f5fe;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+</style>

@@ -1,0 +1,40 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains / editor
+.idea/
+.vscode/
+
+# Local AI / agent tooling (not part of the product)
+AGENTS.md
+CLAUDE.md
+.claude/
+.agents/
+.grok/
+
+# Local audits / reports
+lighthouse*.json
+lighthouse*.html
+*.report.html
+*.report.json

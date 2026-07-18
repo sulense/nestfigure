@@ -1,0 +1,221 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TextToSpeech from '../components/TextToSpeech.astro';
+import AuthorByline from '../components/AuthorByline.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  eyebrow?: string;
+  headline: string;
+  updated?: string;
+  datePublished?: string;
+  dateModified?: string;
+  heroImage?: string;
+  heroImageAlt?: string;
+  ogImage?: string;
+  /** FAQ items for FAQPage JSON-LD (must be factual) */
+  faqs?: { question: string; answer: string }[];
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  eyebrow = 'Guide',
+  headline,
+  updated = 'July 17, 2026',
+  datePublished = '2026-07-17',
+  dateModified = '2026-07-17',
+  heroImage,
+  heroImageAlt = '',
+  ogImage = heroImage ?? '/images/og-default.webp',
+  faqs = [],
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://nestfigure.com');
+const pageUrl = new URL(canonicalPath, site).toString();
+const imageUrl = new URL(ogImage, site).toString();
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline,
+  description,
+  datePublished,
+  dateModified,
+  author: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+    url: 'https://nestfigure.com/about/',
+    jobTitle: 'Developer',
+    image: 'https://nestfigure.com/images/john-rey-balais.webp',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Nestfigure',
+    url: site.toString(),
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': pageUrl,
+  },
+  image: [imageUrl],
+  isAccessibleForFree: true,
+};
+
+const faqLd =
+  faqs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer,
+          },
+        })),
+      }
+    : null;
+
+const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+>
+  <article itemscope itemtype="https://schema.org/Article">
+    <section class="hero">
+      <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1 class="display" style="font-size:clamp(36px,5vw,56px); max-width: 18ch;" itemprop="headline">
+          {headline}
+        </h1>
+        <p class="muted" style="font-size:13px;margin-top:8px;">
+          Educational guide · Updated <time datetime={dateModified}>{updated}</time> · About 8 min read
+        </p>
+        <AuthorByline variant="compact" />
+        {
+          heroImage && (
+            <div class="guide-hero-img">
+              <img
+                src={heroImage}
+                alt={heroImageAlt}
+                width="1200"
+                height="800"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+          )
+        }
+      </div>
+    </section>
+    <section class="section" style="padding-top:0;">
+      <div class="container tts-host">
+        <TextToSpeech targetSelector="[data-tts-content]" />
+      </div>
+      <div class="container prose guide-body" itemprop="articleBody" data-tts-content>
+        <slot />
+
+        {
+          faqs.length > 0 && (
+            <section class="faq-block" aria-labelledby="faq-heading">
+              <h2 id="faq-heading">Frequently asked questions</h2>
+              <div class="faq">
+                {faqs.map((f) => (
+                  <details>
+                    <summary>{f.question}</summary>
+                    <p>{f.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <div data-tts-skip>
+          <AuthorByline variant="card" />
+        </div>
+
+        <div class="guide-cta card" data-tts-skip>
+          <p class="eyebrow" style="margin-bottom:8px;">Related tool</p>
+          <h2 class="heading-sm">Estimate CD growth with the free calculator</h2>
+          <p style="margin-bottom:16px;">
+            Enter principal, APY or interest rate, term, and compounding. Results are mathematical estimates, not bank
+            quotes.
+          </p>
+          <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
+        </div>
+
+        <p class="disclaimer">
+          Sources linked above include U.S. government materials (CFPB, FDIC, NCUA) where noted. Formulas used for
+          illustrations are standard compound-interest identities; banks may use different day-count methods. Last
+          reviewed: {updated}.
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .tts-host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+
+  .guide-body {
+    margin: 0 auto;
+  }
+
+  .guide-hero-img {
+    width: min(100%, 720px);
+    margin-top: 28px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    background: var(--color-pure-white);
+  }
+
+  .guide-hero-img img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .faq-block {
+    margin-top: 40px;
+  }
+
+  .guide-cta {
+    margin-top: 40px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  .guide-cta p {
+    color: var(--color-iron);
+  }
+
+  :global(.prose a[href^='http']) {
+    word-break: break-word;
+  }
+
+  :global(.sources) {
+    font-size: 13px;
+    color: var(--color-iron);
+  }
+
+  :global(.sources li) {
+    margin-bottom: 8px;
+  }
+</style>

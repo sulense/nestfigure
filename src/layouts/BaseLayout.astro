@@ -1,0 +1,209 @@
+---
+import '../styles/global.css';
+import YmylNotice from '../components/YmylNotice.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  ogImage?: string;
+  /** Minimal chrome for iframe embeds */
+  embed?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  canonicalPath = Astro.url.pathname,
+  ogImage = '/images/og-default.webp',
+  embed = false,
+  jsonLd,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://nestfigure.com');
+const canonical = new URL(canonicalPath, site).toString();
+const ogImageUrl = new URL(ogImage, site).toString();
+const jsonLdItems = jsonLd
+  ? Array.isArray(jsonLd)
+    ? jsonLd
+    : [jsonLd]
+  : [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    {!embed && (
+      <meta name="google-site-verification" content="dh8GEJtu_kK4o3hw2RlBDIbnNo1MHc17lX8iFet6Q-Y" />
+    )}
+    {embed && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+    <!-- Analytics only (fonts are self-hosted) -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <!-- Google Analytics: wait for first interaction or 8s so LCP isn't competing with gtag -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      window.gtag = gtag;
+      function loadGtag() {
+        if (window.__gtagLoaded) return;
+        window.__gtagLoaded = true;
+        ['scroll', 'click', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+          window.removeEventListener(evt, loadGtag, { capture: true });
+        });
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RLC6KSL57V';
+        s.onload = function () {
+          gtag('js', new Date());
+          gtag('config', 'G-RLC6KSL57V', { anonymize_ip: true, send_page_view: true });
+        };
+        document.head.appendChild(s);
+      }
+      ['scroll', 'click', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+        window.addEventListener(evt, loadGtag, { once: true, passive: true, capture: true });
+      });
+      setTimeout(loadGtag, 8000);
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nestfigure" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <title>{title}</title>
+    {
+      jsonLdItems.map((item) => (
+        <script type="application/ld+json" set:html={JSON.stringify(item)} />
+      ))
+    }
+  </head>
+  <body class:list={[{ 'is-embed': embed }]}>
+    {
+      !embed && (
+        <header class="site-header">
+          <div class="container inner">
+            <a class="logo" href="/" aria-label="Nestfigure home">
+              <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
+              <span class="logo-text">
+                Nest<span>figure</span>
+              </span>
+            </a>
+            <nav class="nav" aria-label="Primary">
+              <a class="hide-sm" href="/">
+                Home
+              </a>
+              <a href="/cd-calculator/">CD Calculator</a>
+              <a class="hide-sm" href="/guides/">
+                Guides
+              </a>
+              <a class="hide-sm" href="/about/">
+                About
+              </a>
+              <a class="hide-sm" href="/contact/">
+                Contact
+              </a>
+              <a class="btn btn-primary" href="/cd-calculator/">
+                Open tool
+              </a>
+            </nav>
+          </div>
+        </header>
+      )
+    }
+
+    <main>
+      <slot />
+      {
+        !embed && (
+          <section class="ymyl-site-section" aria-label="Important disclaimer" data-tts-skip>
+            <div class="container ymyl-site-inner">
+              <YmylNotice />
+            </div>
+          </section>
+        )
+      }
+    </main>
+
+    {
+      !embed && (
+        <footer class="site-footer">
+          <div class="container inner">
+            <div>
+              <a class="logo" href="/" aria-label="Nestfigure home">
+                <img class="logo-mark" src="/logo-icon.svg" width="28" height="28" alt="" />
+                <span class="logo-text">
+                  Nest<span>figure</span>
+                </span>
+              </a>
+              <p style="margin-top: 12px;">
+                Free personal finance calculators for take-home pay, CDs, and debt. Results are estimates for education
+                only — not financial advice.
+              </p>
+              <div class="footer-social" aria-label="Social and support links">
+                <a
+                  class="footer-social-link"
+                  href="https://github.com/sulense/nestfigure"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  aria-label="Nestfigure on GitHub"
+                >
+                  <svg class="footer-social-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M12 2C6.477 2 2 6.486 2 12.021c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.866-.013-1.7-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.004.071 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.833.091-.647.35-1.088.636-1.339-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.56 9.56 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.31.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.021C22 6.486 17.523 2 12 2z"
+                    ></path>
+                  </svg>
+                  <span>GitHub</span>
+                </a>
+                <a
+                  class="footer-social-link"
+                  href="https://buymeacoffee.com/balaisjohnrey80"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  aria-label="Buy Me a Coffee — support Nestfigure"
+                >
+                  <svg class="footer-social-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M20 3H4v2h16V3zm1 4H3a1 1 0 0 0-1 1v2a6 6 0 0 0 4.5 5.8V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3v-2.2A6 6 0 0 0 22 10V8a1 1 0 0 0-1-1zm-2 3a4 4 0 0 1-3.2 3.9l-.8.15V18a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-3.95l-.8-.15A4 4 0 0 1 4 10V9h15v1z"
+                    ></path>
+                  </svg>
+                  <span>Buy Me a Coffee</span>
+                </a>
+              </div>
+            </div>
+            <div class="footer-links">
+              <a href="/cd-calculator/">CD Calculator</a>
+              <a href="/guides/">Guides</a>
+              <a href="/faq/certificate-of-deposit/">CD FAQ</a>
+              <a href="/guides/how-cd-interest-works/">How CD interest works</a>
+              <a href="/guides/cd-vs-savings/">CD vs savings</a>
+              <a href="/about/">About & methodology</a>
+              <a href="/contact/">Contact</a>
+              <a href="/privacy/">Privacy</a>
+            </div>
+          </div>
+        </footer>
+      )
+    }
+  </body>
+</html>

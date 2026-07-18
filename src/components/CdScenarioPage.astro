@@ -1,0 +1,519 @@
+---
+/**
+ * GEO/SEO scenario template: answer-first, build-time math, CFPB/FDIC/NCUA citations only.
+ * Sample APYs are labeled inputs—not market rates or bank offers.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CdCalculator from './CdCalculator.astro';
+import AuthorByline from './AuthorByline.astro';
+import TextToSpeech from './TextToSpeech.astro';
+import {
+  type CdScenario,
+  money,
+  scenarioCalcUrl,
+  scenarioRows,
+  termLabel,
+  CD_SCENARIOS,
+} from '../lib/cdScenarios';
+
+interface Props {
+  scenario: CdScenario;
+}
+
+const { scenario: s } = Astro.props;
+const rows = scenarioRows(s);
+const primary = rows.find((r) => r.apy === s.defaultApy) ?? rows[0];
+const calcUrl = scenarioCalcUrl(s);
+const path = `/guides/${s.slug}/`;
+const pageUrl = `https://nestfigure.com${path}`;
+const termText = termLabel(s.termMonths);
+const otherScenarios = CD_SCENARIOS.filter((x) => x.slug !== s.slug);
+const dateModified = '2026-07-17';
+const dateLabel = 'July 17, 2026';
+
+/** Real, public sources only (searchable). */
+const SOURCES = {
+  cfpbCd: {
+    name: 'CFPB — What is a certificate of deposit (CD)?',
+    url: 'https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/',
+  },
+  regDd: {
+    name: 'CFPB — Regulation DD (Truth in Savings), 12 CFR Part 1030',
+    url: 'https://www.consumerfinance.gov/rules-policy/regulations/1030/',
+  },
+  fdicInsurance: {
+    name: 'FDIC — Understanding deposit insurance',
+    url: 'https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance',
+  },
+  fdicEdie: {
+    name: 'FDIC — Electronic Deposit Insurance Estimator (EDIE)',
+    url: 'https://edie.fdic.gov/',
+  },
+  ncuaShare: {
+    name: 'NCUA — Share insurance coverage',
+    url: 'https://ncua.gov/consumers/share-insurance-coverage',
+  },
+  methodology: {
+    name: 'Nestfigure — calculator methodology',
+    url: 'https://nestfigure.com/about/',
+  },
+} as const;
+
+const faqs = [
+  {
+    question: s.primaryQuestion,
+    answer: `Direct answer: Dollar interest is not fixed by principal alone—it depends on the annual percentage yield (APY) and other terms your institution discloses. Nestfigure is not a bank and does not publish live rates. For transparent education only, using Nestfigure’s published calculator model (APY input, ${s.compounding} compounding, no monthly deposits): at a sample ${s.defaultApy.toFixed(2)}% APY for ${termText}, ${money(s.principal)} produces about ${primary.interestStr} of interest (ending balance about ${primary.balanceStr}). Real products may use different day-count methods. Enter your disclosed APY in the free CD calculator.`,
+  },
+  {
+    question: 'What is a CD, according to the CFPB?',
+    answer:
+      'According to the Consumer Financial Protection Bureau (CFPB), a certificate of deposit is a type of savings account offered by banks and credit unions. You generally agree to keep your money in the CD without taking a withdrawal for a specified length of time. The CFPB states that withdrawing money early means paying a penalty fee to the bank, and it advises comparing the term, the interest rate, and the early-withdrawal penalty when shopping. Source: consumerfinance.gov Ask CFPB “What is a certificate of deposit (CD)?”',
+  },
+  {
+    question: 'Are these dollar amounts a bank offer or current market rate?',
+    answer:
+      'No. Every sample APY on this page is an illustrative input chosen so the math is transparent. Nestfigure does not list which banks pay which rates and does not claim that 4.00%, 4.50%, or 5.00% APY is available to you today. Under Truth in Savings (Regulation DD), institutions that advertise a rate of return must state it as an annual percentage yield (APY). Use the APY on your written disclosure, then model it here.',
+  },
+  {
+    question: 'Are bank or credit union CDs insured?',
+    answer:
+      'The CFPB states that CDs offered by banks are insured up to $250,000 by the FDIC, and those offered by credit unions are insured up to $250,000 by the NCUA. FDIC materials describe the standard maximum as $250,000 per depositor, per insured bank, per ownership category; NCUA share insurance uses a $250,000 framework by ownership category for federally insured credit unions. Coverage depends on how accounts are titled—confirm with FDIC’s EDIE tool or NCUA share insurance resources for your situation.',
+  },
+  {
+    question: 'How do I estimate a different APY or term?',
+    answer: `Open Nestfigure’s CD calculator prefilled for ${money(s.principal)} and ${termText} (${calcUrl} on this site), then change the rate or term. You can also use the embedded calculator on this page. Methodology is documented at /about/.`,
+  },
+  {
+    question: 'Does Nestfigure include early-withdrawal penalties?',
+    answer:
+      'No. The CFPB notes that early withdrawal from a CD typically means a penalty fee; exact amounts are set by each product. Nestfigure’s estimates assume you hold to the modeled term and do not subtract penalties, fees, or taxes.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: s.headline,
+    description: s.description,
+    datePublished: dateModified,
+    dateModified,
+    author: {
+      '@type': 'Person',
+      name: 'John Rey Balais',
+      url: 'https://nestfigure.com/about/',
+      jobTitle: 'Developer',
+      image: 'https://nestfigure.com/images/john-rey-balais.webp',
+    },
+    publisher: { '@type': 'Organization', name: 'Nestfigure', url: 'https://nestfigure.com/' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+    isAccessibleForFree: true,
+    about: { '@type': 'Thing', name: 'Certificate of deposit' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nestfigure.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://nestfigure.com/guides/' },
+      { '@type': 'ListItem', position: 3, name: s.headline, item: pageUrl },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={s.title}
+  description={s.description}
+  canonicalPath={path}
+  ogImage="/images/og-default.webp"
+  jsonLd={jsonLd}
+>
+  <article>
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow">CD scenario · Educational math</p>
+        <h1 class="display" style="font-size: clamp(32px, 5vw, 48px); max-width: 22ch;">
+          {s.headline}
+        </h1>
+        <p class="lead" style="max-width: 54ch;">
+          Answer-first estimates for <strong>{money(s.principal)}</strong> held for <strong>{termText}</strong>, using
+          Nestfigure’s published compound-interest model at labeled sample APYs—not live bank quotes or advice.
+        </p>
+        <p class="muted" style="font-size: 13px; margin-top: 8px;">
+          Reviewed <time datetime={dateModified}>{dateLabel}</time> ·
+          <a href="/about/">Methodology</a> ·
+          <a href="/faq/certificate-of-deposit/">CD FAQ</a>
+        </p>
+        <AuthorByline variant="compact" />
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0;">
+      <div class="container tts-host">
+        <TextToSpeech targetSelector="[data-tts-content]" />
+      </div>
+
+      <div data-tts-content>
+      <div class="container prose scenario-body">
+        <div class="key-takeaways card">
+          <h2 class="takeaways-title">Key takeaways</h2>
+          <ul>
+            <li>
+              <strong>Interest depends on APY and terms</strong>—not on the principal figure in a search query alone.
+            </li>
+            <li>
+              <strong>At a sample {s.defaultApy.toFixed(2)}% APY</strong> for {termText}, Nestfigure’s model shows
+              about <strong>{primary.interestStr}</strong> interest on {money(s.principal)} (balance{' '}
+              <strong>{primary.balanceStr}</strong>).
+            </li>
+            <li>
+              <strong>Sample APYs (4.00%, 4.50%, 5.00%)</strong> are illustrative inputs for comparison—not a claim
+              that any bank offers those rates today.
+            </li>
+            <li>
+              <strong>CFPB:</strong> a CD is a savings account for a set term; early withdrawal typically means a
+              penalty fee. Compare term, rate, and penalty when shopping.
+            </li>
+            <li>
+              <strong>Insurance:</strong> CFPB notes bank CDs may be FDIC-insured and credit union CDs NCUA-insured
+              up to $250,000 frameworks—confirm structure with official tools.
+            </li>
+          </ul>
+        </div>
+
+        <div class="answer-card card">
+          <p class="eyebrow" style="margin-bottom: 8px;">Direct answer</p>
+          <p>
+            {s.primaryQuestion.replace(/\?$/, '')} is not a single fixed dollar amount. It depends on the
+            <strong> annual percentage yield (APY)</strong> and other terms you actually receive. Nestfigure does not
+            scrape or list live CD rates.
+          </p>
+          <p>
+            Using Nestfigure’s calculator methodology (APY input, <strong>{s.compounding}</strong> compounding, no
+            monthly add-on deposits) at a <strong>sample {s.defaultApy.toFixed(2)}% APY</strong> for
+            <strong> {termText}</strong>:
+          </p>
+          <ul class="answer-stats">
+            <li>
+              <span>Interest earned (sample)</span>
+              <strong>{primary.interestStr}</strong>
+            </li>
+            <li>
+              <span>Estimated balance</span>
+              <strong>{primary.balanceStr}</strong>
+            </li>
+            <li>
+              <span>Principal modeled</span>
+              <strong>{money(s.principal)}</strong>
+            </li>
+          </ul>
+          <p style="margin-bottom: 0;">
+            The table below repeats the same engine at other sample APYs so you can see how yield changes the result.
+            Replace any sample APY with the figure on your disclosure.
+          </p>
+        </div>
+
+        <p>
+          <a class="btn btn-primary" href={calcUrl}>Open calculator with these inputs</a>
+        </p>
+
+        <h2>What the CFPB says about CDs</h2>
+        <p>
+          The
+          <a href={SOURCES.cfpbCd.url} rel="noopener noreferrer" target="_blank">{SOURCES.cfpbCd.name}</a>
+          explains that a CD is a savings account at a bank or credit union with a specified term, that early
+          withdrawal means paying a penalty fee, and that shoppers should compare <strong>term</strong>,
+          <strong> interest rate</strong>, and the <strong>early-withdrawal penalty</strong>. The same page notes that
+          bank CDs are insured up to $250,000 by the FDIC and credit union CDs up to $250,000 by the NCUA (confirm
+          how your accounts are titled).
+        </p>
+        <p>
+          Deposit rate advertising and APY disclosure rules for covered institutions are in
+          <a href={SOURCES.regDd.url} rel="noopener noreferrer" target="_blank">Regulation DD (Truth in Savings)</a>.
+        </p>
+
+        <h2>Sample interest table (verified Nestfigure math)</h2>
+        <p>
+          Each interest and balance figure is computed at build time with the same engine as the
+          <a href="/cd-calculator/">CD calculator</a>
+          (<a href="/about/"> (methodology)</a>. Columns are labeled sample APYs—not market surveys.
+        </p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th scope="col">Sample APY (input)</th>
+                <th scope="col" class="num">Interest</th>
+                <th scope="col" class="num">Balance</th>
+                <th scope="col">Prefill tool</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                rows.map((r) => (
+                  <tr class={r.apy === s.defaultApy ? 'is-current' : undefined}>
+                    <td>{r.apy.toFixed(2)}% APY</td>
+                    <td class="num">{r.interestStr}</td>
+                    <td class="num">{r.balanceStr}</td>
+                    <td>
+                      <a href={scenarioCalcUrl(s, r.apy)}>Calculator @ {r.apy.toFixed(2)}%</a>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">
+          Assumptions: principal {money(s.principal)}; term {termText} ({s.termMonths} months); compounding
+          {` ${s.compounding}`}; monthly deposit $0. Holding to modeled maturity; no taxes or penalties subtracted.
+        </p>
+
+        <h2>How to use this page honestly</h2>
+        <ol>
+          <li>Get an APY and term from an institution’s written disclosure (not an unverified screenshot).</li>
+          <li>Enter that APY in the calculator below (or use a prefill link from the table).</li>
+          <li>Compare early-withdrawal penalties and liquidity needs—math alone is not a decision.</li>
+          <li>
+            For large balances, check insurance with
+            <a href={SOURCES.fdicEdie.url} rel="noopener noreferrer" target="_blank"> FDIC EDIE</a>
+            or
+            <a href={SOURCES.ncuaShare.url} rel="noopener noreferrer" target="_blank"> NCUA share insurance</a>
+            materials.
+          </li>
+        </ol>
+
+        <h2>Try the calculator (prefilled)</h2>
+        <p>
+          Defaults match this scenario: {money(s.principal)}, sample {s.defaultApy.toFixed(2)}% APY, {termText},
+          {` ${s.compounding}`} compounding. Change any field to match a real offer.
+          <a href={calcUrl}> Full calculator URL with query parameters</a>.
+        </p>
+      </div>
+
+      <div class="container" style="margin-top: 8px; margin-bottom: 40px;" data-tts-skip>
+        <CdCalculator
+          principal={s.principal}
+          rate={s.defaultApy}
+          rateType="apy"
+          term={s.termMonths}
+          termUnit="months"
+          compounding={s.compounding}
+        />
+      </div>
+
+      <div class="container prose scenario-body">
+        <h2>FAQ</h2>
+        <div class="faq">
+          {
+            faqs.map((f) => (
+              <details>
+                <summary>
+                  <h3>{f.question}</h3>
+                </summary>
+                <p>{f.answer}</p>
+              </details>
+            ))
+          }
+        </div>
+
+        <h2>Related Nestfigure pages</h2>
+        <ul>
+          {
+            otherScenarios.map((o) => (
+              <li>
+                <a href={`/guides/${o.slug}/`}>{o.cardTitle}</a>
+              </li>
+            ))
+          }
+          <li>
+            <a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a>
+          </li>
+          <li>
+            <a href="/guides/how-cd-interest-works/">How CD interest works</a>
+          </li>
+          <li>
+            <a href="/guides/cd-vs-savings/">CD vs high-yield savings</a>
+          </li>
+          <li>
+            <a href="/cd-calculator/">CD calculator</a>
+          </li>
+        </ul>
+
+        <AuthorByline variant="card" />
+
+        <section class="sources" aria-labelledby="sources-heading">
+          <h2 id="sources-heading">Authoritative sources</h2>
+          <ul>
+            {
+              Object.values(SOURCES).map((src) => (
+                <li>
+                  {src.url.startsWith('http') ? (
+                    <a href={src.url} rel="noopener noreferrer" target="_blank">
+                      {src.name}
+                    </a>
+                  ) : (
+                    <a href={src.url.replace('https://nestfigure.com', '')}>{src.name}</a>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <p class="disclaimer">
+          Educational estimates only. Sample APYs are not offers. Last reviewed: {dateLabel}.
+        </p>
+      </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .tts-host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .hero-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .scenario-body {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .key-takeaways {
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  .takeaways-title {
+    font-size: 15px;
+    margin: 0 0 10px;
+    font-weight: 650;
+  }
+
+  .key-takeaways ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--color-iron);
+  }
+
+  .answer-card {
+    padding: 18px 20px;
+    margin: 20px 0;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  .answer-stats {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .answer-stats li {
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 10px 12px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .answer-stats span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  .answer-stats strong {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .table-wrap .num,
+  table.data td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .table-caption {
+    font-size: 12px;
+    color: var(--color-graphite);
+    margin-top: 8px;
+  }
+
+  .faq summary h3 {
+    display: inline;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-ui);
+    letter-spacing: -0.01em;
+  }
+
+  .sources {
+    margin: 28px 0 12px;
+  }
+
+  .sources h2 {
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+
+  .sources ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 8px;
+    font-size: 13.5px;
+  }
+
+  .disclaimer {
+    font-size: 12px;
+    color: var(--color-graphite);
+    margin-top: 24px;
+  }
+
+  @media (max-width: 640px) {
+    .answer-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

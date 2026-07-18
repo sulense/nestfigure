@@ -1,0 +1,278 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Contact Nestfigure';
+const description =
+  'Contact Nestfigure about calculators, guides, corrections, or privacy using our secure contact form.';
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/contact/">
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Get in touch</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Contact</h1>
+      <p class="lead">
+        Questions, corrections, or feedback about Nestfigure tools and guides. We read every message.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container contact-grid">
+      <div class="card contact-side">
+        <h2 class="heading-sm">How to reach us</h2>
+        <p>Send a message with the form. We reply to the email address you provide.</p>
+        <h2 class="heading-sm" style="margin-top:24px;">What to expect</h2>
+        <ul>
+          <li>Calculator questions and bug reports</li>
+          <li>Factual corrections on guides</li>
+          <li>Privacy requests</li>
+          <li>General feedback</li>
+        </ul>
+        <p class="muted note">
+          Nestfigure provides educational calculators only—not financial, tax, or investment advice. We are not a bank
+          or fiduciary.
+        </p>
+      </div>
+
+      <div class="card-elevated contact-form-wrap">
+        <form id="contact-form" class="contact-form" novalidate>
+          <input type="hidden" name="startedAt" id="startedAt" value="" />
+          <input type="hidden" name="challengeA" id="challengeA" value="" />
+          <input type="hidden" name="challengeB" id="challengeB" value="" />
+
+          <!-- Honeypot fields: hidden from users, bots often fill them -->
+          <div class="hp" aria-hidden="true">
+            <label>
+              Website
+              <input type="text" name="website" tabindex="-1" autocomplete="off" />
+            </label>
+            <label>
+              Company URL
+              <input type="text" name="company_url" tabindex="-1" autocomplete="off" />
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required minlength="2" maxlength="100" autocomplete="name" />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              maxlength="200"
+              autocomplete="email"
+              inputmode="email"
+            />
+          </div>
+
+          <div class="field">
+            <label for="subject">Subject</label>
+            <input id="subject" name="subject" type="text" required minlength="3" maxlength="150" />
+          </div>
+
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required minlength="10" maxlength="5000" rows="6"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="challengeAnswer">
+              Spam check: what is <span id="challenge-label">?</span>?
+            </label>
+            <input
+              id="challengeAnswer"
+              name="challengeAnswer"
+              type="number"
+              required
+              inputmode="numeric"
+              autocomplete="off"
+            />
+            <span class="field-hint">Simple math helps block automated spam.</span>
+          </div>
+
+          <p id="form-status" class="form-status" role="status" hidden></p>
+
+          <button type="submit" class="btn btn-primary" id="submit-btn">Send message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.2fr;
+    gap: 24px;
+    align-items: start;
+    max-width: 960px;
+  }
+
+  .contact-side p,
+  .contact-side li {
+    color: var(--color-iron);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .contact-side ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  .contact-side li {
+    margin-bottom: 8px;
+  }
+
+  .note {
+    margin-top: 20px;
+    font-size: 13px;
+  }
+
+  .contact-form-wrap {
+    padding: 28px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contact-form textarea {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--color-ink);
+    background: var(--color-pure-white);
+    border: 1px solid var(--color-dove-gray);
+    border-radius: 6px;
+    padding: 10px 12px;
+    width: 100%;
+    resize: vertical;
+    outline: none;
+  }
+
+  .contact-form textarea:focus {
+    border-color: var(--color-iris-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .hp {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .form-status {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.45;
+    padding: 10px 12px;
+    border-radius: 6px;
+  }
+
+  .form-status.ok {
+    background: #eefaf3;
+    color: #14532d;
+    border: 1px solid #bbf7d0;
+  }
+
+  .form-status.err {
+    background: #fef2f2;
+    color: #7f1d1d;
+    border: 1px solid #fecaca;
+  }
+
+  @media (max-width: 800px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  function randInt(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function setupChallenge() {
+    const a = randInt(1, 9);
+    const b = randInt(1, 9);
+    (document.getElementById('challengeA') as HTMLInputElement).value = String(a);
+    (document.getElementById('challengeB') as HTMLInputElement).value = String(b);
+    const label = document.getElementById('challenge-label');
+    if (label) label.textContent = `${a} + ${b}`;
+    (document.getElementById('challengeAnswer') as HTMLInputElement).value = '';
+  }
+
+  function init() {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form) return;
+
+    (document.getElementById('startedAt') as HTMLInputElement).value = String(Date.now());
+    setupChallenge();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('form-status') as HTMLElement;
+      const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+      status.hidden = true;
+      status.className = 'form-status';
+
+      const fd = new FormData(form);
+      const payload = {
+        name: String(fd.get('name') || ''),
+        email: String(fd.get('email') || ''),
+        subject: String(fd.get('subject') || ''),
+        message: String(fd.get('message') || ''),
+        startedAt: Number(fd.get('startedAt') || 0),
+        challengeA: Number(fd.get('challengeA')),
+        challengeB: Number(fd.get('challengeB')),
+        challengeAnswer: Number(fd.get('challengeAnswer')),
+        website: String(fd.get('website') || ''),
+        company_url: String(fd.get('company_url') || ''),
+      };
+
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+        status.hidden = false;
+        status.className = 'form-status ok';
+        status.textContent = 'Message sent. We’ll get back to you at the email you provided.';
+        form.reset();
+        (document.getElementById('startedAt') as HTMLInputElement).value = String(Date.now());
+        setupChallenge();
+      } catch (err) {
+        status.hidden = false;
+        status.className = 'form-status err';
+        status.textContent =
+          err instanceof Error ? err.message : 'Could not send. Please try again in a moment.';
+        setupChallenge();
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send message';
+      }
+    });
+  }
+
+  init();
+</script>

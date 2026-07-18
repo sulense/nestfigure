@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CdCalculator from '../../components/CdCalculator.astro';
+
+const title = 'CD Calculator (Embed) — Nestfigure';
+const description = 'Embeddable Nestfigure CD calculator.';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/cd-calculator/"
+  ogImage="/images/feature-cd-calculator.webp"
+  embed={true}
+>
+  <div class="embed-shell">
+    <div class="embed-brand">
+      <a href="https://nestfigure.com/cd-calculator/" target="_blank" rel="noopener noreferrer">
+        <img src="/logo-icon.svg" width="20" height="20" alt="" />
+        Nestfigure CD Calculator
+      </a>
+    </div>
+    <CdCalculator />
+    <p class="embed-foot">
+      <a href="https://nestfigure.com/cd-calculator/" target="_blank" rel="noopener noreferrer"
+        >Open full page on nestfigure.com</a
+      >
+      · Educational estimates only
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .embed-shell {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 16px 24px;
+  }
+
+  .embed-brand {
+    margin-bottom: 12px;
+  }
+
+  .embed-brand a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .embed-brand a:hover {
+    color: var(--color-midnight-iris);
+  }
+
+  .embed-foot {
+    margin: 16px 0 0;
+    font-size: 12px;
+    color: var(--color-graphite);
+    text-align: center;
+  }
+
+  .embed-foot a {
+    color: var(--color-midnight-iris);
+  }
+</style>

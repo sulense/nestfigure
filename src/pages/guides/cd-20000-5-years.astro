@@ -1,0 +1,8 @@
+---
+import CdScenarioPage from '../../components/CdScenarioPage.astro';
+import { getScenario } from '../../lib/cdScenarios';
+
+const scenario = getScenario('cd-20000-5-years')!;
+---
+
+<CdScenarioPage scenario={scenario} />

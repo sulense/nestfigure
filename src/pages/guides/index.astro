@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CD_SCENARIOS } from '../../lib/cdScenarios';
+
+const title = 'Guides — Nestfigure Personal Finance';
+const description =
+  'Educational guides on CDs, APY, and savings with citations to CFPB, FDIC, and NCUA. No signup.';
+
+const guides = [
+  {
+    href: '/guides/how-cd-interest-works/',
+    title: 'How CD interest works',
+    blurb:
+      'Truth in Savings APY vs interest rate, compounding, compound-interest math, and a transparent $10,000 example.',
+    preview: 'formula',
+  },
+  {
+    href: '/guides/cd-vs-savings/',
+    title: 'CD vs high-yield savings',
+    blurb: 'Liquidity vs term deposits, FDIC/NCUA insurance basics, and how to run your own numbers.',
+    preview: 'compare',
+  },
+  {
+    href: '/faq/certificate-of-deposit/',
+    title: 'CD FAQ',
+    blurb:
+      'People-also-ask style answers: how much $10k–$100k can earn, rate myths, term length, downsides, and safety.',
+    preview: 'faq',
+  },
+  ...CD_SCENARIOS.map((s) => ({
+    href: `/guides/${s.slug}/`,
+    title: s.cardTitle,
+    blurb: s.cardBlurb,
+    preview: 'scenario' as const,
+  })),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/guides/"
+  ogImage="/images/og-default.webp"
+>
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Learn</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Guides</h1>
+      <p class="lead">Short explainers that feed our calculators — with real numbers and formulas.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container guide-grid">
+      {
+        guides.map((g) => (
+          <a class="card guide-card" href={g.href}>
+            <div class:list={['preview', g.preview]}>
+              {g.preview === 'formula' ? (
+                <>
+                  <code>A = P(1 + r/n)<sup>n·t</sup></code>
+                  <span>$10,000 @ 4.50% APY → $10,450</span>
+                </>
+              ) : g.preview === 'faq' ? (
+                <>
+                  <span class="chip">$10k · 1 year · sample APY</span>
+                  <span class="chip soft">Rates · terms · safety</span>
+                </>
+              ) : g.preview === 'scenario' ? (
+                <>
+                  <span class="chip">Sample APY table</span>
+                  <span class="chip soft">Prefills calculator</span>
+                </>
+              ) : (
+                <>
+                  <span class="chip">CD · fixed · locked</span>
+                  <span class="chip soft">HYSA · variable · flexible</span>
+                </>
+              )}
+            </div>
+            <div class="guide-card-body">
+              <span class="pill pill-neutral">
+                {g.preview === 'faq' ? 'FAQ' : g.preview === 'scenario' ? 'Scenario' : 'Guide'}
+              </span>
+              <h2 class="heading-sm" style="margin-top:12px;">
+                {g.title}
+              </h2>
+              <p>{g.blurb}</p>
+              <span class="linkish">Read guide →</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    max-width: 960px;
+  }
+
+  .guide-card {
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .guide-card:hover {
+    text-decoration: none;
+    border-color: var(--color-dove-gray);
+  }
+
+  .preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    min-height: 110px;
+    padding: 18px 20px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--color-pale-slate);
+  }
+
+  .preview code {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    color: var(--color-ink);
+  }
+
+  .preview > span:not(.chip) {
+    font-size: 12px;
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+  }
+
+  .chip {
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #c9daf8;
+    background: #fff;
+    color: var(--color-iron);
+  }
+
+  .chip.soft {
+    border-color: #c6ebd5;
+  }
+
+  .guide-card-body {
+    padding: 16px 20px 20px;
+  }
+
+  .guide-card p {
+    margin: 0 0 12px;
+    color: var(--color-iron);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .linkish {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-cobalt);
+  }
+
+  @media (max-width: 640px) {
+    .guide-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

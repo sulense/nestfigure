@@ -1,0 +1,639 @@
+---
+interface Props {
+  /** CSS selector for the content root to read */
+  targetSelector?: string;
+}
+const { targetSelector = '[data-tts-content]' } = Astro.props;
+---
+
+<div class="tts" data-tts data-target={targetSelector} data-state="idle" data-expanded="false">
+  <!-- Collapsed: single obvious entry point -->
+  <button type="button" class="tts-launch" data-tts-launch aria-expanded="false" aria-controls="tts-panel">
+    <span class="tts-launch-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+        <path d="M8 5.14v13.72L19.5 12 8 5.14z"></path>
+      </svg>
+    </span>
+    <span class="tts-launch-text">Play Audio</span>
+  </button>
+
+  <!-- Expanded player -->
+  <div class="tts-panel" id="tts-panel" data-tts-panel hidden>
+    <div class="tts-panel-head">
+      <div class="tts-panel-title">
+        <span class="tts-eq" aria-hidden="true" data-tts-eq>
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <span data-tts-heading>Audio</span>
+      </div>
+      <button type="button" class="tts-collapse" data-tts-collapse aria-label="Collapse audio player">
+        Close
+      </button>
+    </div>
+
+    <div class="tts-progress-wrap">
+      <div
+        class="tts-progress"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-label="Audio progress"
+        data-tts-progress
+      >
+        <div class="tts-progress-fill" data-tts-progress-fill></div>
+      </div>
+      <div class="tts-progress-meta">
+        <span data-tts-progress-label>0%</span>
+        <span data-tts-chunk-label></span>
+      </div>
+    </div>
+
+    <div class="tts-controls" role="group" aria-label="Audio controls">
+      <button type="button" class="tts-btn tts-btn-primary" data-tts-play>Play</button>
+      <button type="button" class="tts-btn" data-tts-pause hidden>Pause</button>
+      <button type="button" class="tts-btn" data-tts-resume hidden>Resume</button>
+      <button type="button" class="tts-btn" data-tts-stop hidden>Stop</button>
+      <label class="tts-rate">
+        <span class="visually-hidden">Speed</span>
+        <select data-tts-rate aria-label="Speech speed">
+          <option value="0.85">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.15">Fast</option>
+        </select>
+      </label>
+    </div>
+
+    <p class="tts-status" data-tts-status role="status" hidden></p>
+  </div>
+</div>
+
+<style>
+  .tts {
+    margin: 0 auto 20px;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* —— Collapsed launch button —— */
+  .tts-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 14px 8px 12px;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 9999px;
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(39, 44, 48, 0.04);
+    transition:
+      border-color 0.12s ease,
+      background 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+
+  .tts-launch:hover {
+    border-color: #c7d7fe;
+    background: #f8faff;
+  }
+
+  .tts-launch:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.25);
+    outline-offset: 2px;
+  }
+
+  .tts-launch-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    background: #2563eb;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .tts[data-expanded='true'] .tts-launch {
+    display: none;
+  }
+
+  /* —— Expanded panel —— */
+  .tts-panel {
+    width: 100%;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 10px;
+    background: #fafbfc;
+    padding: 12px 14px 14px;
+  }
+
+  .tts-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .tts-panel-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .tts-eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+    width: 14px;
+  }
+
+  .tts-eq i {
+    display: block;
+    width: 2px;
+    height: 4px;
+    border-radius: 1px;
+    background: var(--color-dove-gray);
+  }
+
+  .tts[data-state='playing'] .tts-eq i {
+    background: #2563eb;
+    animation: tts-eq 0.85s ease-in-out infinite;
+  }
+
+  .tts[data-state='playing'] .tts-eq i:nth-child(1) {
+    animation-delay: 0s;
+  }
+  .tts[data-state='playing'] .tts-eq i:nth-child(2) {
+    height: 8px;
+    animation-delay: 0.1s;
+  }
+  .tts[data-state='playing'] .tts-eq i:nth-child(3) {
+    height: 11px;
+    animation-delay: 0.2s;
+  }
+  .tts[data-state='playing'] .tts-eq i:nth-child(4) {
+    height: 6px;
+    animation-delay: 0.15s;
+  }
+
+  @keyframes tts-eq {
+    0%,
+    100% {
+      transform: scaleY(0.45);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+
+  .tts-collapse {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--color-graphite);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+  }
+
+  .tts-collapse:hover {
+    color: var(--color-ink);
+    background: #fff;
+  }
+
+  /* Progress */
+  .tts-progress-wrap {
+    margin-bottom: 12px;
+  }
+
+  .tts-progress {
+    height: 6px;
+    border-radius: 9999px;
+    background: #e8eef3;
+    overflow: hidden;
+  }
+
+  .tts-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.25s ease;
+  }
+
+  .tts[data-state='playing'] .tts-progress-fill {
+    transition: width 0.35s linear;
+  }
+
+  .tts-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-graphite);
+  }
+
+  .tts-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tts-btn {
+    appearance: none;
+    border: 1px solid var(--color-pale-slate);
+    background: #fff;
+    color: var(--color-iron);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+
+  .tts-btn:hover {
+    border-color: var(--color-dove-gray);
+    color: var(--color-ink);
+  }
+
+  .tts-btn-primary {
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+    background: #eff6ff;
+  }
+
+  .tts-rate select {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    color: var(--color-iron);
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 6px 8px;
+    background: #fff;
+  }
+
+  .tts-status {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: var(--color-graphite);
+  }
+
+  .tts-status.err {
+    color: #7f1d1d;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .tts.is-unsupported .tts-launch-icon {
+    background: #94a3b8;
+  }
+</style>
+
+<script>
+  type SpeechState = 'idle' | 'playing' | 'paused';
+
+  function chunkText(text: string, maxLen = 180): string[] {
+    const cleaned = text.replace(/\s+/g, ' ').trim();
+    if (!cleaned) return [];
+    const parts: string[] = [];
+    const sentences = cleaned.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleaned];
+    let buf = '';
+    for (const s of sentences) {
+      const piece = s.trim();
+      if (!piece) continue;
+      if ((buf + ' ' + piece).trim().length <= maxLen) {
+        buf = (buf + ' ' + piece).trim();
+      } else {
+        if (buf) parts.push(buf);
+        if (piece.length <= maxLen) {
+          buf = piece;
+        } else {
+          for (let i = 0; i < piece.length; i += maxLen) {
+            parts.push(piece.slice(i, i + maxLen));
+          }
+          buf = '';
+        }
+      }
+    }
+    if (buf) parts.push(buf);
+    return parts;
+  }
+
+  function extractText(root: Element): string {
+    const clone = root.cloneNode(true) as HTMLElement;
+    clone
+      .querySelectorAll(
+        'script, style, noscript, .tts, [data-tts], [data-tts-skip], .guide-cta, .hp, .author-byline, [data-cd-calculator], .calc',
+      )
+      .forEach((el) => el.remove());
+    const bits: string[] = [];
+    clone.querySelectorAll('h1, h2, h3, p, li, figcaption, summary, td, th').forEach((el) => {
+      const t = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (t) bits.push(t);
+    });
+    if (bits.length) return bits.join('. ').replace(/\.\s*\./g, '.');
+    return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function bind(widget: HTMLElement) {
+    const launchBtn = widget.querySelector<HTMLButtonElement>('[data-tts-launch]');
+    const panel = widget.querySelector<HTMLElement>('[data-tts-panel]');
+    const collapseBtn = widget.querySelector<HTMLButtonElement>('[data-tts-collapse]');
+    const playBtn = widget.querySelector<HTMLButtonElement>('[data-tts-play]');
+    const pauseBtn = widget.querySelector<HTMLButtonElement>('[data-tts-pause]');
+    const resumeBtn = widget.querySelector<HTMLButtonElement>('[data-tts-resume]');
+    const stopBtn = widget.querySelector<HTMLButtonElement>('[data-tts-stop]');
+    const rateSel = widget.querySelector<HTMLSelectElement>('[data-tts-rate]');
+    const statusEl = widget.querySelector<HTMLElement>('[data-tts-status]');
+    const progressEl = widget.querySelector<HTMLElement>('[data-tts-progress]');
+    const progressFill = widget.querySelector<HTMLElement>('[data-tts-progress-fill]');
+    const progressLabel = widget.querySelector<HTMLElement>('[data-tts-progress-label]');
+    const chunkLabel = widget.querySelector<HTMLElement>('[data-tts-chunk-label]');
+    const heading = widget.querySelector<HTMLElement>('[data-tts-heading]');
+    const selector = widget.dataset.target || '[data-tts-content]';
+
+    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+      widget.classList.add('is-unsupported');
+      if (launchBtn) {
+        launchBtn.disabled = true;
+        launchBtn.querySelector('.tts-launch-text')!.textContent = 'Audio unavailable';
+      }
+      return;
+    }
+
+    let state: SpeechState = 'idle';
+    let queue: string[] = [];
+    let index = 0;
+    let expanded = false;
+    let chunkBoundary = 0; // progress within current chunk 0..1 from boundary events
+    let boundaryTimer: number | null = null;
+
+    function setExpanded(open: boolean) {
+      expanded = open;
+      widget.dataset.expanded = open ? 'true' : 'false';
+      if (panel) {
+        if (open) panel.removeAttribute('hidden');
+        else panel.setAttribute('hidden', '');
+      }
+      if (launchBtn) launchBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function setStatus(msg: string, err = false) {
+      if (!statusEl) return;
+      if (!msg) {
+        statusEl.hidden = true;
+        statusEl.textContent = '';
+        statusEl.className = 'tts-status';
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.textContent = msg;
+      statusEl.className = err ? 'tts-status err' : 'tts-status';
+    }
+
+    function updateProgress() {
+      const total = queue.length || 1;
+      // index is current chunk; add partial from boundary if speaking
+      const raw = state === 'idle' && index === 0 ? 0 : (index + (state === 'idle' ? 0 : chunkBoundary)) / total;
+      const pct = Math.max(0, Math.min(100, Math.round(raw * 100)));
+      if (progressFill) progressFill.style.width = `${pct}%`;
+      if (progressEl) progressEl.setAttribute('aria-valuenow', String(pct));
+      if (progressLabel) progressLabel.textContent = `${pct}%`;
+      if (chunkLabel) {
+        if (!queue.length || state === 'idle') chunkLabel.textContent = '';
+        else chunkLabel.textContent = `Part ${Math.min(index + 1, total)} of ${total}`;
+      }
+    }
+
+    function syncUi() {
+      widget.dataset.state = state;
+      if (playBtn) playBtn.hidden = state !== 'idle';
+      if (pauseBtn) pauseBtn.hidden = state !== 'playing';
+      if (resumeBtn) resumeBtn.hidden = state !== 'paused';
+      if (stopBtn) stopBtn.hidden = state === 'idle';
+      if (heading) {
+        if (state === 'playing') heading.textContent = 'Playing audio';
+        else if (state === 'paused') heading.textContent = 'Audio paused';
+        else heading.textContent = 'Audio';
+      }
+      updateProgress();
+    }
+
+    function pickVoice(): SpeechSynthesisVoice | null {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return null;
+      const en = voices.filter((v) => /^en(-|_)/i.test(v.lang) || /english/i.test(v.name));
+      const pool = en.length ? en : voices;
+      return (
+        pool.find((v) => /natural|neural|premium|enhanced/i.test(v.name)) ||
+        pool.find((v) => v.localService) ||
+        pool[0] ||
+        null
+      );
+    }
+
+    function clearBoundaryTimer() {
+      if (boundaryTimer != null) {
+        window.clearInterval(boundaryTimer);
+        boundaryTimer = null;
+      }
+    }
+
+    function speakNext() {
+      clearBoundaryTimer();
+      chunkBoundary = 0;
+      if (index >= queue.length) {
+        state = 'idle';
+        chunkBoundary = 0;
+        index = queue.length;
+        setStatus('Finished.');
+        // Snap to 100%
+        if (progressFill) progressFill.style.width = '100%';
+        if (progressLabel) progressLabel.textContent = '100%';
+        if (progressEl) progressEl.setAttribute('aria-valuenow', '100');
+        if (chunkLabel) chunkLabel.textContent = '';
+        window.setTimeout(() => {
+          if (state === 'idle') {
+            index = 0;
+            updateProgress();
+          }
+        }, 800);
+        syncUi();
+        return;
+      }
+
+      const text = queue[index];
+      const utter = new SpeechSynthesisUtterance(text);
+      const voice = pickVoice();
+      if (voice) utter.voice = voice;
+      utter.rate = Number(rateSel?.value || 1);
+      utter.pitch = 1;
+      utter.lang = voice?.lang || 'en-US';
+
+      // Approximate progress within chunk via word boundaries when available
+      const words = text.split(/\s+/).filter(Boolean).length || 1;
+      let wordIdx = 0;
+      utter.onboundary = (ev) => {
+        if (ev.name === 'word' || ev.charIndex != null) {
+          wordIdx += 1;
+          chunkBoundary = Math.min(0.95, wordIdx / words);
+          updateProgress();
+        }
+      };
+      // Fallback smooth progress if boundaries don't fire (Firefox/Safari quirks)
+      const estMs = Math.max(1200, (text.length / 14) * 1000) / Number(rateSel?.value || 1);
+      const started = Date.now();
+      boundaryTimer = window.setInterval(() => {
+        if (state !== 'playing') return;
+        const t = Math.min(0.9, (Date.now() - started) / estMs);
+        if (t > chunkBoundary) {
+          chunkBoundary = t;
+          updateProgress();
+        }
+      }, 200);
+
+      utter.onend = () => {
+        clearBoundaryTimer();
+        chunkBoundary = 0;
+        index += 1;
+        updateProgress();
+        if (state === 'playing') speakNext();
+      };
+      utter.onerror = () => {
+        clearBoundaryTimer();
+        chunkBoundary = 0;
+        index += 1;
+        if (state === 'playing') speakNext();
+      };
+
+      state = 'playing';
+      syncUi();
+      window.speechSynthesis.speak(utter);
+    }
+
+    function prepareQueue(): boolean {
+      const root = document.querySelector(selector);
+      if (!root) {
+        setStatus('Could not find article text.', true);
+        return false;
+      }
+      queue = chunkText(extractText(root));
+      if (!queue.length) {
+        setStatus('No readable text found.', true);
+        return false;
+      }
+      return true;
+    }
+
+    function setStatus(msg: string, err = false) {
+      if (!statusEl) return;
+      if (!msg) {
+        statusEl.hidden = true;
+        statusEl.textContent = '';
+        statusEl.className = 'tts-status';
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.textContent = msg;
+      statusEl.className = err ? 'tts-status err' : 'tts-status';
+    }
+
+    function start() {
+      window.speechSynthesis.cancel();
+      clearBoundaryTimer();
+      if (!prepareQueue()) return;
+      index = 0;
+      chunkBoundary = 0;
+      state = 'playing';
+      setStatus('Playing…');
+      syncUi();
+      window.setTimeout(() => speakNext(), 50);
+    }
+
+    function pause() {
+      if (state !== 'playing') return;
+      window.speechSynthesis.pause();
+      clearBoundaryTimer();
+      state = 'paused';
+      setStatus('Paused.');
+      syncUi();
+    }
+
+    function resume() {
+      if (state !== 'paused') return;
+      window.speechSynthesis.resume();
+      state = 'playing';
+      setStatus('Playing…');
+      syncUi();
+    }
+
+    function stop() {
+      window.speechSynthesis.cancel();
+      clearBoundaryTimer();
+      state = 'idle';
+      queue = [];
+      index = 0;
+      chunkBoundary = 0;
+      setStatus('');
+      syncUi();
+    }
+
+    function openAndPlay() {
+      setExpanded(true);
+      start();
+    }
+
+    launchBtn?.addEventListener('click', openAndPlay);
+    collapseBtn?.addEventListener('click', () => {
+      // Keep playing if they only collapse? Prefer stop for simplicity when closing.
+      stop();
+      setExpanded(false);
+    });
+    playBtn?.addEventListener('click', start);
+    pauseBtn?.addEventListener('click', pause);
+    resumeBtn?.addEventListener('click', resume);
+    stopBtn?.addEventListener('click', stop);
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+    window.addEventListener('pagehide', stop);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && state === 'playing') pause();
+    });
+
+    setExpanded(false);
+    syncUi();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tts]').forEach(bind);
+</script>

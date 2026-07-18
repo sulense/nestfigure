@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Privacy Policy — Nestfigure';
+const description = 'Privacy policy for Nestfigure personal finance calculators.';
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/privacy/">
+  <section class="section">
+    <div class="container prose">
+      <p class="eyebrow">Legal</p>
+      <h1 class="heading">Privacy Policy</h1>
+      <p>Last updated: July 17, 2026</p>
+      <p>
+        Nestfigure (“we”) provides free calculator tools in the browser. Calculator inputs are processed locally in
+        your browser for core CD calculations and are not stored on our servers by the calculator itself.
+      </p>
+      <h2>Information we may collect</h2>
+      <ul>
+        <li>
+          <strong>Usage data:</strong> If we enable analytics (e.g. privacy-oriented analytics or Google Analytics),
+          we may collect pages visited, device/browser type, and approximate location.
+        </li>
+        <li>
+          <strong>Logs:</strong> Standard server or CDN logs (IP address, user agent) may be collected by our host.
+        </li>
+        <li>
+          <strong>Advertising:</strong> If we display ads, ad partners may use cookies or similar technologies per
+          their policies.
+        </li>
+      </ul>
+      <h2>Cookies</h2>
+      <p>
+        We may use essential cookies for site operation and optional cookies for analytics or ads. You can control
+        cookies through your browser settings.
+      </p>
+      <h2>Third parties</h2>
+      <p>
+        Hosting, CDN, analytics, and ad networks process data under their own privacy policies. We do not sell your
+        calculator inputs as a product.
+      </p>
+      <h2>Contact</h2>
+      <p>
+        For privacy requests, use the <a href="/contact/">contact form</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

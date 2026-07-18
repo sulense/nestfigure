@@ -1,0 +1,1329 @@
+---
+import { COMPOUNDING_OPTIONS, type Compounding } from '../lib/cdMath';
+
+interface Props {
+  /** Optional SSR defaults (URL query params override these in the browser). */
+  principal?: number;
+  rate?: number;
+  rateType?: 'apy' | 'apr';
+  term?: number;
+  termUnit?: 'months' | 'years';
+  compounding?: Compounding;
+  monthlyDeposit?: number;
+}
+
+const {
+  principal = 10000,
+  rate = 4.5,
+  rateType = 'apy',
+  term = 12,
+  termUnit = 'months',
+  compounding = 'daily',
+  monthlyDeposit = 0,
+} = Astro.props;
+
+const rateDisplay = Number.isInteger(rate) ? String(rate) : rate.toFixed(2);
+---
+
+<div class="calc card-elevated" id="cd-calculator" data-cd-calculator>
+  <div class="calc-grid">
+    <form class="calc-form" id="cd-form" novalidate>
+      <div class="calc-form-head">
+        <span class="pill">Live</span>
+        <span class="muted" style="font-size: 12px;">Updates as you type</span>
+      </div>
+
+      <div class="field">
+        <label for="principal">Initial deposit</label>
+        <input
+          id="principal"
+          name="principal"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="100"
+          value={principal}
+          required
+        />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="rate">Rate (%)</label>
+          <input
+            id="rate"
+            name="rate"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            max="100"
+            step="0.01"
+            value={rateDisplay}
+            required
+          />
+        </div>
+        <div class="field">
+          <label for="rateType">Rate type</label>
+          <select id="rateType" name="rateType">
+            <option value="apy" selected={rateType === 'apy'}>APY</option>
+            <option value="apr" selected={rateType === 'apr'}>Nominal APR</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="term">Term</label>
+          <input
+            id="term"
+            name="term"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            max="600"
+            step="1"
+            value={term}
+            required
+          />
+        </div>
+        <div class="field">
+          <label for="termUnit">Unit</label>
+          <select id="termUnit" name="termUnit">
+            <option value="months" selected={termUnit === 'months'}>Months</option>
+            <option value="years" selected={termUnit === 'years'}>Years</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="compounding">Compounding</label>
+        <select id="compounding" name="compounding">
+          {
+            COMPOUNDING_OPTIONS.map((o) => (
+              <option value={o.value} selected={o.value === compounding}>
+                {o.label}
+              </option>
+            ))
+          }
+        </select>
+        <span class="field-hint">Most bank CDs compound daily or monthly.</span>
+      </div>
+
+      <div class="field">
+        <label for="monthlyDeposit">Monthly add-on deposit (optional)</label>
+        <input
+          id="monthlyDeposit"
+          name="monthlyDeposit"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="50"
+          value={monthlyDeposit}
+        />
+        <span class="field-hint">Models a CD-like savings plan; many true CDs don’t allow add-ons.</span>
+      </div>
+
+      <div class="preset-row" role="group" aria-label="Term presets">
+        <button type="button" class="btn btn-secondary preset" data-months="3">3 mo</button>
+        <button type="button" class="btn btn-secondary preset" data-months="6">6 mo</button>
+        <button type="button" class="btn btn-secondary preset" data-months="12">12 mo</button>
+        <button type="button" class="btn btn-secondary preset" data-months="24">24 mo</button>
+        <button type="button" class="btn btn-secondary preset" data-months="60">5 yr</button>
+      </div>
+    </form>
+
+    <div class="calc-results" aria-live="polite">
+      <div class="result-block">
+        <div class="result-label">Final balance</div>
+        <div class="result-value" id="out-balance">$0.00</div>
+      </div>
+      <div class="result-grid">
+        <div class="result-mini">
+          <div class="result-label">Interest earned</div>
+          <div class="result-mid" id="out-interest">$0.00</div>
+        </div>
+        <div class="result-mini">
+          <div class="result-label">Total deposited</div>
+          <div class="result-mid" id="out-deposits">$0.00</div>
+        </div>
+        <div class="result-mini">
+          <div class="result-label">Effective APY</div>
+          <div class="result-mid" id="out-apy">0.00%</div>
+        </div>
+        <div class="result-mini">
+          <div class="result-label">Term</div>
+          <div class="result-mid" id="out-term">—</div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button type="button" class="btn btn-secondary" id="copy-results">Copy results</button>
+        <button type="button" class="btn btn-secondary" id="export-pdf">Export PDF</button>
+      </div>
+      <p class="result-note" id="copy-status" hidden></p>
+      <p class="result-note">
+        Illustrative estimate only. Actual bank CD rates, compounding, and early withdrawal penalties vary.
+      </p>
+    </div>
+  </div>
+
+  <div class="chart-block">
+    <div class="schedule-head">
+      <p class="heading-sm" style="margin:0">Balance over time</p>
+      <span class="muted" style="font-size:12px">Growth chart</span>
+    </div>
+    <div class="chart-wrap" role="img" aria-label="CD balance growth chart">
+      <div class="chart-y-axis" aria-hidden="true">
+        <span id="chart-y-max">—</span>
+        <span id="chart-y-mid">—</span>
+        <span id="chart-y-min">—</span>
+      </div>
+      <div class="chart-main">
+        <svg
+          id="growth-chart"
+          viewBox="0 0 800 280"
+          preserveAspectRatio="xMidYMid meet"
+          shape-rendering="geometricPrecision"
+        >
+          <defs>
+            <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3e79ea" stop-opacity="0.22" />
+              <stop offset="100%" stop-color="#3e79ea" stop-opacity="0.02" />
+            </linearGradient>
+          </defs>
+          <g id="chart-grid"></g>
+          <path id="chart-area" fill="url(#areaFill)" />
+          <path
+            id="chart-line"
+            fill="none"
+            stroke="#3e79ea"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            vector-effect="non-scaling-stroke"
+          />
+          <g id="chart-dots"></g>
+        </svg>
+        <div class="chart-x-axis" aria-hidden="true">
+          <span>Start</span>
+          <span id="chart-x-mid"></span>
+          <span>Maturity</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-block">
+    <div class="schedule-head">
+      <p class="heading-sm" style="margin:0">Compare common CD terms</p>
+      <span class="muted" style="font-size:12px">Same deposit & rate, different lengths</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data" id="compare-table">
+        <thead>
+          <tr>
+            <th>Term</th>
+            <th>Final balance</th>
+            <th>Interest</th>
+            <th>vs your term</th>
+          </tr>
+        </thead>
+        <tbody id="compare-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="schedule">
+    <div class="schedule-head">
+      <p class="heading-sm" style="margin:0">Growth schedule</p>
+      <span class="muted" style="font-size:12px" id="schedule-note">By period</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data" id="schedule-table">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Deposit</th>
+            <th>Interest</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .calc {
+    padding: 24px;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .calc-form-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .preset-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .preset-row .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .calc-results {
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .result-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-iron);
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 48px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--color-ink);
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .result-mid {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result-note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-graphite);
+    line-height: 1.45;
+  }
+
+  .chart-block,
+  .compare-block,
+  .schedule {
+    margin-top: 28px;
+  }
+
+  .schedule-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .chart-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 10px;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 16px 16px 12px;
+    background: var(--color-pure-white);
+  }
+
+  .chart-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 4px 0 28px;
+    min-width: 4.5rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-graphite);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .chart-main {
+    min-width: 0;
+  }
+
+  .chart-main svg {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 800 / 280;
+    display: block;
+    overflow: visible;
+  }
+
+  .chart-x-axis {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding: 0 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-graphite);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (max-width: 520px) {
+    .chart-y-axis {
+      min-width: 3.25rem;
+      font-size: 10px;
+    }
+  }
+
+  tr.is-current td {
+    background: rgba(137, 236, 176, 0.12);
+    font-weight: 500;
+  }
+
+  @media (max-width: 800px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>
+
+<script>
+  type Compounding =
+    | 'daily'
+    | 'monthly'
+    | 'quarterly'
+    | 'semiannually'
+    | 'annually'
+    | 'continuous';
+
+  type Row = { label: string; deposit: number; interest: number; balance: number };
+  type CompareRow = {
+    months: number;
+    term: string;
+    balance: number;
+    interest: number;
+    deltaLabel: string;
+    isCurrent: boolean;
+  };
+
+  const N: Record<Exclude<Compounding, 'continuous'>, number> = {
+    daily: 365,
+    monthly: 12,
+    quarterly: 4,
+    semiannually: 2,
+    annually: 1,
+  };
+
+  const COMPARE_TERMS = [3, 6, 12, 24, 36, 60];
+
+  const COMPOUNDING_LABEL: Record<Compounding, string> = {
+    daily: 'Daily',
+    monthly: 'Monthly',
+    quarterly: 'Quarterly',
+    semiannually: 'Semi-annually',
+    annually: 'Annually',
+    continuous: 'Continuous',
+  };
+
+  let lastExport = {
+    principal: 0,
+    ratePercent: 0,
+    rateIsApy: true,
+    compounding: 'daily' as Compounding,
+    termMonths: 0,
+    monthlyDeposit: 0,
+    balance: 0,
+    interest: 0,
+    deposits: 0,
+    apy: 0,
+    points: [] as number[],
+    scheduleRows: [] as Row[],
+    scheduleNote: 'By period',
+    compareRows: [] as CompareRow[],
+  };
+
+  function nominalRate(ratePercent: number, rateIsApy: boolean, compounding: Compounding): number {
+    const r = ratePercent / 100;
+    if (!rateIsApy) return r;
+    if (compounding === 'continuous') return Math.log(1 + r);
+    const n = N[compounding];
+    return n * (Math.pow(1 + r, 1 / n) - 1);
+  }
+
+  function compoundAmount(principal: number, nominal: number, compounding: Compounding, years: number): number {
+    if (years <= 0) return principal;
+    if (compounding === 'continuous') return principal * Math.exp(nominal * years);
+    const n = N[compounding as Exclude<Compounding, 'continuous'>] ?? 12;
+    return principal * Math.pow(1 + nominal / n, n * years);
+  }
+
+  function monthlyGrowth(nominal: number, compounding: Compounding): number {
+    if (compounding === 'continuous') return Math.exp(nominal / 12) - 1;
+    const n = N[compounding as Exclude<Compounding, 'continuous'>] ?? 12;
+    return Math.pow(1 + nominal / n, n / 12) - 1;
+  }
+
+  function formatMoney(n: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    }).format(n || 0);
+  }
+
+  function formatPercent(n: number): string {
+    return `${((n || 0) * 100).toFixed(2)}%`;
+  }
+
+  function termLabel(termMonths: number): string {
+    const years = Math.floor(termMonths / 12);
+    const months = Math.round(termMonths % 12);
+    let label = '';
+    if (years > 0) label += `${years} yr`;
+    if (months > 0) label += `${years > 0 ? ' ' : ''}${months} mo`;
+    return label || '—';
+  }
+
+  function project(
+    principal: number,
+    ratePercent: number,
+    rateIsApy: boolean,
+    compounding: Compounding,
+    termMonths: number,
+    monthlyDeposit: number,
+  ): { finalBalance: number; totalInterest: number; totalDeposits: number; rows: Row[]; points: number[] } {
+    const years = termMonths / 12;
+    const nominal = nominalRate(ratePercent, rateIsApy, compounding);
+    const points: number[] = [principal];
+
+    if (termMonths <= 0) {
+      return { finalBalance: principal, totalInterest: 0, totalDeposits: principal, rows: [], points };
+    }
+
+    if (monthlyDeposit === 0) {
+      const finalBalance = compoundAmount(principal, nominal, compounding, years);
+      const totalInterest = finalBalance - principal;
+      const rows: Row[] = [];
+      const step = termMonths <= 24 ? 1 : Math.max(1, Math.floor(termMonths / 12));
+      if (termMonths <= 24) {
+        for (let m = 1; m <= termMonths; m++) {
+          const bal = compoundAmount(principal, nominal, compounding, m / 12);
+          const prev = m === 1 ? principal : compoundAmount(principal, nominal, compounding, (m - 1) / 12);
+          rows.push({ label: `Month ${m}`, deposit: 0, interest: bal - prev, balance: bal });
+          points.push(bal);
+        }
+      } else {
+        const yearCount = Math.ceil(termMonths / 12);
+        for (let y = 1; y <= yearCount; y++) {
+          const months = Math.min(y * 12, termMonths);
+          const bal = compoundAmount(principal, nominal, compounding, months / 12);
+          const prevMonths = Math.min((y - 1) * 12, termMonths);
+          const prev = y === 1 ? principal : compoundAmount(principal, nominal, compounding, prevMonths / 12);
+          rows.push({ label: `Year ${y}`, deposit: 0, interest: bal - prev, balance: bal });
+          // denser chart points monthly for longer terms
+        }
+        for (let m = 1; m <= termMonths; m++) {
+          points.push(compoundAmount(principal, nominal, compounding, m / 12));
+        }
+        if (rows.length) rows[rows.length - 1].balance = finalBalance;
+      }
+      return { finalBalance, totalInterest, totalDeposits: principal, rows, points };
+    }
+
+    let balance = principal;
+    let totalDeposits = principal;
+    const g = monthlyGrowth(nominal, compounding);
+    const rows: Row[] = [];
+    for (let m = 1; m <= Math.floor(termMonths); m++) {
+      const before = balance;
+      balance = balance * (1 + g);
+      const interest = balance - before;
+      balance += monthlyDeposit;
+      totalDeposits += monthlyDeposit;
+      rows.push({ label: `Month ${m}`, deposit: monthlyDeposit, interest, balance });
+      points.push(balance);
+    }
+    const rem = termMonths - Math.floor(termMonths);
+    if (rem > 0.001) {
+      const before = balance;
+      if (compounding === 'continuous') balance = balance * Math.exp(nominal * (rem / 12));
+      else balance = balance * Math.pow(1 + g, rem);
+      rows.push({
+        label: `Month ${Math.ceil(termMonths)}`,
+        deposit: 0,
+        interest: balance - before,
+        balance,
+      });
+      points.push(balance);
+    }
+
+    let displayRows = rows;
+    if (rows.length > 24) {
+      const map = new Map<number, Row>();
+      rows.forEach((r, i) => {
+        const year = Math.ceil((i + 1) / 12);
+        const ex = map.get(year);
+        if (!ex) map.set(year, { label: `Year ${year}`, deposit: r.deposit, interest: r.interest, balance: r.balance });
+        else {
+          ex.deposit += r.deposit;
+          ex.interest += r.interest;
+          ex.balance = r.balance;
+        }
+      });
+      displayRows = [...map.values()];
+    }
+
+    return {
+      finalBalance: balance,
+      totalInterest: balance - totalDeposits,
+      totalDeposits,
+      rows: displayRows,
+      points,
+    };
+  }
+
+  function formatAxisMoney(n: number): string {
+    if (!Number.isFinite(n)) return '—';
+    const abs = Math.abs(n);
+    if (abs >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+    if (abs >= 10_000) return `$${Math.round(n).toLocaleString('en-US')}`;
+    return formatMoney(n);
+  }
+
+  /** Downsample long series so the path stays smooth and crisp. */
+  function samplePoints(points: number[], maxPoints = 96): number[] {
+    if (points.length <= maxPoints) return points;
+    const out: number[] = [];
+    const last = points.length - 1;
+    for (let i = 0; i < maxPoints; i++) {
+      const idx = Math.round((i / (maxPoints - 1)) * last);
+      out.push(points[idx]);
+    }
+    return out;
+  }
+
+  function renderChart(points: number[]) {
+    const line = document.getElementById('chart-line') as SVGPathElement | null;
+    const area = document.getElementById('chart-area') as SVGPathElement | null;
+    const grid = document.getElementById('chart-grid');
+    const dots = document.getElementById('chart-dots');
+    const yMaxEl = document.getElementById('chart-y-max');
+    const yMidEl = document.getElementById('chart-y-mid');
+    const yMinEl = document.getElementById('chart-y-min');
+    if (!line || !area || !grid || !dots || !yMaxEl || !yMidEl || !yMinEl) return;
+
+    if (!points.length) {
+      line.setAttribute('d', '');
+      area.setAttribute('d', '');
+      grid.innerHTML = '';
+      dots.innerHTML = '';
+      return;
+    }
+
+    const series = samplePoints(points);
+    const padL = 8;
+    const padR = 12;
+    const padT = 16;
+    const padB = 16;
+    const w = 800 - padL - padR;
+    const h = 280 - padT - padB;
+    let min = Math.min(...series);
+    let max = Math.max(...series);
+    // Small padding so a flat line isn't glued to the edge
+    if (max === min) {
+      min = min * 0.98;
+      max = max * 1.02 || 1;
+    } else {
+      const pad = (max - min) * 0.08;
+      min -= pad;
+      max += pad;
+    }
+    const span = max - min;
+
+    // Horizontal grid (4 bands)
+    const gridLines: string[] = [];
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (h * i) / 4;
+      gridLines.push(
+        `<line x1="${padL}" y1="${y.toFixed(2)}" x2="${(padL + w).toFixed(2)}" y2="${y.toFixed(2)}" stroke="#e3e8ea" stroke-width="1" vector-effect="non-scaling-stroke" />`,
+      );
+    }
+    // Left baseline
+    gridLines.push(
+      `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${(padT + h).toFixed(2)}" stroke="#e3e8ea" stroke-width="1" vector-effect="non-scaling-stroke" />`,
+    );
+    grid.innerHTML = gridLines.join('');
+
+    const coords = series.map((p, i) => {
+      const x = padL + (i / Math.max(series.length - 1, 1)) * w;
+      const y = padT + h - ((p - min) / span) * h;
+      return [x, y] as const;
+    });
+
+    // Smooth-looking polyline with high precision (no non-uniform stretch)
+    const lineD = coords
+      .map((c, i) => `${i === 0 ? 'M' : 'L'}${c[0].toFixed(2)},${c[1].toFixed(2)}`)
+      .join(' ');
+    const baseY = (padT + h).toFixed(2);
+    const areaD =
+      lineD +
+      ` L${coords[coords.length - 1][0].toFixed(2)},${baseY}` +
+      ` L${coords[0][0].toFixed(2)},${baseY} Z`;
+
+    line.setAttribute('d', lineD);
+    area.setAttribute('d', areaD);
+
+    const start = coords[0];
+    const end = coords[coords.length - 1];
+    dots.innerHTML = `
+      <circle cx="${start[0].toFixed(2)}" cy="${start[1].toFixed(2)}" r="4" fill="#ffffff" stroke="#3e79ea" stroke-width="2" vector-effect="non-scaling-stroke" />
+      <circle cx="${end[0].toFixed(2)}" cy="${end[1].toFixed(2)}" r="4.5" fill="#3e79ea" stroke="#ffffff" stroke-width="2" vector-effect="non-scaling-stroke" />
+    `;
+
+    const dataMin = Math.min(...points);
+    const dataMax = Math.max(...points);
+    const dataMid = (dataMin + dataMax) / 2;
+    yMaxEl.textContent = formatAxisMoney(dataMax);
+    yMidEl.textContent = formatAxisMoney(dataMid);
+    yMinEl.textContent = formatAxisMoney(dataMin);
+  }
+
+  function renderCompare(
+    principal: number,
+    ratePercent: number,
+    rateIsApy: boolean,
+    compounding: Compounding,
+    currentMonths: number,
+    monthlyDeposit: number,
+    currentBalance: number,
+  ) {
+    const tbody = document.getElementById('compare-body');
+    if (!tbody) return;
+
+    const terms = [...new Set([...COMPARE_TERMS, Math.round(currentMonths)].filter((t) => t > 0))].sort(
+      (a, b) => a - b,
+    );
+
+    tbody.innerHTML = terms
+      .map((months) => {
+        const r = project(principal, ratePercent, rateIsApy, compounding, months, monthlyDeposit);
+        const delta = r.finalBalance - currentBalance;
+        const deltaStr =
+          Math.abs(delta) < 0.005
+            ? 'Current'
+            : delta > 0
+              ? `+${formatMoney(delta)}`
+              : formatMoney(delta);
+        const currentClass = months === Math.round(currentMonths) ? ' class="is-current"' : '';
+        return `<tr${currentClass}>
+          <td>${termLabel(months)}</td>
+          <td>${formatMoney(r.finalBalance)}</td>
+          <td>${formatMoney(r.totalInterest)}</td>
+          <td>${deltaStr}</td>
+        </tr>`;
+      })
+      .join('');
+  }
+
+  function calculate() {
+    const principal = Math.max(0, parseFloat((document.getElementById('principal') as HTMLInputElement).value) || 0);
+    const ratePercent = Math.max(0, parseFloat((document.getElementById('rate') as HTMLInputElement).value) || 0);
+    const rateIsApy = (document.getElementById('rateType') as HTMLSelectElement).value === 'apy';
+    const term = Math.max(0, parseFloat((document.getElementById('term') as HTMLInputElement).value) || 0);
+    const termUnit = (document.getElementById('termUnit') as HTMLSelectElement).value;
+    const compounding = (document.getElementById('compounding') as HTMLSelectElement).value as Compounding;
+    const monthlyDeposit = Math.max(
+      0,
+      parseFloat((document.getElementById('monthlyDeposit') as HTMLInputElement).value) || 0,
+    );
+    const termMonths = termUnit === 'years' ? term * 12 : term;
+
+    const result = project(principal, ratePercent, rateIsApy, compounding, termMonths, monthlyDeposit);
+    const years = termMonths / 12;
+    const effectiveApy =
+      result.totalDeposits > 0 && years > 0
+        ? Math.pow(result.finalBalance / result.totalDeposits, 1 / years) - 1
+        : 0;
+
+    const scheduleNote =
+      result.rows.length && result.rows[0].label.startsWith('Year') ? 'Yearly summary' : 'Monthly schedule';
+
+    const terms = [...new Set([...COMPARE_TERMS, Math.round(termMonths)].filter((t) => t > 0))].sort(
+      (a, b) => a - b,
+    );
+    const compareRows: CompareRow[] = terms.map((months) => {
+      const r = project(principal, ratePercent, rateIsApy, compounding, months, monthlyDeposit);
+      const delta = r.finalBalance - result.finalBalance;
+      const deltaLabel =
+        Math.abs(delta) < 0.005 ? 'Current' : delta > 0 ? `+${formatMoney(delta)}` : formatMoney(delta);
+      return {
+        months,
+        term: termLabel(months),
+        balance: r.finalBalance,
+        interest: r.totalInterest,
+        deltaLabel,
+        isCurrent: months === Math.round(termMonths),
+      };
+    });
+
+    lastExport = {
+      principal,
+      ratePercent,
+      rateIsApy,
+      compounding,
+      termMonths,
+      monthlyDeposit,
+      balance: result.finalBalance,
+      interest: result.totalInterest,
+      deposits: result.totalDeposits,
+      apy: Math.max(0, effectiveApy),
+      points: result.points,
+      scheduleRows: result.rows,
+      scheduleNote,
+      compareRows,
+    };
+
+    (document.getElementById('out-balance') as HTMLElement).textContent = formatMoney(result.finalBalance);
+    (document.getElementById('out-interest') as HTMLElement).textContent = formatMoney(result.totalInterest);
+    (document.getElementById('out-deposits') as HTMLElement).textContent = formatMoney(result.totalDeposits);
+    (document.getElementById('out-apy') as HTMLElement).textContent = formatPercent(lastExport.apy);
+    (document.getElementById('out-term') as HTMLElement).textContent = termLabel(termMonths);
+
+    const tbody = document.getElementById('schedule-body') as HTMLElement;
+    tbody.innerHTML = result.rows
+      .map(
+        (r) => `<tr>
+        <td>${r.label}</td>
+        <td>${formatMoney(r.deposit)}</td>
+        <td>${formatMoney(r.interest)}</td>
+        <td>${formatMoney(r.balance)}</td>
+      </tr>`,
+      )
+      .join('');
+
+    (document.getElementById('schedule-note') as HTMLElement).textContent = scheduleNote;
+
+    renderChart(result.points);
+    renderCompare(principal, ratePercent, rateIsApy, compounding, termMonths, monthlyDeposit, result.finalBalance);
+  }
+
+  function resultLines(): string[] {
+    const s = lastExport;
+    return [
+      'Nestfigure CD Calculator results',
+      `Deposit: ${formatMoney(s.principal)}`,
+      `Rate: ${s.ratePercent.toFixed(2)}% ${s.rateIsApy ? 'APY' : 'nominal APR'}`,
+      `Term: ${termLabel(s.termMonths)}`,
+      `Compounding: ${COMPOUNDING_LABEL[s.compounding]}`,
+      s.monthlyDeposit > 0 ? `Monthly deposit: ${formatMoney(s.monthlyDeposit)}` : '',
+      `Final balance: ${formatMoney(s.balance)}`,
+      `Interest earned: ${formatMoney(s.interest)}`,
+      `Total deposited: ${formatMoney(s.deposits)}`,
+      `Effective APY: ${formatPercent(s.apy)}`,
+      'Estimates only - not a bank quote.',
+      'https://nestfigure.com/cd-calculator/',
+    ].filter((line) => line.length > 0);
+  }
+
+  function setActionStatus(message: string, ms = 2000) {
+    const status = document.getElementById('copy-status');
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+    window.setTimeout(() => {
+      status.hidden = true;
+    }, ms);
+  }
+
+  async function copyResults() {
+    const text = resultLines().join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      setActionStatus('Copied to clipboard.');
+    } catch {
+      setActionStatus('Could not copy — select and copy manually.', 4000);
+    }
+  }
+
+  /** Escape text for safe HTML embedding. */
+  function esc(value: string | number): string {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /** Build chart SVG paths from balance points. */
+  function chartSvgMarkup(points: number[]): string {
+    const pts = points.length ? points : [0];
+    const W = 720;
+    const H = 220;
+    const padL = 8;
+    const padR = 8;
+    const padT = 12;
+    const padB = 12;
+    const plotW = W - padL - padR;
+    const plotH = H - padT - padB;
+    const minV = Math.min(...pts);
+    const maxV = Math.max(...pts);
+    const span = Math.max(maxV - minV, 1);
+    const coords = pts.map((p, i) => {
+      const x = padL + (i / Math.max(pts.length - 1, 1)) * plotW;
+      const y = padT + ((maxV - p) / span) * plotH;
+      return [x, y] as const;
+    });
+    const lineD = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c[0].toFixed(1)},${c[1].toFixed(1)}`).join(' ');
+    const baseY = (padT + plotH).toFixed(1);
+    const areaD =
+      lineD +
+      ` L${coords[coords.length - 1][0].toFixed(1)},${baseY}` +
+      ` L${coords[0][0].toFixed(1)},${baseY} Z`;
+    const yTicks = [0, 0.25, 0.5, 0.75, 1]
+      .map((t) => {
+        const y = padT + plotH * t;
+        const val = maxV - span * t;
+        return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#e8eef3" stroke-width="1"/>
+          <text x="${padL}" y="${(y - 4).toFixed(1)}" fill="#5c6670" font-size="10" font-family="ui-monospace,monospace">${esc(formatMoney(val))}</text>`;
+      })
+      .join('');
+    const start = coords[0];
+    const end = coords[coords.length - 1];
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="220" role="img" aria-label="Balance growth chart">
+      <defs>
+        <linearGradient id="pdfArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3e79ea" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#3e79ea" stop-opacity="0.02"/>
+        </linearGradient>
+      </defs>
+      ${yTicks}
+      <path d="${areaD}" fill="url(#pdfArea)"/>
+      <path d="${lineD}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${start[0].toFixed(1)}" cy="${start[1].toFixed(1)}" r="4" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <circle cx="${end[0].toFixed(1)}" cy="${end[1].toFixed(1)}" r="4.5" fill="#2563eb" stroke="#fff" stroke-width="2"/>
+    </svg>`;
+  }
+
+  /**
+   * HTML report printed via the browser ("Save as PDF").
+   * Real HTML tables + SVG chart = crisp, readable numbers (no hand-rolled PDF text bugs).
+   */
+  function buildReportHtml(): string {
+    const s = lastExport;
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    const inputs = [
+      `Deposit ${formatMoney(s.principal)}`,
+      `${s.ratePercent.toFixed(2)}% ${s.rateIsApy ? 'APY' : 'nominal APR'}`,
+      termLabel(s.termMonths),
+      `${COMPOUNDING_LABEL[s.compounding]} compounding`,
+    ];
+    if (s.monthlyDeposit > 0) inputs.push(`+${formatMoney(s.monthlyDeposit)}/mo`);
+
+    const compareRows = s.compareRows
+      .map(
+        (r) => `<tr class="${r.isCurrent ? 'is-current' : ''}">
+        <td>${esc(r.term)}</td>
+        <td class="num">${esc(formatMoney(r.balance))}</td>
+        <td class="num">${esc(formatMoney(r.interest))}</td>
+        <td class="num">${esc(r.deltaLabel)}</td>
+      </tr>`,
+      )
+      .join('');
+
+    const scheduleRows = s.scheduleRows
+      .map(
+        (r) => `<tr>
+        <td>${esc(r.label)}</td>
+        <td class="num">${esc(formatMoney(r.deposit))}</td>
+        <td class="num">${esc(formatMoney(r.interest))}</td>
+        <td class="num">${esc(formatMoney(r.balance))}</td>
+      </tr>`,
+      )
+      .join('');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Nestfigure CD Calculator Report</title>
+<style>
+  @page { margin: 14mm 12mm; size: letter; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: #1a1f24;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .sheet { max-width: 800px; margin: 0 auto; }
+  .banner {
+    background: #2563eb;
+    color: #fff;
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .banner strong { font-size: 16px; letter-spacing: -0.01em; }
+  .banner span { font-size: 11px; opacity: 0.92; }
+  h1 { font-size: 20px; margin: 0 0 6px; font-weight: 650; letter-spacing: -0.02em; }
+  .meta { color: #5c6670; font-size: 12px; margin: 0 0 16px; }
+  .metrics {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .metric {
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+  }
+  .metric.hero {
+    background: #f0f5fe;
+    border-color: #d7e4fb;
+  }
+  .metric .lbl {
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5c6670;
+    margin-bottom: 4px;
+  }
+  .metric .val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1f24;
+  }
+  .metric.hero .val {
+    font-size: 22px;
+    color: #2563eb;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 14px;
+    margin: 22px 0 4px;
+    font-weight: 650;
+  }
+  .sub { color: #5c6670; font-size: 11px; margin: 0 0 10px; }
+  .chart {
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    padding: 8px 10px 4px;
+    background: #fff;
+    margin-bottom: 8px;
+  }
+  .chart-axis {
+    display: flex;
+    justify-content: space-between;
+    color: #5c6670;
+    font-size: 10px;
+    padding: 0 6px 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  thead th {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 9px 12px;
+  }
+  thead th.num, td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e8eef3;
+    color: #1a1f24;
+  }
+  tbody tr:nth-child(even) td { background: #fafbfc; }
+  tbody tr.is-current td {
+    background: #eef4ff;
+    font-weight: 600;
+  }
+  .disclaimer {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: #f0f5fe;
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #334048;
+  }
+  .footer {
+    margin-top: 12px;
+    font-size: 10px;
+    color: #5c6670;
+  }
+  @media print {
+    .banner { break-inside: avoid; }
+    .metrics { break-inside: avoid; }
+    .chart { break-inside: avoid; }
+    table { break-inside: auto; }
+    tr { break-inside: avoid; break-after: auto; }
+    thead { display: table-header-group; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="banner">
+      <div>
+        <strong>Nestfigure</strong><br/>
+        <span>CD Calculator Report</span>
+      </div>
+      <span>${esc(dateStr)}</span>
+    </div>
+
+    <h1>Your CD estimate</h1>
+    <p class="meta">${esc(inputs.join('  ·  '))}</p>
+
+    <div class="metrics">
+      <div class="metric hero">
+        <div class="lbl">Final balance</div>
+        <div class="val">${esc(formatMoney(s.balance))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Interest earned</div>
+        <div class="val">${esc(formatMoney(s.interest))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Total deposited</div>
+        <div class="val">${esc(formatMoney(s.deposits))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Effective APY</div>
+        <div class="val">${esc(formatPercent(s.apy))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Term</div>
+        <div class="val">${esc(termLabel(s.termMonths))}</div>
+      </div>
+    </div>
+
+    <h2>Balance over time</h2>
+    <p class="sub">Projected balance from start to maturity</p>
+    <div class="chart">
+      ${chartSvgMarkup(s.points)}
+      <div class="chart-axis"><span>Start</span><span>Maturity</span></div>
+    </div>
+
+    <h2>Compare common CD terms</h2>
+    <p class="sub">Same deposit and rate, different lengths</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Term</th>
+          <th class="num">Final balance</th>
+          <th class="num">Interest</th>
+          <th class="num">vs your term</th>
+        </tr>
+      </thead>
+      <tbody>${compareRows}</tbody>
+    </table>
+
+    <h2>Growth schedule</h2>
+    <p class="sub">${esc(s.scheduleNote)}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th class="num">Deposit</th>
+          <th class="num">Interest</th>
+          <th class="num">Balance</th>
+        </tr>
+      </thead>
+      <tbody>${scheduleRows}</tbody>
+    </table>
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> Illustrative estimate only. Not financial advice. Nestfigure is not a bank,
+      credit union, broker, or fiduciary. Actual rates, compounding, day-count methods, and early withdrawal
+      penalties vary — always read the institution’s disclosures.
+    </div>
+    <p class="footer">Generated by Nestfigure · https://nestfigure.com/cd-calculator/</p>
+  </div>
+</body>
+</html>`;
+  }
+
+  function exportPdf() {
+    try {
+      const html = buildReportHtml();
+      // Hidden iframe print avoids popup blockers and uses the browser's Save as PDF
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute('title', 'PDF export');
+      iframe.style.cssText =
+        'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(iframe);
+
+      const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!frameDoc || !iframe.contentWindow) {
+        iframe.remove();
+        throw new Error('iframe unavailable');
+      }
+
+      frameDoc.open();
+      frameDoc.write(html);
+      frameDoc.close();
+
+      const runPrint = () => {
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+          setActionStatus('Use “Save as PDF” in the print dialog.', 5000);
+        } catch {
+          setActionStatus('Could not open print dialog. Try Copy results instead.', 4000);
+        }
+        window.setTimeout(() => iframe.remove(), 2000);
+      };
+
+      // Wait a tick for layout/SVG paint before printing
+      window.setTimeout(runPrint, 250);
+    } catch {
+      setActionStatus('Could not create PDF. Try Copy results instead.', 4000);
+    }
+  }
+
+  /** Prefill from ?principal=&rate=&apy=&term=&termUnit=&months=&years=&compounding=&monthlyDeposit= */
+  function applyQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (![...params.keys()].length) return;
+
+    const num = (key: string): number | null => {
+      const raw = params.get(key);
+      if (raw == null || raw === '') return null;
+      const v = parseFloat(raw);
+      return Number.isFinite(v) && v >= 0 ? v : null;
+    };
+
+    const setInput = (id: string, value: number | string) => {
+      const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+      if (el) el.value = String(value);
+    };
+
+    const principal = num('principal') ?? num('deposit');
+    if (principal != null) setInput('principal', principal);
+
+    // apy= sets rate and forces APY mode; rate= uses rateType if present
+    const apy = num('apy');
+    const rate = num('rate');
+    if (apy != null) {
+      setInput('rate', apy);
+      setInput('rateType', 'apy');
+    } else if (rate != null) {
+      setInput('rate', rate);
+    }
+
+    const rateType = params.get('rateType');
+    if (rateType === 'apy' || rateType === 'apr') setInput('rateType', rateType);
+
+    const months = num('months');
+    const years = num('years');
+    if (months != null) {
+      setInput('term', Math.max(1, Math.round(months)));
+      setInput('termUnit', 'months');
+    } else if (years != null) {
+      setInput('term', Math.max(1, years));
+      setInput('termUnit', 'years');
+    } else {
+      const term = num('term');
+      if (term != null) setInput('term', Math.max(1, term));
+      const unit = params.get('termUnit');
+      if (unit === 'months' || unit === 'years') setInput('termUnit', unit);
+    }
+
+    const compounding = params.get('compounding');
+    const allowed = ['daily', 'monthly', 'quarterly', 'semiannually', 'annually', 'continuous'];
+    if (compounding && allowed.includes(compounding)) setInput('compounding', compounding);
+
+    const monthly =
+      num('monthlyDeposit') ?? num('monthly') ?? num('addOn');
+    if (monthly != null) setInput('monthlyDeposit', monthly);
+  }
+
+  function bind() {
+    const form = document.getElementById('cd-form');
+    if (!form) return;
+    applyQueryParams();
+    form.addEventListener('input', calculate);
+    form.addEventListener('change', calculate);
+    document.querySelectorAll('.preset').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const months = (btn as HTMLElement).dataset.months || '12';
+        (document.getElementById('term') as HTMLInputElement).value = months;
+        (document.getElementById('termUnit') as HTMLSelectElement).value = 'months';
+        calculate();
+      });
+    });
+    document.getElementById('copy-results')?.addEventListener('click', copyResults);
+    document.getElementById('export-pdf')?.addEventListener('click', exportPdf);
+    calculate();
+  }
+
+  bind();
+</script>

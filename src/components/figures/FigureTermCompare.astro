@@ -1,0 +1,77 @@
+---
+/**
+ * Illustrative term table at constant 4.50% effective annual yield.
+ * balance = 10000 * (1.045)^(months/12)
+ * Verified: 12 mo → 10450; 24 mo → 10920.25
+ */
+const rows = [
+  { term: '3 months (t = 0.25 yr)', balance: '$10,110.72', interest: '$110.72' },
+  { term: '6 months (t = 0.5 yr)', balance: '$10,222.50', interest: '$222.50' },
+  { term: '12 months (t = 1 yr)', balance: '$10,450.00', interest: '$450.00', highlight: true },
+  { term: '24 months (t = 2 yr)', balance: '$10,920.25', interest: '$920.25' },
+];
+---
+
+<figure class="content-figure data-figure">
+  <div class="fig-inner">
+    <p class="fig-title">Illustration only · $10,000 at 4.50% effective annual yield</p>
+    <p class="sub">
+      Formula used: balance = 10,000 × (1.045)<sup>t</sup>. This is a constant effective-annual-rate model for
+      teaching—not a live CD rate sheet and not Regulation DD product disclosure for any bank.
+    </p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Term</th>
+            <th>Modeled balance</th>
+            <th>Modeled interest</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((r) => (
+              <tr class={r.highlight ? 'hi' : undefined}>
+                <td>
+                  {r.term}
+                  {r.highlight ? ' · baseline' : ''}
+                </td>
+                <td>{r.balance}</td>
+                <td>{r.interest}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <figcaption>
+    Arithmetic check for one year: $10,000 × 0.045 = $450; $10,000 + $450 = $10,450. Adjust inputs in the
+    <a href="/cd-calculator/">CD calculator</a> for other assumptions.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-inner {
+    padding: 20px;
+  }
+  .fig-title {
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+    font-family: var(--font-mono);
+  }
+  .sub {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: var(--color-iron);
+    line-height: 1.45;
+  }
+  :global(tr.hi td) {
+    background: rgba(137, 236, 176, 0.14);
+    font-weight: 500;
+  }
+</style>

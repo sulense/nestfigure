@@ -1,0 +1,799 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
+import TextToSpeech from '../../components/TextToSpeech.astro';
+import { calculateCd } from '../../lib/cdMath';
+
+const title = 'CD FAQ: How Much Interest, Rates, Terms & Safety | Nestfigure';
+const description =
+  'Factual CD FAQ with transparent sample math: $10k–$100k earnings examples, term length, downsides, FDIC/NCUA basics, and rate myths. Not bank quotes or advice.';
+const canonicalPath = '/faq/certificate-of-deposit/';
+const dateModified = '2026-07-17';
+const updatedLabel = 'July 17, 2026';
+const pageUrl = 'https://nestfigure.com/faq/certificate-of-deposit/';
+
+/** Format USD for display (build-time, deterministic). */
+function money(n: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
+/**
+ * Educational estimate only — Nestfigure CD methodology:
+ * APY input, daily compounding model, no monthly deposits.
+ * Not a bank quote; institutions use their own day-count rules.
+ */
+function estimate(principal: number, termMonths: number, apyPercent: number) {
+  const r = calculateCd({
+    principal,
+    ratePercent: apyPercent,
+    rateIsApy: true,
+    termMonths,
+    compounding: 'daily',
+    monthlyDeposit: 0,
+  });
+  return {
+    interest: r.totalInterest,
+    balance: r.finalBalance,
+    interestStr: money(r.totalInterest),
+    balanceStr: money(r.finalBalance),
+  };
+}
+
+// —— Verified sample math (used in answers + table) ——
+const e10k1y45 = estimate(10000, 12, 4.5);
+const e10k1y50 = estimate(10000, 12, 5);
+const e10k6m45 = estimate(10000, 6, 4.5);
+const e10k6m50 = estimate(10000, 6, 5);
+const e10k3m45 = estimate(10000, 3, 4.5);
+const e10k3m50 = estimate(10000, 3, 5);
+const e20k5y45 = estimate(20000, 60, 4.5);
+const e50k6m45 = estimate(50000, 6, 4.5);
+const e50k6m50 = estimate(50000, 6, 5);
+const e50k1y45 = estimate(50000, 12, 4.5);
+const e50k1y50 = estimate(50000, 12, 5);
+const e100k6m45 = estimate(100000, 6, 4.5);
+const e100k6m50 = estimate(100000, 6, 5);
+const e5k6m45 = estimate(5000, 6, 4.5);
+const e1k1y45 = estimate(1000, 12, 4.5);
+const e5k1y45 = estimate(5000, 12, 4.5);
+
+/** Years to double at constant APY (compound annually for transparency): ln(2)/ln(1+apy) */
+const yearsToDoubleAt45 = Math.log(2) / Math.log(1.045);
+
+/** Simplified constant-yield principal for $3,000/month interest: (3000*12) / 0.045 */
+const principalFor3kMonthAt45 = (3000 * 12) / 0.045;
+
+type Faq = { question: string; answer: string; id: string };
+type Section = { id: string; title: string; items: Faq[] };
+
+const sections: Section[] = [
+  {
+    id: 'earnings',
+    title: 'How much can a CD earn?',
+    items: [
+      {
+        id: '10k-one-year',
+        question: 'How much will a $10,000 CD make in one year?',
+        answer: `Direct answer: Interest equals whatever APY and terms your institution discloses—not a fixed dollar amount Nestfigure can guarantee. For transparent education only, using Nestfigure’s compound-interest model (APY input, daily compounding, no extra deposits): at a sample 4.50% APY for 12 months, interest is ${e10k1y45.interestStr} ($10,000 grows to ${e10k1y45.balanceStr}). At a sample 5.00% APY, interest is ${e10k1y50.interestStr} (balance ${e10k1y50.balanceStr}). Real bank day-count methods can differ. Enter your quoted APY in the free CD calculator.`,
+      },
+      {
+        id: '10k-six-months',
+        question: 'How much will a $10,000 CD make in 6 months?',
+        answer: `Direct answer: It depends on the APY on your deposit account. Nestfigure sample math only (daily compounding model, no add-on deposits): at 4.50% APY for 6 months, interest is ${e10k6m45.interestStr} (balance ${e10k6m45.balanceStr}). At 5.00% APY, interest is ${e10k6m50.interestStr} (balance ${e10k6m50.balanceStr}). These are not offers or predictions of market rates.`,
+      },
+      {
+        id: '10k-three-months-2026',
+        question: 'How much will a $10,000 3 month CD earn in 2026?',
+        answer: `Direct answer: The calendar year (including 2026) does not set your interest—your account’s disclosed APY, term, and compounding do. Nestfigure does not forecast 2026 CD rates and does not have live bank rate data. Sample math only: $10,000 for 3 months at 4.50% APY → about ${e10k3m45.interestStr} interest (balance ${e10k3m45.balanceStr}); at 5.00% APY → about ${e10k3m50.interestStr} interest (balance ${e10k3m50.balanceStr}). Always use the APY on your Truth in Savings disclosure.`,
+      },
+      {
+        id: '20k-five-years',
+        question: 'What if I put $20,000 in a CD for 5 years?',
+        answer: `Direct answer: Holding a longer term can increase total interest if you leave funds to maturity, but you typically give up liquidity and may pay an early-withdrawal penalty if you exit early (see CFPB’s CD explainer). Nestfigure sample only at 4.50% APY for 60 months, no monthly deposits: interest about ${e20k5y45.interestStr} (balance about ${e20k5y45.balanceStr}). Your real APY, penalties, and renewals control the outcome. Compare terms in the CD calculator.`,
+      },
+      {
+        id: '50k-six-months',
+        question: 'How much will a $50,000 CD earn in 6 months?',
+        answer: `Direct answer: For a single lump sum at a constant sample APY, interest scales with principal. Nestfigure model only: $50,000 for 6 months at 4.50% APY → interest ${e50k6m45.interestStr} (balance ${e50k6m45.balanceStr}); at 5.00% APY → interest ${e50k6m50.interestStr} (balance ${e50k6m50.balanceStr}). For large balances, review deposit insurance limits and ownership categories with FDIC (banks) or NCUA (credit unions) materials—not Nestfigure account placement.`,
+      },
+      {
+        id: '50k-best-interest',
+        question: "What's the best interest I can get on $50,000?",
+        answer: `Direct answer: Nestfigure cannot state a “best” live APY for $50,000 because we do not aggregate bank offers and rates change by institution, term, and day. What we can show is math at sample APYs you might be quoted: $50,000 for 12 months at 4.50% APY → interest ${e50k1y45.interestStr}; at 5.00% APY → interest ${e50k1y50.interestStr}. Verify any offer on the institution’s disclosure, then model that exact APY in the calculator.`,
+      },
+      {
+        id: '100k-six-months',
+        question: 'How much will $100,000 make in a 6 month CD?',
+        answer: `Direct answer: Interest depends on the APY you actually receive. Nestfigure sample only: $100,000 for 6 months at 4.50% APY → interest ${e100k6m45.interestStr} (balance ${e100k6m45.balanceStr}); at 5.00% APY → interest ${e100k6m50.interestStr} (balance ${e100k6m50.balanceStr}). FDIC states standard deposit insurance coverage is $250,000 per depositor, per insured bank, per ownership category; NCUA share insurance uses a $250,000 framework for federally insured credit unions—confirm coverage for your situation with those agencies’ tools, not this site.`,
+      },
+      {
+        id: '100k-six-months-alt',
+        question: 'How much will 100k make in a 6 month CD?',
+        answer: `Direct answer: Same as $100,000 for six months—use your quoted APY. Nestfigure educational model (daily compounding, no add-ons): at 4.50% APY, interest is ${e100k6m45.interestStr}; at 5.00% APY, interest is ${e100k6m50.interestStr}. Open the CD calculator for a full schedule using your numbers.`,
+      },
+    ],
+  },
+  {
+    id: 'worth-it',
+    title: 'Is a CD worth it?',
+    items: [
+      {
+        id: 'is-cd-good-idea',
+        question: 'Is putting money in a CD a good idea?',
+        answer:
+          'Direct answer: It can be reasonable for some goals and a poor fit for others—there is no universal “yes.” According to the CFPB, a CD is a type of savings account at a bank or credit union where you generally agree to leave money for a set term, and withdrawing early typically means paying a penalty fee. A CD may fit money you will not need until a known date and for which you want a disclosed APY. It may not fit emergency cash you must access freely, or long-horizon goals where you accept market risk for growth. Nestfigure provides education and math, not personalized advice.',
+      },
+      {
+        id: 'worth-10k',
+        question: 'Is it worth putting 10k in a CD?',
+        answer: `Direct answer: Only if $10,000 can stay for the full term under terms you accept after comparing liquid options. Sample math only: $10,000 for 12 months at 4.50% APY → about ${e10k1y45.interestStr} interest before taxes (Nestfigure model). If you may need the cash soon, an early-withdrawal penalty (disclosed by the institution under Truth in Savings rules) can erase much of that benefit. Compare APYs and access needs; this site does not decide for you.`,
+      },
+      {
+        id: 'worth-1000',
+        question: 'Is it worth putting $1000 in a CD?',
+        answer: `Direct answer: It can still earn interest, but minimum deposits, penalties, and paperwork are set by each institution—Nestfigure does not list product minimums. Sample math only: $1,000 for 12 months at 4.50% APY → ${e1k1y45.interestStr} interest (balance ${e1k1y45.balanceStr}). For very short or uncertain needs, a liquid savings account may be simpler. Check the account disclosure before opening.`,
+      },
+      {
+        id: 'six-month-worth-it',
+        question: 'Is a six month CD worth it?',
+        answer:
+          'Direct answer: A 6-month CD can make sense when you have a ~6-month horizon, accept limited access, and the disclosed APY compares favorably to other deposit options you can actually open. Tradeoffs include early-withdrawal penalties and reinvestment risk at maturity if rates change. Nestfigure does not rank today’s products; we help you estimate interest once you have a real APY.',
+      },
+      {
+        id: '5000-six-month-now',
+        question: 'Why should you put $5000 in a 6 month CD now?',
+        answer: `Direct answer: You should not open a CD solely because a headline says “now.” Nestfigure does not urge deposits today and has no affiliate “best CD” list. A legitimate reason to consider any short CD is a known need date plus an APY and penalty terms you accept in writing. Sample math only: $5,000 for 6 months at 4.50% APY → interest about ${e5k6m45.interestStr} (balance ${e5k6m45.balanceStr})—not a large windfall. Keep emergency funds accessible per your own plan.`,
+      },
+      {
+        id: 'good-amount-in-cd',
+        question: 'What is a good amount of money to have in a CD?',
+        answer:
+          'Direct answer: There is no single correct amount. A practical framework many educators describe is: keep emergency reserves in liquid accounts; only lock money you can leave until maturity; and stay aware of insurance limits. FDIC: standard maximum deposit insurance is $250,000 per depositor, per insured bank, per ownership category. NCUA: share insurance for federally insured credit unions is structured around $250,000 coverage by ownership category (see NCUA share insurance materials). Nestfigure does not recommend a dollar target for you.',
+      },
+      {
+        id: 'downside-of-cd',
+        question: 'What is the downside of a CD?',
+        answer:
+          'Direct answer: Common downsides include limited liquidity, early-withdrawal penalties, and opportunity cost if other options later pay more or if you needed the cash. The CFPB notes that withdrawing from a CD early means paying a penalty fee to the bank, and it advises comparing term, interest rate, and the early-withdrawal penalty when shopping. CDs also do not provide stock-market growth potential; they are deposit contracts. Read your account agreement and Truth in Savings disclosures.',
+      },
+    ],
+  },
+  {
+    id: 'rates',
+    title: 'CD rates & “highest rate” questions',
+    items: [
+      {
+        id: 'is-there-7-percent',
+        question: 'Is there a 7% CD rate?',
+        answer:
+          'Direct answer: Nestfigure does not maintain live rate data and cannot confirm that any 7% APY CD is available to you. We do not publish bank rate tables. Under Truth in Savings (Regulation DD), institutions that advertise a rate of return must state it as an annual percentage yield (APY). If an institution quotes you an APY in a compliant disclosure, enter that figure in the calculator—do not rely on unverified social-media claims.',
+      },
+      {
+        id: 'is-there-5-percent',
+        question: 'Is there a 5% CD out there?',
+        answer: `Direct answer: Nestfigure cannot verify whether any specific 5% APY CD is open today. We are not a rate board. If you receive a written 5.00% APY quote, sample math for education: $10,000 for 12 months → interest ${e10k1y50.interestStr} (balance ${e10k1y50.balanceStr}) under Nestfigure’s model. Always confirm APY, term, and penalties on the institution’s disclosure.`,
+      },
+      {
+        id: 'does-anyone-have-5-percent',
+        question: 'Does anyone have a 5% CD?',
+        answer:
+          'Direct answer: Nestfigure does not know who offers 5% APY on any given day and does not list issuers. Shop only with institutions you can verify, compare full terms, and treat screenshots without disclosures as unreliable. Use this site solely to estimate interest after you have a real APY.',
+      },
+      {
+        id: 'who-has-9-5',
+        question: 'Who has a 9.5% CD?',
+        answer:
+          'Direct answer: Nestfigure does not endorse, list, or verify any “9.5% CD” claim. Extremely high percentages circulating online may omit eligibility rules, may not be insured deposits, or may be inaccurate. Confirm the legal name of the institution, whether deposits are FDIC-insured (banks) or NCUA-insured (credit unions), and the full APY and term on official disclosures before sending money.',
+      },
+      {
+        id: 'highest-cd-rate-now',
+        question: 'Who has the highest CD rate right now?',
+        answer:
+          'Direct answer: Nestfigure does not publish a live “highest CD rate” ranking. APYs change by term and institution. We provide calculators and education so you can model interest after you obtain a quote from an institution you choose—not a leaderboard of banks.',
+      },
+      {
+        id: 'highest-2-year-cd',
+        question: 'Who has the highest paying 2 year CD right now?',
+        answer:
+          'Direct answer: We do not maintain a 24-month rate leaderboard. A 2-year term generally means longer lock-up than a short CD; early withdrawal may trigger a penalty under the account terms. When you have a disclosed 2-year APY, enter principal and 24 months in the CD calculator to estimate interest and compare other terms yourself.',
+      },
+      {
+        id: 'good-6-month-rate',
+        question: 'What is considered a good 6 month CD rate right now?',
+        answer:
+          'Direct answer: Nestfigure does not define or publish a current “good” national 6-month APY number, because that would require live market data we do not collect. A practical comparison is: the APY and penalties on offers you can open versus liquid insured deposit alternatives available to you the same day. Re-check rates close to funding; do not use this page as a rate index.',
+      },
+      {
+        id: 'rates-down-2026',
+        question: 'Are CD rates predicted to go down in 2026?',
+        answer:
+          'Direct answer: Nestfigure does not issue interest-rate forecasts for 2026 or any year. Future APYs on new accounts depend on market conditions and each institution’s pricing. A CD you already hold is governed by its existing contract until maturity (subject to the agreement). For planning, model more than one sample APY rather than relying on predictions.',
+      },
+    ],
+  },
+  {
+    id: 'terms-timing',
+    title: 'Term length, timing & maturity',
+    items: [
+      {
+        id: 'best-term-length',
+        question: 'What CD term length is best?',
+        answer:
+          'Direct answer: The best term is the one that matches when you need the money—not a single “winner” for everyone. The CFPB advises selecting your CD maturity date based on expected needs and comparing term, interest rate, and early-withdrawal penalty. Short terms favor access; longer terms increase lock-up. Some people use multiple CDs with staggered maturities (a ladder); that is a strategy description, not a Nestfigure product recommendation.',
+      },
+      {
+        id: 'how-long-leave-money',
+        question: 'How long should I leave money in a CD?',
+        answer:
+          'Direct answer: Plan to leave funds until the maturity date on your account agreement if you want to avoid early-withdrawal penalties. Choose that date from your real cash needs. If the date is uncertain, shorter terms or liquid savings may fit better. Nestfigure cannot pick a term for your household.',
+      },
+      {
+        id: 'best-time-to-buy',
+        question: 'What is the best time to buy a CD?',
+        answer:
+          'Direct answer: There is no Nestfigure “buy signal.” A practical checklist is: (1) money you will not need during the term, (2) APY and penalty terms you have compared in writing, (3) a maturity date that matches a goal. Trying to perfectly time rate peaks is uncertain. This site helps with math after you have terms—not market timing.',
+      },
+      {
+        id: 'what-not-to-do-maturity',
+        question: 'What not to do when your CD matures?',
+        answer:
+          'Direct answer: Do not ignore maturity notices or assume automatic renewal matches your needs. For many automatically renewing time accounts, federal Truth in Savings rules (Regulation DD, 12 CFR 1030.5) require institutions to provide advance maturity notices with specified timing. Grace periods and renewal APYs are product-specific—read your disclosure. Decide deliberately whether to withdraw, renew, or change terms.',
+      },
+    ],
+  },
+  {
+    id: 'safety-compare',
+    title: 'Safety, alternatives & comparisons',
+    items: [
+      {
+        id: 'cd-vs-money-market',
+        question: 'Is it better to put money in a CD or money market today?',
+        answer:
+          'Direct answer: Neither is always better. A CD typically locks funds for a term at a disclosed APY, with possible early-withdrawal penalties. A money market deposit account is generally more liquid and often pays a variable rate. Choose based on access needs and the APYs, fees, and insurance status of offers available to you. See Nestfigure’s CD vs high-yield savings guide for a related comparison. Not personalized advice.',
+      },
+      {
+        id: 'better-than-cd',
+        question: 'What is a better investment than a CD?',
+        answer:
+          'Direct answer: “Better” depends on goal and risk tolerance. CDs are deposits with contractual terms; they are not designed to maximize long-term market growth. Assets that can grow more can also lose value. Nestfigure does not rank a single superior investment and does not provide investment advice—we focus on CD math and deposit education.',
+      },
+      {
+        id: 'safest-large-sum',
+        question: 'Where is the safest place to put a large sum of money?',
+        answer:
+          'Direct answer: Nestfigure does not designate a single safest institution or product. For cash deposits in the United States, consumers often review FDIC insurance for banks ($250,000 per depositor, per insured bank, per ownership category, per FDIC) and NCUA share insurance for federally insured credit unions ($250,000 framework by ownership category, per NCUA). “Safest” is not the same as highest APY. Confirm coverage with those agencies’ official materials (for example FDIC’s EDIE estimator) for your account structure.',
+      },
+      {
+        id: 'cd-if-market-crashes',
+        question: 'What happens to a CD if the market crashes?',
+        answer:
+          'Direct answer: A standard bank or credit union CD is a deposit account, not a share of the stock market. A stock-market decline does not by itself reset the APY on your existing CD contract. You still rely on the institution’s performance of the deposit contract and on applicable deposit or share insurance rules. Early withdrawal can still incur a penalty under your agreement even during a market crash.',
+      },
+      {
+        id: 'smartest-10k',
+        question: 'What is the smartest thing to do with $10,000?',
+        answer: `Direct answer: There is no single smartest use of $10,000 for every person. Priorities people often evaluate include high-interest debt, emergency liquidity, and dated goals (where a CD is only one possible cash tool). Nestfigure can estimate CD interest on $10,000 (for example ${e10k1y45.interestStr} over 12 months at a sample 4.50% APY under our model) but cannot design your full financial plan.`,
+      },
+    ],
+  },
+  {
+    id: 'unrealistic',
+    title: 'Unrealistic return questions (honest answers)',
+    items: [
+      {
+        id: 'smartest-invest-now',
+        question: 'What is the smartest thing to invest in right now?',
+        answer:
+          'Direct answer: Nestfigure will not name a single “smartest” investment for everyone right now. That depends on time horizon, risk, taxes, and your full situation. A CD is one deposit product with a disclosed APY and term tradeoffs—not a universal answer. Be skeptical of anyone selling certainty.',
+      },
+      {
+        id: 'number-one-investment',
+        question: 'What is the number one investment right now?',
+        answer:
+          'Direct answer: There is no permanent number-one investment Nestfigure can certify. For deposits, compare APY, fees, insurance, and liquidity on real disclosures. Broader portfolio choices are outside this calculator’s scope and are not advice from Nestfigure.',
+      },
+      {
+        id: 'double-5k-quickly',
+        question: 'How can I double $5000 quickly?',
+        answer: `Direct answer: You should not expect a CD to double $5,000 quickly. Under Nestfigure’s model at a sample 4.50% APY, $5,000 earns about ${e5k1y45.interestStr} over 12 months—not another $5,000. At a constant 4.50% annual compound rate, the mathematical time to double is about ${yearsToDoubleAt45.toFixed(1)} years (ln(2)/ln(1.045)), before taxes and without guaranteeing any product. Strategies that promise to double money fast often involve high risk of loss. Nestfigure will not provide get-rich-quick steps.`,
+      },
+      {
+        id: 'make-3000-a-month',
+        question: 'How much money do I need to invest to make $3,000 a month?',
+        answer: `Direct answer: At CD-like yields, the principal required is very large because deposit APYs produce modest interest relative to $3,000 per month. Transparent simplified math (not a product quote): $3,000 × 12 = $36,000 per year of interest. If interest alone were 4.50% of principal each year with no principal spend-down, principal ≈ $36,000 ÷ 0.045 = ${money(principalFor3kMonthAt45)}. Real accounts differ (taxes, compounding, withdrawals, changing rates). CDs are rarely used as the sole tool for that income target. This is education, not a savings recommendation.`,
+      },
+    ],
+  },
+];
+
+const allFaqs = sections.flatMap((s) => s.items);
+
+const exampleRows = [
+  { label: '$10,000 · 3 months', e45: e10k3m45, e50: e10k3m50 },
+  { label: '$10,000 · 6 months', e45: e10k6m45, e50: e10k6m50 },
+  { label: '$10,000 · 12 months', e45: e10k1y45, e50: e10k1y50 },
+  { label: '$5,000 · 6 months', e45: e5k6m45, e50: estimate(5000, 6, 5) },
+  { label: '$20,000 · 5 years', e45: e20k5y45, e50: estimate(20000, 60, 5) },
+  { label: '$50,000 · 6 months', e45: e50k6m45, e50: e50k6m50 },
+  { label: '$100,000 · 6 months', e45: e100k6m45, e50: e100k6m50 },
+];
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nestfigure.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Certificate of deposit FAQ', item: pageUrl },
+  ],
+};
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: allFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.answer,
+    },
+  })),
+};
+
+const webPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: pageUrl,
+  dateModified,
+  inLanguage: 'en-US',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'Nestfigure',
+    url: 'https://nestfigure.com/',
+  },
+  about: {
+    '@type': 'Thing',
+    name: 'Certificate of deposit',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Nestfigure',
+    url: 'https://nestfigure.com/',
+  },
+  author: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+    url: 'https://nestfigure.com/about/',
+    jobTitle: 'Developer',
+    image: 'https://nestfigure.com/images/john-rey-balais.webp',
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage="/images/og-default.webp"
+  jsonLd={[webPageLd, breadcrumbLd, faqLd]}
+>
+  <article itemscope itemtype="https://schema.org/FAQPage">
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow">CDs · FAQ · Educational</p>
+        <h1 class="display" style="font-size: clamp(34px, 5vw, 52px); max-width: 20ch;">
+          CD FAQ: interest examples, rates, terms & safety
+        </h1>
+        <p class="lead" style="max-width: 54ch;">
+          Answer-first explanations for common certificate of deposit questions. Sample dollar figures use Nestfigure’s
+          published calculator math at stated APYs—not live bank rates or predictions.
+        </p>
+        <p class="muted" style="font-size: 13px; margin-top: 8px;">
+          Reviewed <time datetime={dateModified}>{updatedLabel}</time> · {allFaqs.length} questions ·
+          <a href="/about/">Methodology</a>
+        </p>
+        <AuthorByline variant="compact" />
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0;">
+      <div class="container tts-host">
+        <TextToSpeech targetSelector="[data-tts-content]" />
+      </div>
+      <div class="container faq-page" data-tts-content>
+        <div class="key-takeaways card">
+          <h2 class="takeaways-title">Key takeaways</h2>
+          <ul>
+            <li>
+              <strong>Interest is not fixed by the question alone</strong>—it depends on the APY, term, and rules on
+              your deposit disclosure.
+            </li>
+            <li>
+              <strong>Sample math on this page</strong> uses Nestfigure’s model: APY input, daily compounding, no
+              monthly deposits. Full-year 4.50% APY on $10,000 → {e10k1y45.interestStr} interest.
+            </li>
+            <li>
+              <strong>We do not list live bank rates</strong> or name “who has the highest CD today.”
+            </li>
+            <li>
+              <strong>CFPB:</strong> a CD is a savings account for a set term; early withdrawal typically means a
+              penalty fee.
+            </li>
+            <li>
+              <strong>FDIC / NCUA:</strong> standard insurance frameworks use $250,000 by depositor/ownership rules—confirm
+              with official tools for large balances.
+            </li>
+          </ul>
+        </div>
+
+        <div class="cta-row card">
+          <div>
+            <p class="eyebrow" style="margin-bottom: 6px;">Free tool</p>
+            <p class="heading-sm" style="margin: 0;">Run your own principal, APY, and term</p>
+            <p class="muted" style="margin: 8px 0 0; font-size: 13px;">
+              Same math engine as the samples below · schedule + optional PDF · no signup.
+            </p>
+          </div>
+          <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
+        </div>
+
+        <section class="method-block" aria-labelledby="method-heading">
+          <h2 id="method-heading">Illustrative earnings table (verified sample APYs)</h2>
+          <p class="method-note">
+            Every figure below is computed at build time with Nestfigure’s
+            <a href="/about/">published CD methodology</a>
+            (APY → daily compounding model, no add-on deposits). Replace the sample APY with your institution’s
+            disclosed APY for a realistic estimate.
+          </p>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th scope="col">Principal & term</th>
+                  <th scope="col" class="num">Interest @ 4.50% APY</th>
+                  <th scope="col" class="num">Interest @ 5.00% APY</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  exampleRows.map((row) => (
+                    <tr>
+                      <td>{row.label}</td>
+                      <td class="num">{row.e45.interestStr}</td>
+                      <td class="num">{row.e50.interestStr}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <nav class="toc card" aria-label="FAQ categories">
+          <p class="toc-label">On this page</p>
+          <ul>
+            {
+              sections.map((s) => (
+                <li>
+                  <a href={`#${s.id}`}>
+                    {s.title}
+                    <span class="count">{s.items.length}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        {
+          sections.map((section) => (
+            <section class="faq-section" id={section.id} aria-labelledby={`${section.id}-heading`}>
+              <h2 id={`${section.id}-heading`}>{section.title}</h2>
+              <div class="faq">
+                {section.items.map((item) => (
+                  <details id={item.id} itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <summary>
+                      <h3 itemprop="name">{item.question}</h3>
+                    </summary>
+                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                      <p itemprop="text">{item.answer}</p>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ))
+        }
+
+        <AuthorByline variant="card" />
+
+        <section class="sources" aria-labelledby="sources-heading">
+          <h2 id="sources-heading">Authoritative sources</h2>
+          <ul>
+            <li>
+              <a
+                href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+                rel="noopener noreferrer"
+                target="_blank">CFPB — What is a certificate of deposit (CD)?</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.consumerfinance.gov/rules-policy/regulations/1030/"
+                rel="noopener noreferrer"
+                target="_blank">CFPB — Regulation DD (Truth in Savings), 12 CFR Part 1030</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance"
+                rel="noopener noreferrer"
+                target="_blank">FDIC — Understanding deposit insurance ($250,000 standard maximum by category)</a
+              >
+            </li>
+            <li>
+              <a href="https://edie.fdic.gov/" rel="noopener noreferrer" target="_blank"
+                >FDIC — Electronic Deposit Insurance Estimator (EDIE)</a
+              >
+            </li>
+            <li>
+              <a href="https://ncua.gov/consumers/share-insurance-coverage" rel="noopener noreferrer" target="_blank"
+                >NCUA — Share insurance coverage</a
+              >
+            </li>
+            <li>
+              <a href="/about/">Nestfigure — calculator methodology</a>
+            </li>
+          </ul>
+        </section>
+
+        <div class="related card">
+          <p class="eyebrow" style="margin-bottom: 8px;">Related Nestfigure pages</p>
+          <ul class="related-links">
+            <li>
+              <a href="/cd-calculator/">CD calculator</a>
+              <span>Custom principal, APY, term, schedule</span>
+            </li>
+            <li>
+              <a href="/guides/how-cd-interest-works/">How CD interest works</a>
+              <span>APY, compounding, worked example</span>
+            </li>
+            <li>
+              <a href="/guides/cd-vs-savings/">CD vs high-yield savings</a>
+              <span>Liquidity vs lock-up</span>
+            </li>
+          </ul>
+        </div>
+
+        <p class="disclaimer">
+          Sample balances assume a constant APY input and Nestfigure’s educational compound-interest methodology with
+          no monthly add-on deposits. Banks and credit unions may use different day-count conventions. Last reviewed:
+          {updatedLabel}.
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .hero-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tts-host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .faq-page {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .key-takeaways {
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  .takeaways-title {
+    font-size: 15px;
+    margin: 0 0 10px;
+    font-weight: 650;
+  }
+
+  .key-takeaways ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--color-iron);
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  .method-block {
+    margin-bottom: 28px;
+  }
+
+  .method-block h2 {
+    font-size: 18px;
+    margin: 0 0 8px;
+  }
+
+  .method-note {
+    font-size: 13px;
+    color: var(--color-graphite);
+    line-height: 1.5;
+    margin: 0 0 12px;
+  }
+
+  .table-wrap .num,
+  table.data .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .toc {
+    padding: 16px 18px;
+    margin-bottom: 32px;
+  }
+
+  .toc-label {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .toc a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 0;
+  }
+
+  .toc a:hover {
+    color: #1d4ed8;
+  }
+
+  .toc .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-graphite);
+    background: #f0f5fe;
+    border-radius: 9999px;
+    padding: 2px 8px;
+  }
+
+  .faq-section {
+    margin-bottom: 36px;
+    scroll-margin-top: 80px;
+  }
+
+  .faq-section h2 {
+    font-size: 22px;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+  }
+
+  .faq details {
+    scroll-margin-top: 80px;
+  }
+
+  .faq summary h3 {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: inherit;
+    font-family: var(--font-ui);
+  }
+
+  .faq details p {
+    margin: 0;
+    padding: 0 4px 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-iron);
+  }
+
+  .sources {
+    margin: 8px 0 28px;
+  }
+
+  .sources h2 {
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+
+  .sources ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 8px;
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .related {
+    padding: 18px 20px;
+    margin-top: 8px;
+  }
+
+  .related-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .related-links li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .related-links a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .related-links span {
+    font-size: 13px;
+    color: var(--color-graphite);
+  }
+
+  .disclaimer {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--color-graphite);
+    line-height: 1.5;
+  }
+</style>
