@@ -572,10 +572,20 @@ table.data tr:last-child td {
   text-decoration: none;
 }
 
+/* Site-wide YMYL block — always after page content, before footer */
+.ymyl-site-section {
+  padding: 0 0 var(--spacing-32);
+  margin-top: var(--spacing-24);
+}
+
+.ymyl-site-inner {
+  max-width: 760px;
+}
+
 .site-footer {
   border-top: 1px solid var(--color-pale-slate);
   padding: var(--spacing-40) 0;
-  margin-top: var(--spacing-64);
+  margin-top: var(--spacing-24);
 }
 
 .site-footer .inner {

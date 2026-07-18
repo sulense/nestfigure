@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import YmylNotice from '../components/YmylNotice.astro';
 
 interface Props {
   title: string;
@@ -131,6 +132,15 @@ const jsonLdItems = jsonLd
 
     <main>
       <slot />
+      {
+        !embed && (
+          <section class="ymyl-site-section" aria-label="Important disclaimer" data-tts-skip>
+            <div class="container ymyl-site-inner">
+              <YmylNotice />
+            </div>
+          </section>
+        )
+      }
     </main>
 
     {
