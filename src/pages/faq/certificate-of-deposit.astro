@@ -491,7 +491,9 @@ const webPageLd = {
               <div class="faq">
                 {section.items.map((item) => (
                   <details id={item.id} itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <summary itemprop="name">{item.question}</summary>
+                    <summary>
+                      <h3 itemprop="name">{item.question}</h3>
+                    </summary>
                     <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
                       <p itemprop="text">{item.answer}</p>
                     </div>
@@ -712,6 +714,18 @@ const webPageLd = {
 
   .faq details {
     scroll-margin-top: 80px;
+  }
+
+  .faq summary h3 {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: inherit;
+    font-family: var(--font-ui);
   }
 
   .faq details p {
