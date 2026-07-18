@@ -3,10 +3,45 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const title = 'About & Methodology — Nestfigure';
 const description =
-  'How Nestfigure calculators work: compound-interest formulas, APY conversion assumptions, what we omit, and YMYL disclaimers.';
+  'Meet John Rey Balais, the developer behind Nestfigure. How our CD calculator math works, what we omit, and YMYL disclaimers.';
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'John Rey Balais',
+  jobTitle: 'Developer',
+  description:
+    'Developer building Nestfigure—free personal finance calculators and educational guides, starting with certificates of deposit.',
+  image: 'https://nestfigure.com/images/john-rey-balais.webp',
+  url: 'https://nestfigure.com/about/',
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Nestfigure',
+    url: 'https://nestfigure.com/',
+  },
+};
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Nestfigure',
+  url: 'https://nestfigure.com/',
+  description:
+    'Free personal finance calculators and educational guides. Estimates for education only—not bank quotes or financial advice.',
+  founder: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+  },
+  logo: 'https://nestfigure.com/logo-icon.svg',
+};
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/about/">
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath="/about/"
+  jsonLd={[personLd, orgLd]}
+>
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
       <p class="eyebrow">Trust & methodology</p>
@@ -23,6 +58,36 @@ const description =
         site is personalized financial, tax, or investment advice.
       </p>
 
+      <h2>Who builds Nestfigure</h2>
+      <div class="founder card">
+        <picture>
+          <source srcset="/images/john-rey-balais.webp" type="image/webp" />
+          <img
+            class="founder-photo"
+            src="/images/john-rey-balais.jpg"
+            alt="John Rey Balais, developer of Nestfigure"
+            width="160"
+            height="160"
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+        <div class="founder-copy">
+          <p class="founder-name">John Rey Balais</p>
+          <p class="founder-role">Developer · Nestfigure</p>
+          <p>
+            I’m a developer building Nestfigure—free personal finance calculators and educational guides, starting with
+            certificates of deposit. I focus on clear math, transparent assumptions, and tools you can use without
+            signing up.
+          </p>
+          <p>
+            Nestfigure is not a bank, broker, or adviser. Calculator results are educational estimates under documented
+            formulas—not offers, rate quotes, or personalized advice. Report factual errors via the
+            <a href="/contact/">contact form</a>.
+          </p>
+        </div>
+      </div>
+
       <h2>What we build</h2>
       <p>
         Nestfigure focuses on personal finance calculators and related guides (starting with certificates of deposit).
@@ -32,9 +97,10 @@ const description =
 
       <h2>Who authors this content</h2>
       <p>
-        Content is published by <strong>Nestfigure</strong> (organization). We do not invent named “expert” authors or
-        fabricated credentials. Report factual errors via the
-        <a href="/contact/">contact form</a>.
+        Content is published by <strong>Nestfigure</strong> and written or reviewed by
+        <strong>John Rey Balais</strong>. We do not invent guest “expert” personas or fabricated credentials. Guides
+        and FAQs cite public U.S. sources (for example CFPB, FDIC, and NCUA materials) where deposit concepts are
+        discussed.
       </p>
 
       <h2>CD calculator methodology</h2>
@@ -97,10 +163,11 @@ const description =
         <li>Issuer-specific day-count rules</li>
       </ul>
 
-      <h2>Guides</h2>
+      <h2>Guides & FAQ</h2>
       <ul>
         <li><a href="/guides/how-cd-interest-works/">How CD interest works</a> (cites CFPB / Regulation DD)</li>
         <li><a href="/guides/cd-vs-savings/">CD vs high-yield savings</a> (cites CFPB, FDIC, NCUA)</li>
+        <li><a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a></li>
         <li><a href="/guides/">All guides</a></li>
       </ul>
 
@@ -126,8 +193,8 @@ const description =
           >
         </li>
         <li>
-          <a href="https://www.ncua.gov/support-services/share-insurance-fund" rel="noopener noreferrer" target="_blank"
-            >NCUA — Share insurance</a
+          <a href="https://ncua.gov/consumers/share-insurance-coverage" rel="noopener noreferrer" target="_blank"
+            >NCUA — Share insurance coverage</a
           >
         </li>
       </ul>
@@ -150,5 +217,58 @@ const description =
     border: 1px solid var(--color-pale-slate);
     border-radius: 6px;
     padding: 14px 16px;
+  }
+
+  .founder {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 24px;
+    align-items: start;
+    padding: 20px;
+    margin: 16px 0 28px;
+  }
+
+  .founder-photo {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--color-pale-slate);
+    background: #f0f5fe;
+  }
+
+  .founder-copy {
+    min-width: 0;
+  }
+
+  .founder-name {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+
+  .founder-role {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-graphite);
+  }
+
+  .founder-copy p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 640px) {
+    .founder {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .founder-copy p {
+      text-align: left;
+    }
   }
 </style>
