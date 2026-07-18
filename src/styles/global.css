@@ -605,6 +605,43 @@ table.data tr:last-child td {
   font-size: 13px;
 }
 
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--color-pale-slate);
+  border-radius: 9999px;
+  background: #fff;
+  color: var(--color-iron);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.footer-social-link:hover {
+  border-color: #c7d7fe;
+  background: #f8faff;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.footer-social-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
 @media (max-width: 720px) {
   .nav .hide-sm {
     display: none;

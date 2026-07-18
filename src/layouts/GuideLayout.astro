@@ -141,15 +141,11 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
           )
         }
 
-        <AuthorByline variant="card" />
+        <div data-tts-skip>
+          <AuthorByline variant="card" />
+        </div>
 
-        <p class="ymyl-notice">
-          <strong>YMYL notice:</strong> This page is for education only. It is not financial, tax, or investment
-          advice. Nestfigure is not a bank, credit union, broker, or fiduciary. Product terms vary—always read your
-          institution’s disclosures.
-        </p>
-
-        <div class="guide-cta card">
+        <div class="guide-cta card" data-tts-skip>
           <p class="eyebrow" style="margin-bottom:8px;">Related tool</p>
           <h2 class="heading-sm">Estimate CD growth with the free calculator</h2>
           <p style="margin-bottom:16px;">
@@ -158,6 +154,14 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
           </p>
           <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
         </div>
+
+        <!-- Always after educational content (article, FAQ, author, CTA) -->
+        <p class="ymyl-notice">
+          <strong>YMYL notice:</strong> This page is for education only. It is not financial, tax, or investment
+          advice. Nestfigure is not a bank, credit union, broker, or fiduciary. Product terms vary—always read your
+          institution’s disclosures.
+        </p>
+
         <p class="disclaimer">
           Sources linked above include U.S. government materials (CFPB, FDIC, NCUA) where noted. Formulas used for
           illustrations are standard compound-interest identities; banks may use different day-count methods. Last
@@ -182,7 +186,7 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
   }
 
   .ymyl-notice {
-    margin-top: 36px;
+    margin-top: 28px;
     font-size: 13px !important;
     line-height: 1.5 !important;
     color: var(--color-iron) !important;

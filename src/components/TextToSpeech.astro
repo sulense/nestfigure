@@ -452,7 +452,11 @@ const { targetSelector = '[data-tts-content]' } = Astro.props;
 
   function extractText(root: Element): string {
     const clone = root.cloneNode(true) as HTMLElement;
-    clone.querySelectorAll('script, style, noscript, .tts, [data-tts], .guide-cta, .hp').forEach((el) => el.remove());
+    clone
+      .querySelectorAll(
+        'script, style, noscript, .tts, [data-tts], [data-tts-skip], .guide-cta, .hp, .author-byline, [data-cd-calculator], .calc',
+      )
+      .forEach((el) => el.remove());
     const bits: string[] = [];
     clone.querySelectorAll('h1, h2, h3, p, li, figcaption, summary, td, th').forEach((el) => {
       const t = (el.textContent || '').replace(/\s+/g, ' ').trim();

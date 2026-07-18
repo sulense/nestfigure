@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AuthorByline from '../../components/AuthorByline.astro';
+import TextToSpeech from '../../components/TextToSpeech.astro';
 import { calculateCd } from '../../lib/cdMath';
 
 const title = 'CD FAQ: How Much Interest, Rates, Terms & Safety | Nestfigure';
@@ -402,7 +403,10 @@ const webPageLd = {
     </section>
 
     <section class="section" style="padding-top: 0;">
-      <div class="container faq-page">
+      <div class="container tts-host">
+        <TextToSpeech targetSelector="[data-tts-content]" />
+      </div>
+      <div class="container faq-page" data-tts-content>
         <div class="key-takeaways card">
           <h2 class="takeaways-title">Key takeaways</h2>
           <ul>
@@ -427,12 +431,6 @@ const webPageLd = {
             </li>
           </ul>
         </div>
-
-        <p class="ymyl-banner">
-          <strong>YMYL notice:</strong> Nestfigure is not a bank, credit union, broker, investment adviser, or
-          fiduciary. Nothing here is personalized financial advice or a deposit offer. Always read the institution’s
-          Truth in Savings disclosures before opening an account.
-        </p>
 
         <div class="cta-row card">
           <div>
@@ -573,6 +571,12 @@ const webPageLd = {
           </ul>
         </div>
 
+        <p class="ymyl-banner">
+          <strong>YMYL notice:</strong> Nestfigure is not a bank, credit union, broker, investment adviser, or
+          fiduciary. Nothing here is personalized financial advice or a deposit offer. Always read the institution’s
+          Truth in Savings disclosures before opening an account.
+        </p>
+
         <p class="disclaimer">
           Sample balances assume a constant APY input and Nestfigure’s educational compound-interest methodology with
           no monthly add-on deposits. Banks and credit unions may use different day-count conventions. Last reviewed:
@@ -589,6 +593,15 @@ const webPageLd = {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .tts-host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
   }
 
   .faq-page {

@@ -6,6 +6,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CdCalculator from './CdCalculator.astro';
 import AuthorByline from './AuthorByline.astro';
+import TextToSpeech from './TextToSpeech.astro';
 import {
   type CdScenario,
   money,
@@ -158,6 +159,11 @@ const jsonLd = [
     </section>
 
     <section class="section" style="padding-top: 0;">
+      <div class="container tts-host">
+        <TextToSpeech targetSelector="[data-tts-content]" />
+      </div>
+
+      <div data-tts-content>
       <div class="container prose scenario-body">
         <div class="key-takeaways card">
           <h2 class="takeaways-title">Key takeaways</h2>
@@ -184,12 +190,6 @@ const jsonLd = [
             </li>
           </ul>
         </div>
-
-        <p class="ymyl-banner">
-          <strong>YMYL notice:</strong> Nestfigure is not a bank, credit union, broker, investment adviser, or
-          fiduciary. Nothing here is a deposit offer or personalized advice. Always read the institution’s Truth in
-          Savings disclosures before opening an account.
-        </p>
 
         <div class="answer-card card">
           <p class="eyebrow" style="margin-bottom: 8px;">Direct answer</p>
@@ -301,7 +301,7 @@ const jsonLd = [
         </p>
       </div>
 
-      <div class="container" style="margin-top: 8px; margin-bottom: 40px;">
+      <div class="container" style="margin-top: 8px; margin-bottom: 40px;" data-tts-skip>
         <CdCalculator
           principal={s.principal}
           rate={s.defaultApy}
@@ -371,15 +371,31 @@ const jsonLd = [
           </ul>
         </section>
 
+        <p class="ymyl-banner">
+          <strong>YMYL notice:</strong> Nestfigure is not a bank, credit union, broker, investment adviser, or
+          fiduciary. Nothing here is a deposit offer or personalized advice. Always read the institution’s Truth in
+          Savings disclosures before opening an account.
+        </p>
+
         <p class="disclaimer">
           Educational estimates only. Sample APYs are not offers. Last reviewed: {dateLabel}.
         </p>
+      </div>
       </div>
     </section>
   </article>
 </BaseLayout>
 
 <style>
+  .tts-host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
   .hero-inner {
     text-align: center;
     display: flex;
