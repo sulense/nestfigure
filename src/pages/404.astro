@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Page not found — Nestfigure';
+const description =
+  'That page is missing or the link is outdated. Open Nestfigure calculators, guides, FAQ, or methodology instead.';
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={null}
+  ogImage="/images/og-default.webp"
+  noindex={true}
+>
+  <section class="hero not-found-hero">
+    <div class="container not-found-inner">
+      <p class="eyebrow">Error 404</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Page not found</h1>
+      <p class="lead">
+        That URL does not match a Nestfigure page. It may be mistyped, removed, or never published. Try a calculator or
+        guide below.
+      </p>
+      <div class="not-found-actions">
+        <a class="btn btn-primary" href="/">Home</a>
+        <a class="btn btn-secondary" href="/calculators/">All calculators</a>
+        <a class="btn btn-secondary" href="/guides/">Guides</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container not-found-grid">
+      <a class="card not-found-card" href="/cd-calculator/">
+        <span class="pill">Live</span>
+        <h2 class="heading-sm" style="margin-top:12px;">CD Calculator</h2>
+        <p>Estimate certificate of deposit interest and maturity value.</p>
+        <span class="linkish">Open CD calculator →</span>
+      </a>
+      <a class="card not-found-card" href="/raise-calculator/">
+        <span class="pill">Live</span>
+        <h2 class="heading-sm" style="margin-top:12px;">Raise Calculator</h2>
+        <p>Estimate a percent or dollar salary increase by period.</p>
+        <span class="linkish">Open raise calculator →</span>
+      </a>
+      <a class="card not-found-card" href="/faq/">
+        <span class="pill pill-neutral">Help</span>
+        <h2 class="heading-sm" style="margin-top:12px;">FAQ</h2>
+        <p>Answers for CD and raise tools with official source links.</p>
+        <span class="linkish">Browse FAQs →</span>
+      </a>
+      <a class="card not-found-card" href="/methodology/">
+        <span class="pill pill-neutral">Trust</span>
+        <h2 class="heading-sm" style="margin-top:12px;">Methodology</h2>
+        <p>Formulas, assumptions, and intentional omissions for each calculator.</p>
+        <span class="linkish">Read methodology →</span>
+      </a>
+      <a class="card not-found-card" href="/about/">
+        <span class="pill pill-neutral">About</span>
+        <h2 class="heading-sm" style="margin-top:12px;">About Nestfigure</h2>
+        <p>Who builds Nestfigure and how we treat educational estimates.</p>
+        <span class="linkish">About →</span>
+      </a>
+      <a class="card not-found-card" href="/contact/">
+        <span class="pill pill-neutral">Contact</span>
+        <h2 class="heading-sm" style="margin-top:12px;">Contact</h2>
+        <p>Report a broken link, correction, or calculator issue.</p>
+        <span class="linkish">Contact us →</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found-hero {
+    padding-bottom: 24px;
+  }
+
+  .not-found-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .not-found-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .not-found-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    max-width: 960px;
+  }
+
+  .not-found-card {
+    text-decoration: none;
+    color: inherit;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color 0.15s ease;
+  }
+
+  .not-found-card:hover {
+    text-decoration: none;
+    color: inherit;
+    border-color: var(--color-dove-gray);
+  }
+
+  .not-found-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-iron);
+    flex: 1;
+  }
+
+  .linkish {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-cobalt);
+    margin-top: 4px;
+  }
+</style>

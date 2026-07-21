@@ -1,0 +1,241 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import { calculateCd } from '../../lib/cdMath';
+
+const title = 'CD Early Withdrawal Penalties: What CFPB Says | Nestfigure';
+const description =
+  'Educational overview of CD early withdrawal: CFPB guidance that early withdrawal typically incurs a penalty, Truth in Savings disclosure context, FDIC/NCUA insurance notes, and what Nestfigure’s calculator omits.';
+
+function money(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+
+const heldToMaturity = calculateCd({
+  principal: 10000,
+  ratePercent: 4.5,
+  rateIsApy: true,
+  termMonths: 12,
+  compounding: 'daily',
+  monthlyDeposit: 0,
+});
+
+const CFPB_CD =
+  'https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/';
+const REG_DD = 'https://www.consumerfinance.gov/rules-policy/regulations/1030/';
+const ECFR_DD = 'https://www.ecfr.gov/current/title-12/chapter-X/part-1030';
+const FDIC =
+  'https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance';
+const EDIE = 'https://edie.fdic.gov/';
+const NCUA = 'https://ncua.gov/consumers/share-insurance-coverage';
+
+const faqs = [
+  {
+    question: 'What happens if I withdraw a CD early?',
+    answer:
+      'According to the CFPB’s Ask CFPB page “What is a certificate of deposit (CD)?”, withdrawing money early means paying a penalty fee to the bank. Exact fees are product-specific—read your agreement. Source: consumerfinance.gov Ask CFPB CD explainer.',
+  },
+  {
+    question: 'What should I compare when shopping for a CD?',
+    answer:
+      'The CFPB advises comparing the term (how long you leave money in), the interest rate you earn, and the amount of the early-withdrawal penalty. Nestfigure does not list live bank rates.',
+  },
+  {
+    question: 'Does Nestfigure subtract early withdrawal penalties?',
+    answer:
+      'No. Nestfigure’s CD calculator estimates interest under stated rate, term, and compounding assumptions only. It does not model penalties, fees, or promotional rates. See Nestfigure’s CD calculator methodology page.',
+  },
+  {
+    question: 'Are CDs FDIC- or NCUA-insured?',
+    answer:
+      'The CFPB states that CDs offered by banks are insured up to $250,000 by the FDIC, and those offered by credit unions are insured up to $250,000 by the NCUA. Coverage depends on ownership categories—use FDIC EDIE or NCUA materials for your structure.',
+  },
+  {
+    question: 'How should I compare CDs if I might need the money early?',
+    answer:
+      'The CFPB advises comparing term, interest rate, and the early-withdrawal penalty. Nestfigure’s CD vs savings guide covers liquidity tradeoffs with CFPB, FDIC, and NCUA citations.',
+  },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  canonicalPath="/guides/cd-early-withdrawal/"
+  eyebrow="CDs & savings · Educational"
+  headline="CD early withdrawal & penalties"
+  updated="July 22, 2026"
+  datePublished="2026-07-21"
+  dateModified="2026-07-22"
+  readMinutes={12}
+  ogImage="/images/guide-how-cd-interest.webp"
+  faqs={faqs}
+  toolHref="/cd-calculator/"
+  toolTitle="Estimate CD growth (no penalties modeled)"
+  toolBlurb="Nestfigure projects educational compound-interest balances from principal, APY, term, and compounding. It does not subtract early-withdrawal penalties."
+  toolCta="Open CD Calculator"
+>
+  <p>
+    <strong>Direct answer:</strong> According to the Consumer Financial Protection Bureau (CFPB), withdrawing money
+    from a certificate of deposit early means paying a
+    <strong>penalty fee</strong> to the bank. When you shop, the CFPB says to compare the term, the interest rate, and
+    the early-withdrawal penalty. Nestfigure’s free
+    <a href="/cd-calculator/">CD calculator</a> does <strong>not</strong> subtract penalties—it only models educational
+    compound-interest growth from the rate, term, and compounding you enter. Always read the institution’s disclosure.
+  </p>
+
+  <div class="key-takeaways card">
+    <h2 class="takeaways-title">Key takeaways</h2>
+    <ul>
+      <li>
+        <strong>CFPB:</strong> early CD withdrawal means paying a penalty fee to the bank (
+        <a href={CFPB_CD} rel="noopener noreferrer" target="_blank">Ask CFPB CD explainer</a>).
+      </li>
+      <li>
+        <strong>Shop by:</strong> term, interest rate, and the amount of the early-withdrawal penalty (CFPB).
+      </li>
+      <li>
+        <strong>Insurance:</strong> CFPB states bank CDs may be FDIC-insured and credit-union CDs NCUA-insured up to
+        $250,000 under applicable rules—confirm for your accounts.
+      </li>
+      <li>
+        <strong>Nestfigure:</strong> does not model penalties; sample held-to-maturity math only (for example{' '}
+        {money(10000)} at labeled 4.50% APY for 12 months → about {money(heldToMaturity.totalInterest)} interest under
+        Nestfigure assumptions).
+      </li>
+    </ul>
+  </div>
+
+  <nav class="guide-toc card" aria-label="On this page">
+    <p>On this page</p>
+    <ul>
+      <li><a href="#cfpb">What the CFPB says</a></li>
+      <li><a href="#reg-dd">Truth in Savings disclosures</a></li>
+      <li><a href="#insurance">FDIC / NCUA insurance</a></li>
+      <li><a href="#math">What Nestfigure models (and omits)</a></li>
+      <li><a href="#liquidity">Liquidity alternatives</a></li>
+      <li><a href="#sources">Authoritative sources</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="cfpb">What the CFPB says</h2>
+  <p>
+    The CFPB’s Ask CFPB explainer
+    <a href={CFPB_CD} rel="noopener noreferrer" target="_blank">“What is a certificate of deposit (CD)?”</a>
+    (last reviewed Aug 28, 2023 on the CFPB page) describes CDs as savings products with a set length of time. It
+    states that withdrawing money early means paying a penalty fee to the bank.
+  </p>
+  <p>
+    The same page advises: when you shop for a CD, compare different offers by looking at the
+    <strong>term</strong> (the time you agree to leave your money in the CD), the
+    <strong>interest rate</strong> you earn, and the
+    <strong>amount of the penalty</strong> for withdrawing money before the end of the term.
+  </p>
+  <p>
+    The CFPB also notes a practical tip: select your CD maturity date based on your expected needs (for example, if you
+    plan to spend the money in five years, look at five-year CDs). That is consumer education from the CFPB—not a
+    Nestfigure product recommendation.
+  </p>
+
+  <h2 id="reg-dd">Truth in Savings disclosures (Regulation DD)</h2>
+  <p>
+    Under Regulation DD (Truth in Savings, 12 CFR Part 1030), covered institutions provide account disclosures so
+    consumers can make informed decisions. Time accounts (including many CDs) have disclosure requirements that include
+    early withdrawal penalty information. Official materials:
+  </p>
+  <ul>
+    <li>
+      <a href={REG_DD} rel="noopener noreferrer" target="_blank">CFPB — Regulation DD (Truth in Savings)</a>
+    </li>
+    <li>
+      <a href={ECFR_DD} rel="noopener noreferrer" target="_blank">eCFR — 12 CFR Part 1030</a>
+    </li>
+  </ul>
+  <p>
+    Nestfigure is not a bank and does not replace product disclosures. Penalty formulas (for example, a number of
+    months of interest) are set by the institution—not by this website.
+  </p>
+
+  <h2 id="insurance">FDIC and NCUA insurance (separate from penalties)</h2>
+  <p>
+    Insurance and early-withdrawal penalties are different topics. The CFPB states that CDs offered by banks are
+    insured up to $250,000 by the FDIC, and those offered by credit unions are insured up to $250,000 by the NCUA.
+  </p>
+  <p>
+    The
+    <a href={FDIC} rel="noopener noreferrer" target="_blank">FDIC</a>
+    describes standard coverage as $250,000 per depositor, per insured bank, for each account ownership category.
+    Confirm structure with
+    <a href={EDIE} rel="noopener noreferrer" target="_blank">FDIC EDIE</a>
+    or
+    <a href={NCUA} rel="noopener noreferrer" target="_blank">NCUA share insurance materials</a>.
+  </p>
+
+  <h2 id="math">What Nestfigure models (and omits)</h2>
+  <ul>
+    <li>
+      <strong>Models:</strong> principal, APY or nominal rate, term, compounding, optional monthly add-on deposits
+    </li>
+    <li>
+      <strong>Omits:</strong> early withdrawal penalties, fees, tiered or promotional rates, tax withholding, issuer
+      day-count quirks
+    </li>
+  </ul>
+  <p>
+    Educational held-to-maturity illustration only (not a bank quote): principal {money(10000)}, labeled sample{' '}
+    <strong>4.50% APY</strong>, 12 months, daily compounding in Nestfigure’s model → interest about{' '}
+    <strong>{money(heldToMaturity.totalInterest)}</strong>, balance about{' '}
+    <strong>{money(heldToMaturity.finalBalance)}</strong>. Early withdrawal would reduce realized results by the
+    institution’s penalty—which we do not subtract.
+  </p>
+  <p>
+    Full assumptions:
+    <a href="/methodology/cd-calculator/">CD calculator methodology</a>.
+  </p>
+
+  <h2 id="liquidity">Liquidity alternatives (educational)</h2>
+  <p>
+    If you may need cash before maturity, compare locked CD terms with more liquid savings products carefully. The
+    CFPB’s CD page emphasizes matching term to needs and understanding the early-withdrawal penalty. Nestfigure’s
+    <a href="/guides/cd-vs-savings/">CD vs high-yield savings</a> guide summarizes structural differences with
+    CFPB/FDIC/NCUA citations. Neither product is always better for every person.
+  </p>
+
+  <h2 id="sources">Authoritative sources</h2>
+  <ul class="sources">
+    <li>
+      <a href={CFPB_CD} rel="noopener noreferrer" target="_blank"
+        >CFPB — What is a certificate of deposit (CD)?</a
+      >
+    </li>
+    <li>
+      <a href={REG_DD} rel="noopener noreferrer" target="_blank">CFPB — Regulation DD (Truth in Savings)</a>
+    </li>
+    <li>
+      <a href={ECFR_DD} rel="noopener noreferrer" target="_blank">eCFR — 12 CFR Part 1030</a>
+    </li>
+    <li>
+      <a href={FDIC} rel="noopener noreferrer" target="_blank">FDIC — Understanding deposit insurance</a>
+    </li>
+    <li>
+      <a href={EDIE} rel="noopener noreferrer" target="_blank"
+        >FDIC Electronic Deposit Insurance Estimator (EDIE)</a
+      >
+    </li>
+    <li>
+      <a href={NCUA} rel="noopener noreferrer" target="_blank">NCUA — Share insurance coverage</a>
+    </li>
+    <li>
+      Nestfigure —
+      <a href="/methodology/cd-calculator/">CD calculator methodology</a>
+    </li>
+  </ul>
+
+  <h2>Related Nestfigure pages</h2>
+  <ul>
+    <li><a href="/guides/how-cd-interest-works/">How CD interest works</a></li>
+    <li><a href="/guides/cd-vs-savings/">CD vs high-yield savings</a></li>
+    <li><a href="/faq/certificate-of-deposit/">CD FAQ</a></li>
+    <li><a href="/cd-calculator/">CD calculator</a></li>
+    <li><a href="/guides/cd-10000-one-year/">$10,000 CD one-year scenario</a></li>
+  </ul>
+</GuideLayout>

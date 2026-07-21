@@ -1,0 +1,175 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
+
+const title = 'CD Calculator Methodology — Nestfigure';
+const description =
+  'How Nestfigure’s free CD calculator estimates maturity value: compound-interest formulas, APY conversion, compounding options, and intentional omissions.';
+const canonicalPath = '/methodology/cd-calculator/';
+const dateLabel = 'July 22, 2026';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'CD Calculator Methodology',
+  description,
+  dateModified: '2026-07-22',
+  author: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+    url: 'https://nestfigure.com/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Nestfigure',
+    url: 'https://nestfigure.com/',
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage="/images/feature-cd-calculator.webp"
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Methodology · CD</p>
+      <h1 class="display" style="font-size:clamp(32px,4.5vw,48px);">CD calculator methodology</h1>
+      <p class="lead">Transparent formulas and limits for educational CD estimates.</p>
+      <AuthorByline variant="compact" />
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container prose" style="max-width:720px;">
+      <p>
+        Tool: <a href="/cd-calculator/">CD calculator</a> · Embed:
+        <a href="/embed/cd-calculator/">Embeddable CD calculator</a> · Hub:
+        <a href="/methodology/">All methodology</a> · FAQ:
+        <a href="/faq/certificate-of-deposit/">CD FAQ</a>
+      </p>
+
+      <h2>Purpose</h2>
+      <p>
+        The CD calculator estimates certificate of deposit maturity value and interest for
+        <strong>education</strong>. It is not a bank quote, Truth in Savings disclosure, or personalized advice. U.S.
+        deposit products offered by covered institutions must follow Regulation DD (Truth in Savings, 12 CFR Part
+        1030); our tool does not replace those disclosures.
+      </p>
+
+      <h2>Discrete compounding</h2>
+      <p>
+        <code class="code">A = P × (1 + r/n)^(n×t)</code>
+      </p>
+      <ul>
+        <li><strong>P</strong> — principal</li>
+        <li><strong>r</strong> — annual nominal rate (decimal)</li>
+        <li><strong>n</strong> — periods per year (365 daily, 12 monthly, 4 quarterly, 2 semi-annual, 1 annual)</li>
+        <li><strong>t</strong> — years (term months ÷ 12)</li>
+      </ul>
+
+      <h2>Continuous compounding</h2>
+      <p>
+        <code class="code">A = P × e^(r×t)</code>
+      </p>
+      <p>
+        Continuous compounding is the mathematical limit of more frequent discrete compounding. It is included for
+        completeness; many retail CDs use discrete schedules.
+      </p>
+
+      <h2>APY input conversion</h2>
+      <p>
+        When you enter APY, we convert it to a nominal rate consistent with the selected compounding so that, under this
+        model, a one-year horizon matches the entered APY:
+      </p>
+      <ul>
+        <li>Discrete: <code>r = n × ((1 + APY)^(1/n) − 1)</code></li>
+        <li>Continuous: <code>r = ln(1 + APY)</code></li>
+      </ul>
+      <p>
+        Example: at 4.50% APY for one year with no fees, $10,000 grows by $450 to $10,450 under a pure 4.50% effective
+        annual yield—arithmetic under stated assumptions, not a claim about any bank’s current rates.
+      </p>
+
+      <h2>Optional monthly deposits</h2>
+      <p>
+        If you add a monthly deposit, we simulate month-by-month growth then add the deposit. Many traditional CDs do
+        not allow add-on deposits; treat this mode as a planning illustration only.
+      </p>
+
+      <h2>Outputs</h2>
+      <ul>
+        <li>Final balance, interest earned, total deposited, effective APY under the model</li>
+        <li>Growth chart and period schedule</li>
+        <li>Compare common terms table</li>
+        <li>Copy results and browser PDF export</li>
+        <li>Share, embed, and URL prefills</li>
+      </ul>
+
+      <h2>What we intentionally omit</h2>
+      <ul>
+        <li>Early withdrawal penalties</li>
+        <li>Promotional or step-up rates</li>
+        <li>Account fees and minimums</li>
+        <li>Tax withholding or tax advice</li>
+        <li>Issuer-specific day-count rules</li>
+      </ul>
+
+      <h2>Primary external references</h2>
+      <ul>
+        <li>
+          <a
+            href="https://www.consumerfinance.gov/rules-policy/regulations/1030/"
+            rel="noopener noreferrer"
+            target="_blank">CFPB — Regulation DD (Truth in Savings)</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+            rel="noopener noreferrer"
+            target="_blank">CFPB — What is a CD?</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance"
+            rel="noopener noreferrer"
+            target="_blank">FDIC — Deposit insurance</a
+          >
+        </li>
+        <li>
+          <a href="https://ncua.gov/consumers/share-insurance-coverage" rel="noopener noreferrer" target="_blank"
+            >NCUA — Share insurance</a
+          >
+        </li>
+      </ul>
+
+      <h2>Related content</h2>
+      <ul>
+        <li><a href="/guides/how-cd-interest-works/">How CD interest works</a></li>
+        <li><a href="/guides/cd-vs-savings/">CD vs savings</a></li>
+        <li><a href="/guides/cd-early-withdrawal/">Early withdrawal</a></li>
+        <li><a href="/faq/certificate-of-deposit/">CD FAQ</a></li>
+        <li><a href="/guides/">All guides & scenarios</a></li>
+      </ul>
+
+      <AuthorByline variant="card" />
+      <p class="disclaimer">Last reviewed: {dateLabel}.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: #f0f5fe;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+</style>

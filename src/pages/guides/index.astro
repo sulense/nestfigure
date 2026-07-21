@@ -1,38 +1,142 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { CD_SCENARIOS } from '../../lib/cdScenarios';
+import { RAISE_SCENARIOS } from '../../lib/raiseScenarios';
 
 const title = 'Guides — Nestfigure Personal Finance';
 const description =
-  'Educational guides on CDs, APY, and savings with citations to CFPB, FDIC, and NCUA. No signup.';
+  'Educational guides and scenarios organized by calculator: CD interest and salary raises, with CFPB, FDIC, NCUA, BLS, and IRS citations where relevant.';
 
-const guides = [
+type Card = {
+  href: string;
+  title: string;
+  blurb: string;
+  kind: string;
+};
+
+type Category = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  toolHref: string;
+  toolLabel: string;
+  methodHref: string;
+  faqHref: string;
+  guides: Card[];
+  scenarios: Card[];
+  extras: Card[];
+};
+
+const cdGuides: Card[] = [
   {
     href: '/guides/how-cd-interest-works/',
     title: 'How CD interest works',
     blurb:
       'Truth in Savings APY vs interest rate, compounding, compound-interest math, and a transparent $10,000 example.',
-    preview: 'formula',
+    kind: 'Guide',
   },
   {
     href: '/guides/cd-vs-savings/',
     title: 'CD vs high-yield savings',
     blurb: 'Liquidity vs term deposits, FDIC/NCUA insurance basics, and how to run your own numbers.',
-    preview: 'compare',
+    kind: 'Guide',
   },
   {
-    href: '/faq/certificate-of-deposit/',
-    title: 'CD FAQ',
-    blurb:
-      'People-also-ask style answers: how much $10k–$100k can earn, rate myths, term length, downsides, and safety.',
-    preview: 'faq',
+    href: '/guides/cd-early-withdrawal/',
+    title: 'CD early withdrawal & penalties',
+    blurb: 'What the CFPB says about early withdrawal penalties and what Nestfigure’s calculator omits.',
+    kind: 'Guide',
   },
-  ...CD_SCENARIOS.map((s) => ({
-    href: `/guides/${s.slug}/`,
-    title: s.cardTitle,
-    blurb: s.cardBlurb,
-    preview: 'scenario' as const,
-  })),
+];
+
+const raiseGuides: Card[] = [
+  {
+    href: '/guides/how-to-calculate-a-raise/',
+    title: 'How to calculate a raise percentage',
+    blurb: 'Raise formulas, a worked $60,000 / 5% example, and the free raise calculator.',
+    kind: 'Guide',
+  },
+  {
+    href: '/guides/hourly-to-salary-raise/',
+    title: 'Hourly to annual raise math',
+    blurb: 'Convert hourly × hours × weeks, apply a raise percent, and link percent to annual dollars.',
+    kind: 'Guide',
+  },
+  {
+    href: '/guides/raise-vs-bonus/',
+    title: 'Raise vs bonus (math only)',
+    blurb: 'Base-pay raise vs one-time bonus arithmetic—Nestfigure does not choose for you.',
+    kind: 'Guide',
+  },
+];
+
+const categories: Category[] = [
+  {
+    id: 'cd-calculator',
+    eyebrow: 'Certificate of deposit',
+    title: 'CD Calculator',
+    intro:
+      'Compound-interest explainers, worked deposit scenarios, FAQ, and methodology for Nestfigure’s free CD tool.',
+    toolHref: '/cd-calculator/',
+    toolLabel: 'Open CD Calculator',
+    methodHref: '/methodology/cd-calculator/',
+    faqHref: '/faq/certificate-of-deposit/',
+    guides: cdGuides,
+    scenarios: CD_SCENARIOS.map((s) => ({
+      href: `/guides/${s.slug}/`,
+      title: s.cardTitle,
+      blurb: s.cardBlurb,
+      kind: 'Scenario',
+    })),
+    extras: [
+      {
+        href: '/faq/certificate-of-deposit/',
+        title: 'CD FAQ',
+        blurb:
+          'Sample earnings at labeled APYs, term length, early withdrawal, FDIC/NCUA basics, and rate myths.',
+        kind: 'FAQ',
+      },
+      {
+        href: '/methodology/cd-calculator/',
+        title: 'CD methodology',
+        blurb: 'Formulas, APY conversion, compounding options, and intentional omissions.',
+        kind: 'Methodology',
+      },
+    ],
+  },
+  {
+    id: 'raise-calculator',
+    eyebrow: 'Salary increase',
+    title: 'Raise Calculator',
+    intro:
+      'Percent and hourly raise explainers, stated-sample scenarios, FAQ, and methodology for Nestfigure’s free raise tool.',
+    toolHref: '/raise-calculator/',
+    toolLabel: 'Open Raise Calculator',
+    methodHref: '/methodology/raise-calculator/',
+    faqHref: '/faq/raise-calculator/',
+    guides: raiseGuides,
+    scenarios: RAISE_SCENARIOS.map((s) => ({
+      href: `/guides/${s.slug}/`,
+      title: s.cardTitle,
+      blurb: s.cardBlurb,
+      kind: 'Scenario',
+    })),
+    extras: [
+      {
+        href: '/faq/raise-calculator/',
+        title: 'Raise calculator FAQ',
+        blurb: 'Percent math, hourly examples, BLS context, taxes, and product limits.',
+        kind: 'FAQ',
+      },
+      {
+        href: '/methodology/raise-calculator/',
+        title: 'Raise methodology',
+        blurb: 'Raise formulas, period splits, hourly annualization, and optional tax rate limits.',
+        kind: 'Methodology',
+      },
+    ],
+  },
 ];
 ---
 
@@ -45,62 +149,170 @@ const guides = [
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
       <p class="eyebrow">Learn</p>
-      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Guides</h1>
-      <p class="lead">Short explainers that feed our calculators — with real numbers and formulas.</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Guides & scenarios</h1>
+      <p class="lead">
+        Educational content grouped by calculator — transparent math and official source links.
+      </p>
+      <nav class="cat-jump" aria-label="Jump to calculator">
+        {
+          categories.map((c) => (
+            <a class="btn btn-secondary" href={`#${c.id}`}>
+              {c.title}
+            </a>
+          ))
+        }
+        <a class="btn btn-secondary" href="/faq/">FAQ hub</a>
+        <a class="btn btn-secondary" href="/methodology/">Methodology</a>
+      </nav>
     </div>
   </section>
 
-  <section class="section" style="padding-top:0;">
-    <div class="container guide-grid">
-      {
-        guides.map((g) => (
-          <a class="card guide-card" href={g.href}>
-            <div class:list={['preview', g.preview]}>
-              {g.preview === 'formula' ? (
-                <>
-                  <code>A = P(1 + r/n)<sup>n·t</sup></code>
-                  <span>$10,000 @ 4.50% APY → $10,450</span>
-                </>
-              ) : g.preview === 'faq' ? (
-                <>
-                  <span class="chip">$10k · 1 year · sample APY</span>
-                  <span class="chip soft">Rates · terms · safety</span>
-                </>
-              ) : g.preview === 'scenario' ? (
-                <>
-                  <span class="chip">Sample APY table</span>
-                  <span class="chip soft">Prefills calculator</span>
-                </>
-              ) : (
-                <>
-                  <span class="chip">CD · fixed · locked</span>
-                  <span class="chip soft">HYSA · variable · flexible</span>
-                </>
-              )}
-            </div>
-            <div class="guide-card-body">
-              <span class="pill pill-neutral">
-                {g.preview === 'faq' ? 'FAQ' : g.preview === 'scenario' ? 'Scenario' : 'Guide'}
-              </span>
-              <h2 class="heading-sm" style="margin-top:12px;">
-                {g.title}
+  {
+    categories.map((cat) => (
+      <section class="section cat-section" id={cat.id} style="padding-top:0;">
+        <div class="container">
+          <header class="cat-header">
+            <div class="cat-header-copy">
+              <p class="eyebrow">{cat.eyebrow}</p>
+              <h2 class="heading" style="margin-bottom:8px;">
+                {cat.title}
               </h2>
-              <p>{g.blurb}</p>
-              <span class="linkish">Read guide →</span>
+              <p class="cat-intro">{cat.intro}</p>
             </div>
-          </a>
-        ))
-      }
-    </div>
-  </section>
+            <div class="cat-header-actions">
+              <a class="btn btn-primary" href={cat.toolHref}>
+                {cat.toolLabel}
+              </a>
+              <a class="btn btn-secondary" href={cat.methodHref}>
+                Methodology
+              </a>
+              <a class="btn btn-secondary" href={cat.faqHref}>
+                FAQ
+              </a>
+            </div>
+          </header>
+
+          <h3 class="subhead">Guides</h3>
+          <div class="guide-grid">
+            {cat.guides.map((g) => (
+              <a class="card guide-card" href={g.href}>
+                <div class="guide-card-body">
+                  <span class="pill pill-neutral">{g.kind}</span>
+                  <h4 class="heading-sm" style="margin-top:12px;">
+                    {g.title}
+                  </h4>
+                  <p>{g.blurb}</p>
+                  <span class="linkish">Read →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <h3 class="subhead">Scenarios</h3>
+          <div class="guide-grid">
+            {cat.scenarios.map((g) => (
+              <a class="card guide-card" href={g.href}>
+                <div class="guide-card-body">
+                  <span class="pill pill-neutral">{g.kind}</span>
+                  <h4 class="heading-sm" style="margin-top:12px;">
+                    {g.title}
+                  </h4>
+                  <p>{g.blurb}</p>
+                  <span class="linkish">Read →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <h3 class="subhead">FAQ & methodology</h3>
+          <div class="guide-grid">
+            {cat.extras.map((g) => (
+              <a class="card guide-card" href={g.href}>
+                <div class="guide-card-body">
+                  <span class="pill pill-neutral">{g.kind}</span>
+                  <h4 class="heading-sm" style="margin-top:12px;">
+                    {g.title}
+                  </h4>
+                  <p>{g.blurb}</p>
+                  <span class="linkish">Open →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
 </BaseLayout>
 
 <style>
+  .cat-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .cat-jump .btn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  .cat-section {
+    scroll-margin-top: 72px;
+    padding-bottom: 16px;
+  }
+
+  .cat-section + .cat-section {
+    margin-top: 12px;
+    padding-top: 32px !important;
+    border-top: 1px solid var(--color-pale-slate);
+  }
+
+  .cat-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 24px;
+    margin-bottom: 8px;
+    max-width: 1100px;
+  }
+
+  .cat-header-copy {
+    min-width: min(100%, 420px);
+    flex: 1;
+  }
+
+  .cat-intro {
+    margin: 0;
+    max-width: 52ch;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--color-iron);
+  }
+
+  .cat-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .subhead {
+    margin: 28px 0 12px;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
   .guide-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 16px;
-    max-width: 960px;
+    max-width: 1100px;
   }
 
   .guide-card {
@@ -113,51 +325,12 @@ const guides = [
 
   .guide-card:hover {
     text-decoration: none;
+    color: inherit;
     border-color: var(--color-dove-gray);
   }
 
-  .preview {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-    min-height: 110px;
-    padding: 18px 20px;
-    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
-    border-bottom: 1px solid var(--color-pale-slate);
-  }
-
-  .preview code {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    padding: 10px 12px;
-    background: #fff;
-    border: 1px solid var(--color-pale-slate);
-    border-radius: 6px;
-    color: var(--color-ink);
-  }
-
-  .preview > span:not(.chip) {
-    font-size: 12px;
-    color: var(--color-graphite);
-    font-family: var(--font-mono);
-  }
-
-  .chip {
-    font-size: 13px;
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid #c9daf8;
-    background: #fff;
-    color: var(--color-iron);
-  }
-
-  .chip.soft {
-    border-color: #c6ebd5;
-  }
-
   .guide-card-body {
-    padding: 16px 20px 20px;
+    padding: 18px 20px 20px;
   }
 
   .guide-card p {
@@ -176,6 +349,16 @@ const guides = [
   @media (max-width: 640px) {
     .guide-grid {
       grid-template-columns: 1fr;
+    }
+
+    .cat-header-actions {
+      width: 100%;
+    }
+
+    .cat-header-actions .btn {
+      flex: 1;
+      text-align: center;
+      justify-content: center;
     }
   }
 </style>

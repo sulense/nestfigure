@@ -1,0 +1,306 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
+import TextToSpeech from '../../components/TextToSpeech.astro';
+import { calculateRaise, annualFromHourly } from '../../lib/raiseMath';
+
+const title = 'Raise Calculator FAQ: Percent, Hourly & Salary Increase | Nestfigure';
+const description =
+  'Raise calculator FAQ with transparent sample math: percent formulas, hourly examples, BLS ECI context, and taxes. Educational only—not career advice.';
+const canonicalPath = '/faq/raise-calculator/';
+const dateModified = '2026-07-22';
+const updatedLabel = 'July 22, 2026';
+const pageUrl = 'https://nestfigure.com/faq/raise-calculator/';
+
+function money(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+function moneyHr(n: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
+const sample = calculateRaise({
+  inputMode: 'annual',
+  annualSalary: 60000,
+  hourlyRate: 0,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 5,
+  optionalTaxRatePercent: 0,
+});
+const h20 = calculateRaise({
+  inputMode: 'hourly',
+  annualSalary: 0,
+  hourlyRate: 20,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 5,
+  optionalTaxRatePercent: 0,
+});
+const annual20 = annualFromHourly(20, 40, 52);
+
+const BLS_ECI = {
+  home: 'https://www.bls.gov/eci/',
+  release: 'https://www.bls.gov/news.release/eci.nr0.htm',
+  periodLabel: '12-month period ending in March 2026',
+  civilianWagesSalariesYoY: '3.4',
+  releaseDateLabel: 'April 30, 2026',
+  usdl: 'USDL-26-0669',
+} as const;
+const IRS_15T = 'https://www.irs.gov/publications/p15t';
+
+/** answer = plain text for JSON-LD; answerHtml = on-page with real internal links (no naked URLs). */
+type Faq = { question: string; answer: string; answerHtml?: string; id: string };
+type Section = { id: string; title: string; items: Faq[] };
+
+const sections: Section[] = [
+  {
+    id: 'math',
+    title: 'Raise math & formulas',
+    items: [
+      {
+        id: 'how-works',
+        question: 'How does Nestfigure’s raise calculator work?',
+        answer:
+          'It applies raise amount = current × (raise % ÷ 100) and new pay = current + raise amount, then shows annual, monthly (÷12), biweekly (÷26), and weekly (÷52) views, a before/after chart, a percent comparison table, copy results, and PDF export. Educational estimates only—not payroll. See Nestfigure’s raise calculator methodology for full assumptions.',
+        answerHtml: `It applies raise amount = current × (raise % ÷ 100) and new pay = current + raise amount, then shows annual, monthly (÷12), biweekly (÷26), and weekly (÷52) views, a before/after chart, a percent comparison table, copy results, and PDF export. Educational estimates only—not payroll. See the <a href="/methodology/raise-calculator/">raise calculator methodology</a> for full assumptions.`,
+      },
+      {
+        id: '5pct-60k',
+        question: 'How much is a 5% raise on $60,000?',
+        answer: `Stated sample only: 5% of ${money(60000)} is ${money(sample.raiseAmountAnnual)}; new annual ${money(sample.newAnnual)} (about ${money(sample.newMonthly)}/month before taxes). See Nestfigure’s scenario guide “How much is a 5% raise on $60,000?” for a full table.`,
+        answerHtml: `Stated sample only: 5% of ${money(60000)} is ${money(sample.raiseAmountAnnual)}; new annual ${money(sample.newAnnual)} (about ${money(sample.newMonthly)}/month before taxes). See the scenario guide <a href="/guides/raise-60000-5-percent/">How much is a 5% raise on $60,000?</a> for a full table.`,
+      },
+      {
+        id: '20hr-5',
+        question: 'What is a 5% raise on $20 an hour?',
+        answer: `Stated assumptions $20/hour, 40×52 (≈ ${money(annual20)} annualized): 5% → new hourly about ${moneyHr(h20.newHourly)}, raise about ${money(h20.raiseAmountAnnual)}/year. See Nestfigure’s scenario guide “What is a 5% raise on $20 an hour?”`,
+        answerHtml: `Stated assumptions $20/hour, 40×52 (≈ ${money(annual20)} annualized): 5% → new hourly about ${moneyHr(h20.newHourly)}, raise about ${money(h20.raiseAmountAnnual)}/year. See the scenario guide <a href="/guides/raise-20-hour-5-percent/">What is a 5% raise on $20 an hour?</a>`,
+      },
+      {
+        id: 'percent-from-dollar',
+        question: 'What percent is a $1.50 hourly raise?',
+        answer:
+          'Percent = (dollar raise ÷ current hourly) × 100. On $20/hour, $1.50 is 7.5%. On $30/hour, $1.50 is 5%. Enter your rate in the free raise calculator.',
+        answerHtml:
+          'Percent = (dollar raise ÷ current hourly) × 100. On $20/hour, $1.50 is 7.5%. On $30/hour, $1.50 is 5%. Enter your rate in the <a href="/raise-calculator/">raise calculator</a>.',
+      },
+      {
+        id: 'prefill',
+        question: 'Can I prefill the raise calculator from a link?',
+        answer:
+          'Yes. Parameters: mode (annual|hourly), annual or current, hourly, hoursPerWeek, weeksPerYear, raisePercent, raiseAmount, taxRate. Example: open the raise calculator with mode=annual, annual=60000, and raisePercent=5.',
+        answerHtml:
+          'Yes. Parameters: mode (annual|hourly), annual or current, hourly, hoursPerWeek, weeksPerYear, raisePercent, raiseAmount, taxRate. Example: <a href="/raise-calculator/?mode=annual&amp;annual=60000&amp;raisePercent=5">open the raise calculator with $60,000 and 5%</a>.',
+      },
+    ],
+  },
+  {
+    id: 'context',
+    title: 'National trends & “good” raises',
+    items: [
+      {
+        id: 'good-raise',
+        question: 'Is a 3% raise good?',
+        answer: `Nestfigure does not label raises good or bad. Math: new pay = current × 1.03. For national wage-and-salary trends (not your raise), BLS ECI reported civilian wages and salaries up ${BLS_ECI.civilianWagesSalariesYoY}% for the ${BLS_ECI.periodLabel} (not seasonally adjusted), ${BLS_ECI.usdl} (${BLS_ECI.releaseDateLabel}). See the BLS Employment Cost Index pages and re-check live data.`,
+        answerHtml: `Nestfigure does not label raises good or bad. Math: new pay = current × 1.03. For national wage-and-salary trends (not your raise), BLS ECI reported civilian wages and salaries up ${BLS_ECI.civilianWagesSalariesYoY}% for the ${BLS_ECI.periodLabel} (not seasonally adjusted), ${BLS_ECI.usdl} (${BLS_ECI.releaseDateLabel}). See the <a href="${BLS_ECI.home}" rel="noopener noreferrer" target="_blank">BLS Employment Cost Index</a> and re-check live data.`,
+      },
+      {
+        id: 'average',
+        question: 'What is the average employer raise?',
+        answer:
+          'Nestfigure does not maintain an employer average. Use BLS Employment Cost Index publications for aggregate U.S. wage-and-salary movements—not a promise of your next raise.',
+        answerHtml:
+          'Nestfigure does not maintain an employer average. Use <a href="https://www.bls.gov/eci/" rel="noopener noreferrer" target="_blank">BLS Employment Cost Index</a> publications for aggregate U.S. wage-and-salary movements—not a promise of your next raise.',
+      },
+      {
+        id: 'legal-annual',
+        question: 'Am I legally supposed to get a raise every year?',
+        answer:
+          'Nestfigure is not a law firm and does not give legal advice. Many U.S. private-sector roles have no universal legal right to an annual raise; contracts, unions, and local law can differ. Consult a qualified attorney or official labor resources.',
+      },
+    ],
+  },
+  {
+    id: 'taxes',
+    title: 'Taxes & take-home',
+    items: [
+      {
+        id: 'taxes',
+        question: 'Does the raise calculator show take-home after taxes?',
+        answer:
+          'Only if you optionally type an effective tax rate percentage. Nestfigure does not look up IRS brackets or state taxes. Official federal income tax withholding methods for employers are in IRS Publication 15-T.',
+        answerHtml: `Only if you optionally type an effective tax rate percentage. Nestfigure does not look up IRS brackets or state taxes. Official federal income tax withholding methods for employers are in <a href="${IRS_15T}" rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a>.`,
+      },
+      {
+        id: 'bonus',
+        question: 'Should I take a bonus or a raise?',
+        answer:
+          'Nestfigure does not choose for you. A raise changes base pay; a bonus is often one-time. See Nestfigure’s raise vs bonus guide for the math difference only.',
+        answerHtml:
+          'Nestfigure does not choose for you. A raise changes base pay; a bonus is often one-time. See the guide <a href="/guides/raise-vs-bonus/">Raise vs bonus (math only)</a>.',
+      },
+    ],
+  },
+  {
+    id: 'product',
+    title: 'Product & limits',
+    items: [
+      {
+        id: 'free',
+        question: 'Is the raise calculator free?',
+        answer: 'Yes—free, no signup. Educational math only; not tax, legal, or career advice.',
+      },
+      {
+        id: 'cd',
+        question: 'Can I model saving my raise in a CD?',
+        answer:
+          'Yes. Estimate raise dollars in the raise calculator, then open the CD calculator with a principal you choose—educational compound-interest math, not a bank quote.',
+        answerHtml:
+          'Yes. Estimate raise dollars in the <a href="/raise-calculator/">raise calculator</a>, then open the <a href="/cd-calculator/">CD calculator</a> with a principal you choose—educational compound-interest math, not a bank quote.',
+      },
+      {
+        id: 'negotiate',
+        question: 'What should I say when asking for a raise?',
+        answer:
+          'Nestfigure does not coach negotiation scripts. For pay math only, use the raise calculator. Career communication is outside our scope.',
+        answerHtml:
+          'Nestfigure does not coach negotiation scripts. For pay math only, use the <a href="/raise-calculator/">raise calculator</a>. Career communication is outside our scope.',
+      },
+    ],
+  },
+];
+
+const allFaqs = sections.flatMap((s) => s.items);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: allFaqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    url: pageUrl,
+    dateModified,
+    description,
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage="/images/og-raise-calculator.webp"
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">FAQ · Raise calculator</p>
+      <h1 class="display" style="font-size:clamp(32px,4.5vw,48px); max-width: 18ch;">Raise calculator FAQ</h1>
+      <p class="lead">Sample math, formulas, and official context links. Not career or tax advice.</p>
+      <AuthorByline variant="compact" />
+      <TextToSpeech />
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container prose" style="max-width:720px;">
+      <p>
+        Use the free <a href="/raise-calculator/">raise calculator</a> for live numbers.
+        <a href="/faq/">All FAQs</a> ·
+        <a href="/methodology/raise-calculator/">Methodology</a> ·
+        <a href="/guides/how-to-calculate-a-raise/">How-to guide</a>.
+      </p>
+
+      <nav class="toc card" aria-label="FAQ sections">
+        <p class="toc-title">On this page</p>
+        <ul>
+          {
+            sections.map((s) => (
+              <li>
+                <a href={`#${s.id}`}>{s.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {
+        sections.map((section) => (
+          <div id={section.id} class="faq-section">
+            <h2>{section.title}</h2>
+            <div class="faq">
+              {section.items.map((f, i) => (
+                <details open={i === 0 && section.id === 'math'} id={f.id}>
+                  <summary>
+                    <h3>{f.question}</h3>
+                  </summary>
+                  {f.answerHtml ? <p set:html={f.answerHtml} /> : <p>{f.answer}</p>}
+                </details>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+
+      <h2>Scenario pages</h2>
+      <ul>
+        <li><a href="/guides/raise-60000-5-percent/">5% on $60,000</a></li>
+        <li><a href="/guides/raise-20-hour-5-percent/">5% on $20/hour</a></li>
+        <li><a href="/guides/raise-70000-3-percent/">3% on $70,000</a></li>
+        <li><a href="/guides/raise-50000-10-percent/">10% on $50,000</a></li>
+      </ul>
+
+      <AuthorByline variant="card" />
+      <p class="disclaimer">
+        <strong>Disclaimer:</strong> Educational only. Updated {updatedLabel}. Nestfigure is not your employer or a tax
+        adviser.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .toc {
+    padding: 16px 18px;
+    margin: 20px 0 28px;
+  }
+
+  .toc-title {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  .toc ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .faq summary h3 {
+    display: inline;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-ui);
+  }
+
+  .faq-section {
+    margin-bottom: 28px;
+  }
+</style>

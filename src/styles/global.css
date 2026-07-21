@@ -122,6 +122,7 @@ a:hover {
 
 /* Nav/logo/buttons keep cleaner chrome without always-on underline */
 .nav a,
+.nav button.nav-link,
 .logo,
 .btn,
 .footer-links a,
@@ -130,8 +131,7 @@ a:hover {
   text-decoration: none;
 }
 
-.footer-links a:hover,
-.nav a:hover {
+.footer-links a:hover {
   text-decoration: underline;
 }
 
@@ -555,20 +555,142 @@ table.data tr:last-child td {
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 2px;
 }
 
-.nav a {
+.nav-link,
+.nav a.nav-link,
+.nav button.nav-link {
   color: var(--color-ink);
   font-size: 14px;
   font-weight: 450;
   padding: 8px 12px;
   border-radius: var(--radius-md);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: inherit;
 }
 
-.nav a:hover {
+.nav-link:hover,
+.nav a.nav-link:hover,
+.nav button.nav-link:hover {
   background: var(--color-lavender-mist);
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-parent {
+  cursor: pointer;
+}
+
+.nav-caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--color-graphite);
+  margin-left: 2px;
+  transition: transform 0.15s ease;
+}
+
+.nav-item.is-open .nav-caret,
+.nav-item:hover .nav-caret,
+.nav-item:focus-within .nav-caret {
+  transform: rotate(180deg);
+}
+
+/* Flush to trigger (no hover gap). Top padding is an invisible bridge so the
+   pointer can move from the label into the menu without the menu closing. */
+.nav-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  padding: 8px 0 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 60;
+}
+
+.nav-menu::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border: 1px solid var(--color-pale-slate);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(26, 31, 36, 0.1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.nav-item:hover .nav-menu,
+.nav-item:focus-within .nav-menu,
+.nav-item.is-open .nav-menu {
+  display: flex;
+}
+
+.nav-menu-link {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin: 0 6px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.nav-menu-link:first-child {
+  margin-top: 6px;
+}
+
+.nav-menu-link:last-child {
+  margin-bottom: 6px;
+}
+
+.nav-menu-link:hover {
+  background: var(--color-lavender-mist);
+  text-decoration: none;
+}
+
+.nav-cta {
+  margin-left: 4px;
+}
+
+.nav a.btn-primary.nav-cta {
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav a.btn-primary.nav-cta:hover {
+  color: #fff;
   text-decoration: none;
 }
 
@@ -652,9 +774,163 @@ table.data tr:last-child td {
   display: block;
 }
 
+/* Calculator hub / home tool cards */
+.tools-live-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 880px;
+  margin: 32px auto 0;
+}
+
+.tool-card {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0;
+  max-width: 880px;
+  margin: 0;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  padding: 0;
+  transition: transform 0.15s ease;
+}
+
+.tool-card:hover {
+  text-decoration: none;
+  color: inherit;
+  transform: translateY(-2px);
+}
+
+.tool-card:hover .heading-sm,
+.tool-card:hover p,
+.tool-card:hover .muted,
+.tool-card:hover .data-card-label,
+.tool-card:hover .data-card-line {
+  color: inherit;
+}
+
+.tool-media {
+  background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  min-height: 200px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--color-pale-slate);
+}
+
+.data-card-label {
+  margin: 0 0 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+}
+
+.data-card-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--color-iron);
+}
+
+.data-card-line span {
+  color: var(--color-iron);
+}
+
+.data-card-line strong {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.data-card-line.total {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-pale-slate);
+}
+
+.data-card-line.total strong {
+  font-size: 18px;
+  color: var(--color-cobalt);
+}
+
+.tool-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tool-card p {
+  color: var(--color-iron);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.tool-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tool-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-cobalt);
+}
+
+.hub-links {
+  margin-top: 28px;
+  padding: 20px 22px;
+  max-width: 880px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 800px) {
+  .tool-card {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-media {
+    border-right: 0;
+    border-bottom: 1px solid var(--color-pale-slate);
+  }
+}
+
 @media (max-width: 720px) {
-  .nav .hide-sm {
-    display: none;
+  .site-header .inner {
+    min-height: 52px;
+    gap: 8px;
+  }
+
+  .nav {
+    gap: 0;
+  }
+
+  .nav-link,
+  .nav a.nav-link {
+    font-size: 13px;
+    padding: 7px 8px;
+  }
+
+  .nav-menu {
+    right: 0;
+    left: auto;
+    min-width: 180px;
+  }
+
+  .nav-cta {
+    padding: 7px 12px !important;
+    font-size: 13px;
   }
 
   .hero {

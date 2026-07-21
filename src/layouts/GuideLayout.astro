@@ -17,6 +17,13 @@ interface Props {
   ogImage?: string;
   /** FAQ items for FAQPage JSON-LD (must be factual) */
   faqs?: { question: string; answer: string }[];
+  /** Bottom CTA (defaults to CD calculator) */
+  toolHref?: string;
+  toolTitle?: string;
+  toolBlurb?: string;
+  toolCta?: string;
+  /** Approximate reading time label */
+  readMinutes?: number;
 }
 
 const {
@@ -25,13 +32,19 @@ const {
   canonicalPath,
   eyebrow = 'Guide',
   headline,
-  updated = 'July 17, 2026',
+  updated = 'July 22, 2026',
   datePublished = '2026-07-17',
-  dateModified = '2026-07-17',
+  dateModified = '2026-07-22',
   heroImage,
   heroImageAlt = '',
   ogImage = heroImage ?? '/images/og-default.webp',
   faqs = [],
+  toolHref = '/cd-calculator/',
+  toolTitle = 'Estimate CD growth with the free calculator',
+  toolBlurb =
+    'Enter principal, APY or interest rate, term, and compounding. Results are mathematical estimates, not bank quotes.',
+  toolCta = 'Open CD Calculator',
+  readMinutes = 12,
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://nestfigure.com');
@@ -99,7 +112,7 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
           {headline}
         </h1>
         <p class="muted" style="font-size:13px;margin-top:8px;">
-          Educational guide · Updated <time datetime={dateModified}>{updated}</time> · About 8 min read
+          Educational guide · Updated <time datetime={dateModified}>{updated}</time> · About {readMinutes} min read
         </p>
         <AuthorByline variant="compact" />
         {
@@ -147,17 +160,14 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
 
         <div class="guide-cta card" data-tts-skip>
           <p class="eyebrow" style="margin-bottom:8px;">Related tool</p>
-          <h2 class="heading-sm">Estimate CD growth with the free calculator</h2>
-          <p style="margin-bottom:16px;">
-            Enter principal, APY or interest rate, term, and compounding. Results are mathematical estimates, not bank
-            quotes.
-          </p>
-          <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
+          <h2 class="heading-sm">{toolTitle}</h2>
+          <p style="margin-bottom:16px;">{toolBlurb}</p>
+          <a class="btn btn-primary" href={toolHref}>{toolCta}</a>
         </div>
 
         <p class="disclaimer">
-          Sources linked above include U.S. government materials (CFPB, FDIC, NCUA) where noted. Formulas used for
-          illustrations are standard compound-interest identities; banks may use different day-count methods. Last
+          Sources linked above include U.S. government materials (for example CFPB, FDIC, NCUA, BLS, IRS) where noted.
+          Sample math uses only labeled Nestfigure assumptions—not bank quotes, job offers, or personalized advice. Last
           reviewed: {updated}.
         </p>
       </div>
@@ -217,5 +227,50 @@ const jsonLd = faqLd ? [articleLd, faqLd] : articleLd;
 
   :global(.sources li) {
     margin-bottom: 8px;
+  }
+
+  :global(.key-takeaways) {
+    padding: 18px 20px;
+    margin: 0 0 28px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  :global(.key-takeaways h2),
+  :global(.takeaways-title) {
+    font-size: 15px;
+    margin: 0 0 10px;
+    font-weight: 650;
+  }
+
+  :global(.key-takeaways ul) {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--color-iron);
+  }
+
+  :global(.guide-toc) {
+    padding: 16px 18px;
+    margin: 0 0 28px;
+  }
+
+  :global(.guide-toc p) {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-graphite);
+  }
+
+  :global(.guide-toc ul) {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 6px;
+    font-size: 14px;
   }
 </style>

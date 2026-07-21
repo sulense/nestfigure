@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Methodology Hub — Nestfigure Calculators';
+const description =
+  'How Nestfigure personal finance calculators work: transparent formulas, assumptions, and intentional omissions for the CD and raise tools.';
+
+const tools = [
+  {
+    href: '/methodology/cd-calculator/',
+    title: 'CD calculator methodology',
+    blurb:
+      'Compound-interest formulas, APY conversion, compounding choices, optional monthly deposits, and what we omit (penalties, fees, taxes).',
+    toolHref: '/cd-calculator/',
+    tool: 'CD Calculator',
+  },
+  {
+    href: '/methodology/raise-calculator/',
+    title: 'Raise calculator methodology',
+    blurb:
+      'Percent and dollar raise arithmetic, period splits, hourly annualization, optional user tax rate, and limits.',
+    toolHref: '/raise-calculator/',
+    tool: 'Raise Calculator',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/methodology/" ogImage="/images/og-default.webp">
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Transparency</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Methodology</h1>
+      <p class="lead">
+        Exact assumptions for every Nestfigure calculator. Estimates for education—not bank quotes or advice.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container method-grid">
+      {
+        tools.map((t) => (
+          <a class="card method-card" href={t.href}>
+            <span class="pill">Methodology</span>
+            <h2 class="heading-sm" style="margin-top:12px;">
+              {t.title}
+            </h2>
+            <p>{t.blurb}</p>
+            <span class="linkish">Read methodology →</span>
+            <span class="tool-line">
+              Open tool: <span class="tool-name">{t.tool}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+    <div class="container prose" style="max-width:720px;margin-top:32px;">
+      <h2>Who builds this</h2>
+      <p>
+        Content and tools are published by <strong>Nestfigure</strong> and maintained by
+        <strong>John Rey Balais</strong>. Full bio:
+        <a href="/about/">About Nestfigure</a>.
+      </p>
+      <h2>YMYL stance</h2>
+      <p>
+        Nestfigure is not a bank, broker, employer, or adviser. Calculator results are educational estimates under
+        documented formulas. Deposit topics cite CFPB, FDIC, and NCUA materials where relevant; wage context cites BLS;
+        withholding context cites IRS Publication 15-T. We do not invent rates, averages, or credentials.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 900px;
+  }
+
+  .method-card {
+    text-decoration: none;
+    color: inherit;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .method-card:hover {
+    text-decoration: none;
+    border-color: var(--color-dove-gray);
+  }
+
+  .method-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-iron);
+    flex: 1;
+  }
+
+  .linkish {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-cobalt);
+  }
+
+  .tool-line {
+    font-size: 12px;
+    color: var(--color-graphite);
+  }
+
+  .tool-name {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+</style>

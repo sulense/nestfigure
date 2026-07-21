@@ -6,13 +6,13 @@ import FigureCdFlow from '../../components/figures/FigureCdFlow.astro';
 
 const title = 'How CD Interest Works: APY, Compounding & Formulas | Nestfigure';
 const description =
-  'How certificate of deposit interest is calculated under U.S. Truth in Savings rules: APY vs interest rate, compounding, and a transparent worked example.';
+  'How certificate of deposit interest is calculated under U.S. Truth in Savings rules: APY vs interest rate, compounding, Regulation DD definitions, and a transparent $10,000 worked example.';
 
 const faqs = [
   {
     question: 'What is a certificate of deposit (CD)?',
     answer:
-      'According to the Consumer Financial Protection Bureau (CFPB), a certificate of deposit is a type of savings account offered by banks and credit unions. You generally agree to keep money in the CD for a set length of time; withdrawing early typically means paying a penalty fee to the institution.',
+      'According to the Consumer Financial Protection Bureau (CFPB), a certificate of deposit is a type of savings account offered by banks and credit unions. You generally agree to keep money in the CD for a set length of time; withdrawing early means paying a penalty fee to the bank. Source: CFPB Ask CFPB “What is a certificate of deposit (CD)?”',
   },
   {
     question: 'What does APY mean on a CD?',
@@ -27,12 +27,22 @@ const faqs = [
   {
     question: 'How does Nestfigure calculate a sample CD balance?',
     answer:
-      'Nestfigure uses standard compound-interest math for education. For an APY input over a full year at a constant effective annual yield of 4.50%, principal grows by 4.50% (for example, $10,000 becomes $10,450). Real bank results can differ because of day-count conventions, fees, penalties, and product rules. See the methodology page for full assumptions.',
+      'Nestfigure uses standard compound-interest math for education. For an APY input over a full year at a constant effective annual yield of 4.50%, principal grows by 4.50% (for example, $10,000 becomes $10,450). Real bank results can differ because of day-count conventions, fees, penalties, and product rules. See Nestfigure’s CD calculator methodology for full assumptions.',
   },
   {
     question: 'Are early withdrawals from CDs penalized?',
     answer:
-      'Often yes. The CFPB states that withdrawing money from a CD early means paying a penalty fee to the bank. Regulation DD requires time-account disclosures to describe early withdrawal penalties. Exact amounts depend on the product agreement—not on this website.',
+      'According to the CFPB, withdrawing money from a CD early means paying a penalty fee to the bank. Exact amounts depend on the product agreement—not on this website. See Nestfigure’s CD early withdrawal guide for CFPB context.',
+  },
+  {
+    question: 'Are CDs FDIC- or NCUA-insured?',
+    answer:
+      'The CFPB states that CDs offered by banks are insured up to $250,000 by the FDIC, and those offered by credit unions are insured up to $250,000 by the NCUA. Confirm ownership categories with FDIC EDIE or NCUA materials.',
+  },
+  {
+    question: 'What should I compare when shopping for a CD?',
+    answer:
+      'The CFPB advises comparing the term, the interest rate you earn, and the amount of the early-withdrawal penalty when shopping for a CD.',
   },
 ];
 ---
@@ -43,24 +53,65 @@ const faqs = [
   canonicalPath="/guides/how-cd-interest-works/"
   eyebrow="CDs & savings · Educational"
   headline="How CD interest works"
-  updated="July 17, 2026"
+  updated="July 22, 2026"
   datePublished="2026-07-17"
-  dateModified="2026-07-17"
-  ogImage="/images/og-default.webp"
+  dateModified="2026-07-22"
+  readMinutes={14}
+  ogImage="/images/guide-how-cd-interest.webp"
   faqs={faqs}
 >
   <p>
     <strong>Direct answer:</strong> A certificate of deposit (CD) pays interest when you agree to leave funds on
-    deposit for a stated term. In the United States, banks and credit unions must disclose rates under the Truth in
+    deposit for a stated term. In the United States, banks and credit unions disclose deposit rates under the Truth in
     Savings Act (Regulation DD). The figure used for comparison shopping is usually the
     <strong>annual percentage yield (APY)</strong>, which already reflects compounding. Nestfigure’s free
     <a href="/cd-calculator/">CD calculator</a> applies standard compound-interest formulas for education—it is not a
     bank quote.
   </p>
 
+  <div class="key-takeaways card">
+    <h2 class="takeaways-title">Key takeaways</h2>
+    <ul>
+      <li>
+        <strong>CFPB:</strong> a CD is a savings product with a set term; early withdrawal means a penalty fee (
+        <a
+          href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+          rel="noopener noreferrer"
+          target="_blank">Ask CFPB CD explainer</a
+        >).
+      </li>
+      <li>
+        <strong>APY vs interest rate:</strong> APY reflects compounding; the interest rate does not (Regulation DD / 12
+        CFR Part 1030).
+      </li>
+      <li>
+        <strong>Sample math only:</strong> $10,000 at a labeled 4.50% effective annual yield for one year → $450 interest
+        / $10,450 balance under Nestfigure assumptions—not a live bank offer.
+      </li>
+      <li>
+        <strong>Insurance:</strong> CFPB states bank CDs may be FDIC-insured and credit-union CDs NCUA-insured up to
+        $250,000 under applicable rules.
+      </li>
+    </ul>
+  </div>
+
+  <nav class="guide-toc card" aria-label="On this page">
+    <p>On this page</p>
+    <ul>
+      <li><a href="#what-is-cd">What is a CD?</a></li>
+      <li><a href="#apy">APY under Regulation DD</a></li>
+      <li><a href="#rate-vs-apy">Interest rate vs APY</a></li>
+      <li><a href="#compounding">Compounding frequency</a></li>
+      <li><a href="#formula">Compound-interest formula</a></li>
+      <li><a href="#example">Worked example</a></li>
+      <li><a href="#frictions">Early withdrawal & frictions</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </nav>
+
   <FigureCdFlow />
 
-  <h2>What is a certificate of deposit?</h2>
+  <h2 id="what-is-cd">What is a certificate of deposit?</h2>
   <p>
     The
     <a
@@ -73,7 +124,7 @@ const faqs = [
     term length, interest rate, and the early-withdrawal penalty when shopping.
   </p>
 
-  <h2>APY under Truth in Savings (Regulation DD)</h2>
+  <h2 id="apy">APY under Truth in Savings (Regulation DD)</h2>
   <p>
     <strong>Annual percentage yield</strong> is defined in federal Truth in Savings rules (12 CFR Part 1030,
     Regulation DD). Per the regulation’s definitions and
@@ -93,7 +144,7 @@ const faqs = [
     >).
   </p>
 
-  <h2>Interest rate vs APY</h2>
+  <h2 id="rate-vs-apy">Interest rate vs APY</h2>
   <p>
     Regulation DD defines the <strong>interest rate</strong> as the annual rate of interest paid on an account that
     <em>does not</em> reflect compounding. For account disclosures, that rate may also be called the “annual percentage
@@ -111,7 +162,7 @@ const faqs = [
     APY but must not be more conspicuous than the APY. That is why shopping by APY is the usual consumer approach.
   </p>
 
-  <h2>Compounding frequency</h2>
+  <h2 id="compounding">Compounding frequency</h2>
   <p>
     Compounding means earned interest is added to principal so later interest can be calculated on a larger balance.
     Institutions disclose how often they compound (for example daily or monthly). More frequent compounding increases
@@ -124,7 +175,7 @@ const faqs = [
     retail CDs use discrete schedules instead.
   </p>
 
-  <h2>Compound-interest formula (educational model)</h2>
+  <h2 id="formula">Compound-interest formula (educational model)</h2>
   <p>
     For discrete compounding at a constant nominal annual rate <em>r</em>, with <em>n</em> compounding periods per year
     and time <em>t</em> in years, the future value of a single deposit is:
@@ -135,10 +186,10 @@ const faqs = [
     exact day-count method, leap-year handling, or promotional terms. When you enter APY in Nestfigure, the tool
     converts APY to an equivalent nominal rate for the selected compounding mode so a one-year horizon aligns with the
     stated APY under that model—see
-    <a href="/about/">methodology</a>.
+    <a href="/methodology/cd-calculator/">CD calculator methodology</a>.
   </p>
 
-  <h2>Worked example (transparent assumptions)</h2>
+  <h2 id="example">Worked example (transparent assumptions)</h2>
   <p>
     <strong>Assumptions:</strong> principal $10,000; constant effective annual yield of 4.50% (that is, a full-year
     growth factor of 1.045); term of exactly one year; no fees, no early withdrawal, no taxes withheld.
@@ -152,10 +203,10 @@ const faqs = [
     caption="Illustrative only. Open the <a href='/cd-calculator/'>CD calculator</a> to change principal, rate, term, or compounding."
   />
 
-  <h2>Early withdrawal and other real-world frictions</h2>
+  <h2 id="frictions">Early withdrawal and other real-world frictions</h2>
   <p>
-    The CFPB states that early withdrawal from a CD generally triggers a penalty. Regulation DD requires disclosures for
-    time accounts to explain early withdrawal penalties and related features. Nestfigure’s calculator does
+    The CFPB states that withdrawing money from a CD early means paying a penalty fee to the bank. When shopping, the
+    CFPB advises comparing term, interest rate, and the early-withdrawal penalty. Nestfigure’s calculator does
     <strong>not</strong> model penalties, bonuses, tiered rates, or taxes.
   </p>
   <ul>
@@ -165,45 +216,66 @@ const faqs = [
     <li>Tax on interest income (depends on your situation and tax law)</li>
     <li>Issuer day-count conventions (for example, how partial periods are treated)</li>
   </ul>
+  <p>
+    Deeper guide:
+    <a href="/guides/cd-early-withdrawal/">CD early withdrawal &amp; penalties</a>.
+  </p>
 
-  <h2>Sources</h2>
+  <h2>Deposit insurance (CFPB summary)</h2>
+  <p>
+    The same CFPB CD explainer states that CDs offered by banks are insured up to $250,000 by the FDIC, and those
+    offered by credit unions are insured up to $250,000 by the NCUA. Confirm coverage for your ownership structure with
+    <a href="https://edie.fdic.gov/" rel="noopener noreferrer" target="_blank">FDIC EDIE</a>
+    or
+    <a href="https://ncua.gov/consumers/share-insurance-coverage" rel="noopener noreferrer" target="_blank"
+      >NCUA share insurance materials</a
+    >.
+  </p>
+
+  <h2 id="sources">Authoritative sources</h2>
   <ul class="sources">
     <li>
-      Consumer Financial Protection Bureau — “What is a certificate of deposit (CD)?” —
       <a
         href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
         rel="noopener noreferrer"
-        target="_blank">consumerfinance.gov</a
+        target="_blank">CFPB — What is a certificate of deposit (CD)?</a
       >
     </li>
     <li>
-      12 CFR Part 1030 (Regulation DD — Truth in Savings), including definitions of APY and interest rate —
       <a href="https://www.ecfr.gov/current/title-12/chapter-X/part-1030" rel="noopener noreferrer" target="_blank"
-        >eCFR</a
+        >eCFR — 12 CFR Part 1030 (Regulation DD)</a
       >
-      /
+      ·
       <a href="https://www.consumerfinance.gov/rules-policy/regulations/1030/" rel="noopener noreferrer" target="_blank"
-        >CFPB regulation hub</a
+        >CFPB Regulation DD hub</a
       >
     </li>
     <li>
-      Appendix A to Part 1030 — Annual Percentage Yield Calculation —
       <a
         href="https://www.consumerfinance.gov/rules-policy/regulations/1030/A"
         rel="noopener noreferrer"
-        target="_blank">CFPB Appendix A</a
+        target="_blank">CFPB — Appendix A to Part 1030 (APY calculation)</a
       >
     </li>
     <li>
-      Nestfigure calculation assumptions —
-      <a href="/about/">About & methodology</a>
+      <a
+        href="https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance"
+        rel="noopener noreferrer"
+        target="_blank">FDIC — Understanding deposit insurance</a
+      >
+    </li>
+    <li>
+      Nestfigure —
+      <a href="/methodology/cd-calculator/">CD calculator methodology</a>
     </li>
   </ul>
 
   <h2>Related Nestfigure pages</h2>
   <ul>
     <li><a href="/guides/cd-vs-savings/">CD vs high-yield savings</a></li>
+    <li><a href="/guides/cd-early-withdrawal/">CD early withdrawal</a></li>
+    <li><a href="/faq/certificate-of-deposit/">CD FAQ</a></li>
     <li><a href="/cd-calculator/">Free CD calculator</a></li>
-    <li><a href="/about/">Methodology</a></li>
+    <li><a href="/methodology/cd-calculator/">CD methodology</a></li>
   </ul>
 </GuideLayout>

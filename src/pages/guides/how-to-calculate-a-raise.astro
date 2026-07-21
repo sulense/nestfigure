@@ -1,0 +1,381 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import { calculateRaise, annualFromHourly } from '../../lib/raiseMath';
+import { raiseCalculatorUrl } from '../../lib/raiseLinks';
+
+const title = 'How to Calculate a Raise Percentage (Formulas & Examples) | Nestfigure';
+const description =
+  'Raise percentage formulas with worked $60,000 and hourly examples, period splits, BLS wage-index context, and IRS withholding pointers. Educational only—not career advice.';
+
+function money(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+function moneyHr(n: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
+const ex = calculateRaise({
+  inputMode: 'annual',
+  annualSalary: 60000,
+  hourlyRate: 0,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 5,
+  optionalTaxRatePercent: 0,
+});
+
+const ex3 = calculateRaise({
+  inputMode: 'annual',
+  annualSalary: 60000,
+  hourlyRate: 0,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 3,
+  optionalTaxRatePercent: 0,
+});
+
+const h20 = calculateRaise({
+  inputMode: 'hourly',
+  annualSalary: 0,
+  hourlyRate: 20,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 5,
+  optionalTaxRatePercent: 0,
+});
+
+const annual20 = annualFromHourly(20, 40, 52);
+
+const calcUrl = raiseCalculatorUrl({ mode: 'annual', annual: 60000, raisePercent: 5 });
+const calcHourlyUrl = raiseCalculatorUrl({
+  mode: 'hourly',
+  hourly: 20,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 5,
+});
+
+/** BLS USDL-26-0669 (Apr 30, 2026) — re-check live BLS pages when updating. */
+const BLS = {
+  eciHome: 'https://www.bls.gov/eci/',
+  eciRelease: 'https://www.bls.gov/news.release/eci.nr0.htm',
+  cpiHome: 'https://www.bls.gov/cpi/',
+  usdl: 'USDL-26-0669',
+  releaseDate: 'April 30, 2026',
+  period: '12-month period ending in March 2026',
+  civilianWagesYoY: '3.4',
+} as const;
+
+const IRS_15T = 'https://www.irs.gov/publications/p15t';
+
+const faqs = [
+  {
+    question: 'What is the formula for a raise percentage?',
+    answer:
+      'Raise percent = (new pay − current pay) ÷ current pay × 100. Raise amount = current pay × (raise percent ÷ 100). New pay = current pay + raise amount. Use the same unit (annual with annual, hourly with hourly).',
+  },
+  {
+    question: 'How do I calculate a 5% raise on $60,000?',
+    answer: `Stated sample only: 5% of ${money(60000)} is ${money(ex.raiseAmountAnnual)}; new annual pay is ${money(ex.newAnnual)} (about ${money(ex.newMonthly)} per month before taxes). See Nestfigure’s $60,000 / 5% scenario guide for a full table.`,
+  },
+  {
+    question: 'What is a 5% raise on $20 an hour?',
+    answer: `Stated schedule only ($20/hour, 40 hours/week, 52 weeks/year ≈ ${money(annual20)} annualized): 5% → new hourly about ${moneyHr(h20.newHourly)}, raise about ${money(h20.raiseAmountAnnual)} per year. See Nestfigure’s $20/hour / 5% scenario guide.`,
+  },
+  {
+    question: 'How do I convert monthly or biweekly pay for a raise calculation?',
+    answer:
+      'Nestfigure’s display convention annualizes first, then divides: monthly = annual ÷ 12, biweekly = annual ÷ 26, weekly = annual ÷ 52. Your employer’s pay calendar may differ; these divisors are for education only.',
+  },
+  {
+    question: 'Where can I find national wage trend data?',
+    answer: `The U.S. Bureau of Labor Statistics publishes the Employment Cost Index (ECI) for wages and salaries on bls.gov. Per BLS news release ${BLS.usdl} (${BLS.releaseDate}), wages and salaries for civilian workers increased ${BLS.civilianWagesYoY} percent for the ${BLS.period} (not seasonally adjusted). Re-check the live BLS ECI news release for newer data. National indexes are not your individual raise.`,
+  },
+  {
+    question: 'Does a raise calculator include taxes?',
+    answer:
+      'Nestfigure only applies an optional effective tax rate if you type one. It does not implement IRS Publication 15-T withholding tables. Official federal income tax withholding methods for employers are in IRS Publication 15-T on irs.gov.',
+  },
+  {
+    question: 'Is a 3% raise good?',
+    answer: `Nestfigure does not label raises good or bad. Math only: 3% of ${money(60000)} is ${money(ex3.raiseAmountAnnual)} under that sample. For economy-wide wage trends, see BLS ECI—not a personal recommendation.`,
+  },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  canonicalPath="/guides/how-to-calculate-a-raise/"
+  eyebrow="Pay & raises · Educational"
+  headline="How to calculate a raise percentage"
+  updated="July 22, 2026"
+  datePublished="2026-07-17"
+  dateModified="2026-07-22"
+  readMinutes={14}
+  ogImage="/images/guide-how-to-calculate-a-raise.webp"
+  faqs={faqs}
+  toolHref="/raise-calculator/"
+  toolTitle="Run the free raise calculator"
+  toolBlurb="Enter annual or hourly pay and a raise percent or dollar amount. See period tables, comparison rows, copy results, and PDF export. Educational arithmetic only."
+  toolCta="Open Raise Calculator"
+>
+  <p>
+    <strong>Direct answer:</strong> To calculate a raise percentage, divide the dollar increase by your current pay,
+    then multiply by 100. To apply a known percent, multiply current pay by that percent (raise amount = current × raise
+    % ÷ 100). Nestfigure’s free
+    <a href="/raise-calculator/">raise calculator</a> runs the same arithmetic for annual or hourly inputs and shows
+    pay by period. This page is education only—not career, tax, legal, or negotiation advice.
+  </p>
+
+  <div class="key-takeaways card">
+    <h2 class="takeaways-title">Key takeaways</h2>
+    <ul>
+      <li>
+        <strong>Core formulas:</strong> raise amount = current × (raise % ÷ 100); raise % = (new − current) ÷ current ×
+        100.
+      </li>
+      <li>
+        <strong>Sample math only:</strong> {money(60000)} + 5% → raise {money(ex.raiseAmountAnnual)}, new annual{' '}
+        {money(ex.newAnnual)}—not a job offer.
+      </li>
+      <li>
+        <strong>Hourly sample (40×52 stated):</strong> $20/hour + 5% → about {moneyHr(h20.newHourly)}/hour and{' '}
+        {money(h20.raiseAmountAnnual)}/year more.
+      </li>
+      <li>
+        <strong>National context (BLS ECI):</strong> civilian wages and salaries rose {BLS.civilianWagesYoY}% over the{' '}
+        {BLS.period} (not seasonally adjusted)—not your personal raise (
+        <a href={BLS.eciRelease} rel="noopener noreferrer" target="_blank">{BLS.usdl}</a>).
+      </li>
+      <li>
+        <strong>Taxes:</strong> optional user-entered rate only; official federal withholding methods are in{' '}
+        <a href={IRS_15T} rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a>.
+      </li>
+    </ul>
+  </div>
+
+  <nav class="guide-toc card" aria-label="On this page">
+    <p>On this page</p>
+    <ul>
+      <li><a href="#formulas">Basic formulas</a></li>
+      <li><a href="#worked-example">Worked annual example</a></li>
+      <li><a href="#period-splits">Monthly, biweekly, weekly</a></li>
+      <li><a href="#hourly">Hourly pay</a></li>
+      <li><a href="#bls">National wage context (BLS)</a></li>
+      <li><a href="#taxes">Taxes and take-home</a></li>
+      <li><a href="#calculator">What the free calculator includes</a></li>
+      <li><a href="#sources">Authoritative sources</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="formulas">The basic formulas</h2>
+  <p>
+    Percentage change is ordinary arithmetic. Keep both sides in the same unit (for example annual salary with annual
+    salary, or hourly rate with hourly rate).
+  </p>
+  <ul>
+    <li><strong>Raise amount</strong> = current pay × (raise % ÷ 100)</li>
+    <li><strong>New pay</strong> = current pay + raise amount</li>
+    <li><strong>Raise %</strong> = (new pay − current pay) ÷ current pay × 100</li>
+    <li><strong>Raise % from a dollar raise</strong> = (dollar raise ÷ current pay) × 100</li>
+  </ul>
+  <p>
+    Example of the last form: a $1.50 raise on $20/hour is ($1.50 ÷ $20) × 100 = <strong>7.5%</strong>. On $30/hour, the
+    same $1.50 is 5%. Percent, not only the dollar amount, makes raises comparable across bases.
+  </p>
+
+  <h2 id="worked-example">Worked example (stated sample inputs only)</h2>
+  <p>
+    Current annual pay <strong>{money(60000)}</strong>, raise <strong>5%</strong> (illustrative inputs you can change
+    in the tool—not an average or offer):
+  </p>
+  <ul>
+    <li>Raise amount = {money(60000)} × 0.05 = <strong>{money(ex.raiseAmountAnnual)}</strong></li>
+    <li>New annual = <strong>{money(ex.newAnnual)}</strong></li>
+    <li>New monthly ≈ <strong>{money(ex.newMonthly)}</strong> (annual ÷ 12)</li>
+    <li>New biweekly ≈ <strong>{money(ex.newBiweekly)}</strong> (annual ÷ 26)</li>
+    <li>New weekly ≈ <strong>{money(ex.newWeekly)}</strong> (annual ÷ 52)</li>
+  </ul>
+  <p>
+    <a class="btn btn-primary" href={calcUrl}>Open raise calculator with these inputs</a>
+  </p>
+  <p>
+    Compare nearby percents on the same base (still sample math only):
+  </p>
+  <div class="table-wrap" style="margin-bottom:24px;">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Raise %</th>
+          <th class="num">Raise / year</th>
+          <th class="num">New annual</th>
+          <th class="num">New monthly</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>3% on {money(60000)}</td>
+          <td class="num">{money(ex3.raiseAmountAnnual)}</td>
+          <td class="num">{money(ex3.newAnnual)}</td>
+          <td class="num">{money(ex3.newMonthly)}</td>
+        </tr>
+        <tr>
+          <td>5% on {money(60000)}</td>
+          <td class="num">{money(ex.raiseAmountAnnual)}</td>
+          <td class="num">{money(ex.newAnnual)}</td>
+          <td class="num">{money(ex.newMonthly)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Full scenario write-up:
+    <a href="/guides/raise-60000-5-percent/">How much is a 5% raise on $60,000?</a>
+  </p>
+
+  <h2 id="period-splits">Monthly, biweekly, and weekly views</h2>
+  <p>
+    Nestfigure converts annual totals for display using fixed divisors: <strong>12</strong> (monthly),{' '}
+    <strong>26</strong> (biweekly), and <strong>52</strong> (weekly). These are educational conventions, not a claim
+    about your employer’s pay calendar, holidays, or partial periods. Payroll systems may use different calendars.
+  </p>
+  <p>
+    Full assumptions:
+    <a href="/methodology/raise-calculator/">raise calculator methodology</a>.
+  </p>
+
+  <h2 id="hourly">Hourly pay</h2>
+  <p>
+    If you are paid hourly, annualize for an annual raise view:
+    <strong>hourly rate × hours per week × weeks per year</strong> (you choose those hours and weeks). Then apply the
+    same percent formulas. A common full-time illustration is 40 × 52; that is <strong>not</strong> a legal definition
+    of full-time employment on this site.
+  </p>
+  <p>
+    Stated sample: {moneyHr(20)}/hour × 40 × 52 = <strong>{money(annual20)}</strong> annualized. A 5% raise → new
+    hourly about <strong>{moneyHr(h20.newHourly)}</strong>, raise about{' '}
+    <strong>{money(h20.raiseAmountAnnual)}</strong> per year.
+  </p>
+  <p>
+    <a class="btn btn-secondary" href={calcHourlyUrl}>Open hourly sample in the calculator</a>
+  </p>
+  <p>
+    Deeper guide:
+    <a href="/guides/hourly-to-salary-raise/">Hourly to annual raise math</a>
+    · Scenario:
+    <a href="/guides/raise-20-hour-5-percent/">5% on $20/hour</a>
+  </p>
+
+  <h2 id="bls">National wage context (not your raise)</h2>
+  <p>
+    For statistics on how wages and salaries change across the U.S. economy—not your individual raise—see the Bureau of
+    Labor Statistics
+    <a href={BLS.eciHome} rel="noopener noreferrer" target="_blank">Employment Cost Index (ECI)</a>.
+  </p>
+  <p>
+    According to BLS news release <strong>{BLS.usdl}</strong> ({BLS.releaseDate}), wages and salaries for
+    <strong>civilian workers</strong> increased <strong>{BLS.civilianWagesYoY} percent</strong> for the
+    <strong>{BLS.period}</strong>, not seasonally adjusted. Source:
+    <a href={BLS.eciRelease} rel="noopener noreferrer" target="_blank"
+      >BLS ECI news release ({BLS.usdl})</a
+    >. Re-check that page for newer quarters—indexes update over time. An index change is not a recommended personal
+    raise and not a legal requirement for any employer.
+  </p>
+  <p>
+    For official measures of consumer price change (sometimes used when people discuss “cost of living”), see the BLS
+    <a href={BLS.cpiHome} rel="noopener noreferrer" target="_blank">Consumer Price Index (CPI)</a>. Nestfigure does not
+    set COLA policy for employers.
+  </p>
+
+  <h2 id="taxes">Taxes and take-home</h2>
+  <p>
+    Gross raise math is separate from tax withholding and net pay. Federal income tax withholding methods for employers
+    are described in
+    <a href={IRS_15T} rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a>
+    (Federal Income Tax Withholding Methods). Nestfigure does not implement those tables, does not look up tax brackets,
+    and does not replace payroll software or a tax professional.
+  </p>
+  <p>
+    The raise calculator’s optional “effective tax rate” field multiplies gross figures by a percentage
+    <strong>you type</strong> for a rough net view only. Leave it at 0 to hide those estimates.
+  </p>
+
+  <h2>Raise vs one-time bonus (math only)</h2>
+  <p>
+    A raise changes ongoing base pay. A one-time bonus is often a separate payment that may not change base. Nestfigure
+    does not choose between them for you. See
+    <a href="/guides/raise-vs-bonus/">Raise vs bonus (math only)</a>.
+  </p>
+
+  <h2>After you estimate a raise</h2>
+  <p>
+    If you want educational compound-interest math on a principal you choose (for example, parking part of a raise
+    amount), Nestfigure’s
+    <a href="/cd-calculator/">CD calculator</a>
+    models certificate of deposit growth from principal, APY, and term—not a bank quote. See also the CFPB explainer on
+    CDs for product structure and early-withdrawal context:
+    <a
+      href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+      rel="noopener noreferrer"
+      target="_blank">What is a certificate of deposit (CD)?</a
+    >.
+  </p>
+
+  <h2 id="calculator">What the free calculator includes</h2>
+  <ul>
+    <li>Annual or hourly inputs with linked percent and dollar raise fields</li>
+    <li>Pay-by-period table (annual, monthly, biweekly, weekly, approximate hourly)</li>
+    <li>Before/after chart and compare common raise percents</li>
+    <li>Copy results, browser PDF export, share, and embed</li>
+    <li>Deep-link prefills (example: <a href={calcUrl}>$60,000 / 5%</a>)</li>
+  </ul>
+
+  <h2>More scenarios</h2>
+  <ul>
+    <li><a href="/guides/raise-60000-5-percent/">5% on $60,000</a></li>
+    <li><a href="/guides/raise-70000-3-percent/">3% on $70,000</a></li>
+    <li><a href="/guides/raise-50000-10-percent/">10% on $50,000</a></li>
+    <li><a href="/guides/raise-20-hour-5-percent/">5% on $20/hour</a></li>
+    <li><a href="/faq/raise-calculator/">Raise calculator FAQ</a></li>
+  </ul>
+
+  <h2 id="sources">Authoritative sources</h2>
+  <ul class="sources">
+    <li>
+      <a href={BLS.eciHome} rel="noopener noreferrer" target="_blank"
+        >U.S. Bureau of Labor Statistics — Employment Cost Index</a
+      >
+    </li>
+    <li>
+      <a href={BLS.eciRelease} rel="noopener noreferrer" target="_blank"
+        >BLS — ECI news release ({BLS.usdl}, {BLS.releaseDate})</a
+      >
+    </li>
+    <li>
+      <a href={BLS.cpiHome} rel="noopener noreferrer" target="_blank">BLS — Consumer Price Index</a>
+    </li>
+    <li>
+      <a href={IRS_15T} rel="noopener noreferrer" target="_blank"
+        >IRS — Publication 15-T, Federal Income Tax Withholding Methods</a
+      >
+    </li>
+    <li>
+      Nestfigure —
+      <a href="/methodology/raise-calculator/">Raise calculator methodology</a>
+    </li>
+  </ul>
+
+  <h2>Related Nestfigure pages</h2>
+  <ul>
+    <li><a href="/raise-calculator/">Raise calculator</a></li>
+    <li><a href="/guides/hourly-to-salary-raise/">Hourly to annual raise math</a></li>
+    <li><a href="/guides/raise-vs-bonus/">Raise vs bonus</a></li>
+    <li><a href="/cd-calculator/">CD calculator</a></li>
+    <li><a href="/about/">About Nestfigure</a></li>
+  </ul>
+</GuideLayout>

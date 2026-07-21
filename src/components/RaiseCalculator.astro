@@ -1,0 +1,1241 @@
+---
+interface Props {
+  annualSalary?: number;
+  raisePercent?: number;
+  inputMode?: 'annual' | 'hourly';
+  hourlyRate?: number;
+  hoursPerWeek?: number;
+  weeksPerYear?: number;
+  optionalTaxRatePercent?: number;
+}
+
+const {
+  annualSalary = 60000,
+  raisePercent = 5,
+  inputMode = 'annual',
+  hourlyRate = 28.85,
+  hoursPerWeek = 40,
+  weeksPerYear = 52,
+  optionalTaxRatePercent = 0,
+} = Astro.props;
+---
+
+<div class="calc card-elevated" id="raise-calculator" data-raise-calculator>
+  <div class="calc-grid">
+    <form class="calc-form" id="raise-form" novalidate>
+      <div class="calc-form-head">
+        <span class="pill">Live</span>
+        <span class="muted" style="font-size: 12px;">Updates as you type</span>
+      </div>
+
+      <div class="field">
+        <label for="payMode">Current pay entered as</label>
+        <select id="payMode" name="payMode">
+          <option value="annual" selected={inputMode === 'annual'}>Annual salary</option>
+          <option value="hourly" selected={inputMode === 'hourly'}>Hourly wage</option>
+        </select>
+      </div>
+
+      <div class="field" data-annual-only>
+        <label for="annualSalary">Current annual salary</label>
+        <input
+          id="annualSalary"
+          name="annualSalary"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="100"
+          value={annualSalary}
+        />
+      </div>
+
+      <div class="field-row" data-hourly-only hidden>
+        <div class="field">
+          <label for="hourlyRate">Hourly rate</label>
+          <input
+            id="hourlyRate"
+            name="hourlyRate"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="0.01"
+            value={hourlyRate}
+          />
+        </div>
+        <div class="field">
+          <label for="hoursPerWeek">Hours / week</label>
+          <input
+            id="hoursPerWeek"
+            name="hoursPerWeek"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="0.5"
+            value={hoursPerWeek}
+          />
+        </div>
+      </div>
+
+      <div class="field" data-hourly-only hidden>
+        <label for="weeksPerYear">Weeks / year</label>
+        <input
+          id="weeksPerYear"
+          name="weeksPerYear"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          max="54"
+          step="1"
+          value={weeksPerYear}
+        />
+        <span class="field-hint">Common full-time assumption: 40 hours × 52 weeks.</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="raisePercent">Raise (%)</label>
+          <input
+            id="raisePercent"
+            name="raisePercent"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            max="500"
+            step="0.1"
+            value={raisePercent}
+          />
+        </div>
+        <div class="field">
+          <label for="raiseAmount">Raise ($ / year)</label>
+          <input
+            id="raiseAmount"
+            name="raiseAmount"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="50"
+            value="0"
+          />
+        </div>
+      </div>
+      <span class="field-hint">Percent and dollar stay linked to your current annual pay.</span>
+
+      <div class="preset-row" role="group" aria-label="Raise percent presets">
+        <button type="button" class="btn btn-secondary preset" data-pct="3">3%</button>
+        <button type="button" class="btn btn-secondary preset" data-pct="5">5%</button>
+        <button type="button" class="btn btn-secondary preset" data-pct="7">7%</button>
+        <button type="button" class="btn btn-secondary preset" data-pct="10">10%</button>
+      </div>
+
+      <div class="field">
+        <label for="taxRate">Optional: effective tax rate for rough net (%)</label>
+        <input
+          id="taxRate"
+          name="taxRate"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          max="99"
+          step="0.1"
+          value={optionalTaxRatePercent}
+        />
+        <span class="field-hint">
+          You enter this rate—Nestfigure does not look up tax brackets. Leave 0 to hide rough net figures. Not IRS
+          withholding.
+        </span>
+      </div>
+    </form>
+
+    <div class="calc-results" aria-live="polite">
+      <div class="result-block">
+        <div class="result-label">New annual pay</div>
+        <div class="result-value" id="out-new-annual">$0.00</div>
+      </div>
+      <div class="result-grid">
+        <div class="result-mini">
+          <div class="result-label">Raise amount</div>
+          <div class="result-mid" id="out-raise-amount">$0.00</div>
+        </div>
+        <div class="result-mini">
+          <div class="result-label">Raise percent</div>
+          <div class="result-mid" id="out-raise-pct">0%</div>
+        </div>
+        <div class="result-mini">
+          <div class="result-label">Current annual</div>
+          <div class="result-mid" id="out-current-annual">$0.00</div>
+        </div>
+        <div class="result-mini">
+          <div class="result-label">New monthly</div>
+          <div class="result-mid" id="out-new-monthly">$0.00</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data" id="freq-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th class="num">Before</th>
+              <th class="num">After</th>
+              <th class="num">Difference</th>
+            </tr>
+          </thead>
+          <tbody id="freq-body"></tbody>
+        </table>
+      </div>
+
+      <div id="net-block" class="net-block" hidden>
+        <p class="result-label" style="margin-bottom: 8px;">Rough net (your tax rate)</p>
+        <p class="muted" style="font-size: 12px; margin: 0 0 10px;">
+          Uses only the effective rate you typed. Not a paycheck or IRS estimate.
+        </p>
+        <div class="result-grid">
+          <div class="result-mini">
+            <div class="result-label">New annual net</div>
+            <div class="result-mid" id="out-new-net">$0.00</div>
+          </div>
+          <div class="result-mini">
+            <div class="result-label">Raise net / year</div>
+            <div class="result-mid" id="out-raise-net">$0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button type="button" class="btn btn-secondary" id="copy-raise">Copy results</button>
+        <button type="button" class="btn btn-secondary" id="export-pdf">Export PDF</button>
+        <a class="btn btn-secondary" id="save-cd-link" href="/cd-calculator/">Save raise in CD calculator</a>
+      </div>
+      <p class="result-note" id="copy-status" hidden></p>
+      <p class="result-note">
+        Educational arithmetic only. Not an offer of employment, payroll, or tax advice. Employer policies and taxes
+        vary.
+      </p>
+    </div>
+  </div>
+
+  <div class="chart-block">
+    <div class="schedule-head">
+      <p class="heading-sm" style="margin:0">Before vs after (annual)</p>
+      <span class="muted" style="font-size:12px">Pay comparison chart</span>
+    </div>
+    <div class="bar-chart" role="img" aria-label="Before and after annual pay comparison">
+      <div class="bar-row">
+        <span class="bar-label">Before</span>
+        <div class="bar-track">
+          <div class="bar bar-before" id="bar-before" style="width:0%"></div>
+        </div>
+        <span class="bar-value" id="bar-before-val">$0</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">After</span>
+        <div class="bar-track">
+          <div class="bar bar-after" id="bar-after" style="width:0%"></div>
+        </div>
+        <span class="bar-value" id="bar-after-val">$0</span>
+      </div>
+      <div class="bar-row bar-raise-row">
+        <span class="bar-label">Raise</span>
+        <div class="bar-track">
+          <div class="bar bar-raise" id="bar-raise" style="width:0%"></div>
+        </div>
+        <span class="bar-value" id="bar-raise-val">$0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-block">
+    <div class="schedule-head">
+      <p class="heading-sm" style="margin:0">Compare raise percents</p>
+      <span class="muted" style="font-size:12px">Same current pay, different raises</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data" id="compare-table">
+        <thead>
+          <tr>
+            <th>Raise</th>
+            <th class="num">Raise / year</th>
+            <th class="num">New annual</th>
+            <th class="num">New monthly</th>
+            <th class="num">vs your raise</th>
+          </tr>
+        </thead>
+        <tbody id="compare-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .calc {
+    padding: 24px;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .calc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .calc-form-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .preset-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .preset-row .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .calc-results {
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .result-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-iron);
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 44px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--color-ink);
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .result-mid {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .result-note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-graphite);
+    line-height: 1.45;
+  }
+
+  .net-block {
+    border-top: 1px solid var(--color-pale-slate);
+    padding-top: 16px;
+  }
+
+  .table-wrap .num,
+  table.data td.num,
+  table.data th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .chart-block,
+  .compare-block {
+    margin-top: 20px;
+    padding: 20px 22px;
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .schedule-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 96px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .bar-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-iron);
+  }
+
+  .bar-track {
+    height: 18px;
+    background: #f0f5fe;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--color-pale-slate);
+  }
+
+  .bar {
+    height: 100%;
+    border-radius: 999px;
+    min-width: 0;
+    transition: width 0.25s ease;
+  }
+
+  .bar-before {
+    background: #94a3b8;
+  }
+
+  .bar-after {
+    background: #3e79ea;
+  }
+
+  .bar-raise {
+    background: #22c55e;
+  }
+
+  .bar-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: right;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  #compare-body tr.is-current td {
+    background: #eef4ff;
+    font-weight: 600;
+  }
+
+  @media (max-width: 800px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .bar-row {
+      grid-template-columns: 48px 1fr 80px;
+    }
+  }
+</style>
+
+<script>
+  type PayInputMode = 'annual' | 'hourly';
+
+  interface RaiseInputs {
+    inputMode: PayInputMode;
+    annualSalary: number;
+    hourlyRate: number;
+    hoursPerWeek: number;
+    weeksPerYear: number;
+    raisePercent: number;
+    optionalTaxRatePercent: number;
+  }
+
+  function annualFromHourly(hourlyRate: number, hoursPerWeek: number, weeksPerYear: number): number {
+    return Math.max(0, hourlyRate || 0) * Math.max(0, hoursPerWeek || 0) * Math.max(0, weeksPerYear || 0);
+  }
+
+  function currentAnnualPay(input: RaiseInputs): number {
+    if (input.inputMode === 'hourly') {
+      return annualFromHourly(input.hourlyRate, input.hoursPerWeek, input.weeksPerYear);
+    }
+    return Math.max(0, input.annualSalary || 0);
+  }
+
+  function calculateRaise(input: RaiseInputs) {
+    const currentAnnual = currentAnnualPay(input);
+    const raisePercent = Math.max(0, input.raisePercent || 0);
+    const raiseAmountAnnual = currentAnnual * (raisePercent / 100);
+    const newAnnual = currentAnnual + raiseAmountAnnual;
+    const hoursPerYear = Math.max(0, (input.hoursPerWeek || 0) * (input.weeksPerYear || 0));
+    const currentHourly =
+      input.inputMode === 'hourly'
+        ? Math.max(0, input.hourlyRate || 0)
+        : hoursPerYear > 0
+          ? currentAnnual / hoursPerYear
+          : 0;
+    const newHourly =
+      input.inputMode === 'hourly'
+        ? currentHourly * (1 + raisePercent / 100)
+        : hoursPerYear > 0
+          ? newAnnual / hoursPerYear
+          : 0;
+    const taxRate = Math.min(100, Math.max(0, input.optionalTaxRatePercent || 0));
+    let roughNet = null as null | {
+      taxRatePercent: number;
+      currentAnnualNet: number;
+      newAnnualNet: number;
+      raiseAnnualNet: number;
+      currentMonthlyNet: number;
+      newMonthlyNet: number;
+    };
+    if (taxRate > 0 && taxRate < 100) {
+      const keep = 1 - taxRate / 100;
+      roughNet = {
+        taxRatePercent: taxRate,
+        currentAnnualNet: currentAnnual * keep,
+        newAnnualNet: newAnnual * keep,
+        raiseAnnualNet: raiseAmountAnnual * keep,
+        currentMonthlyNet: (currentAnnual * keep) / 12,
+        newMonthlyNet: (newAnnual * keep) / 12,
+      };
+    }
+    return {
+      currentAnnual,
+      raiseAmountAnnual,
+      raisePercent,
+      newAnnual,
+      currentMonthly: currentAnnual / 12,
+      newMonthly: newAnnual / 12,
+      currentBiweekly: currentAnnual / 26,
+      newBiweekly: newAnnual / 26,
+      currentWeekly: currentAnnual / 52,
+      newWeekly: newAnnual / 52,
+      currentHourly,
+      newHourly,
+      roughNet,
+    };
+  }
+
+  function formatMoney(n: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    }).format(n || 0);
+  }
+
+  function formatPct(n: number): string {
+    return `${(n || 0).toFixed(2)}%`;
+  }
+
+  let syncing = false;
+  let lastDriver: 'percent' | 'amount' = 'percent';
+
+  let lastExport = {
+    inputMode: 'annual' as PayInputMode,
+    annualSalary: 0,
+    hourlyRate: 0,
+    hoursPerWeek: 40,
+    weeksPerYear: 52,
+    raisePercent: 0,
+    raiseAmountAnnual: 0,
+    currentAnnual: 0,
+    newAnnual: 0,
+    currentMonthly: 0,
+    newMonthly: 0,
+    currentBiweekly: 0,
+    newBiweekly: 0,
+    currentWeekly: 0,
+    newWeekly: 0,
+    currentHourly: 0,
+    newHourly: 0,
+    taxRatePercent: 0,
+    roughNet: null as null | {
+      taxRatePercent: number;
+      currentAnnualNet: number;
+      newAnnualNet: number;
+      raiseAnnualNet: number;
+      currentMonthlyNet: number;
+      newMonthlyNet: number;
+    },
+    freqRows: [] as { label: string; before: number; after: number; diff: number }[],
+    compareRows: [] as {
+      pct: number;
+      raiseAmount: number;
+      newAnnual: number;
+      newMonthly: number;
+      deltaLabel: string;
+      isCurrent: boolean;
+    }[],
+  };
+
+  function readInputs(): RaiseInputs {
+    const mode = (document.getElementById('payMode') as HTMLSelectElement).value as PayInputMode;
+    return {
+      inputMode: mode,
+      annualSalary: parseFloat((document.getElementById('annualSalary') as HTMLInputElement).value) || 0,
+      hourlyRate: parseFloat((document.getElementById('hourlyRate') as HTMLInputElement).value) || 0,
+      hoursPerWeek: parseFloat((document.getElementById('hoursPerWeek') as HTMLInputElement).value) || 0,
+      weeksPerYear: parseFloat((document.getElementById('weeksPerYear') as HTMLInputElement).value) || 0,
+      raisePercent: parseFloat((document.getElementById('raisePercent') as HTMLInputElement).value) || 0,
+      optionalTaxRatePercent: parseFloat((document.getElementById('taxRate') as HTMLInputElement).value) || 0,
+    };
+  }
+
+  function currentAnnualFromForm(): number {
+    return currentAnnualPay(readInputs());
+  }
+
+  function toggleModeUi() {
+    const mode = (document.getElementById('payMode') as HTMLSelectElement).value;
+    document.querySelectorAll('[data-annual-only]').forEach((el) => {
+      (el as HTMLElement).hidden = mode !== 'annual';
+    });
+    document.querySelectorAll('[data-hourly-only]').forEach((el) => {
+      (el as HTMLElement).hidden = mode !== 'hourly';
+    });
+  }
+
+  function syncLinkedFields(driver: 'percent' | 'amount') {
+    if (syncing) return;
+    syncing = true;
+    lastDriver = driver;
+    const annual = currentAnnualFromForm();
+    const pctEl = document.getElementById('raisePercent') as HTMLInputElement;
+    const amtEl = document.getElementById('raiseAmount') as HTMLInputElement;
+    if (driver === 'percent') {
+      const pct = parseFloat(pctEl.value) || 0;
+      amtEl.value = annual > 0 ? (annual * (pct / 100)).toFixed(2) : '0';
+    } else {
+      const amt = parseFloat(amtEl.value) || 0;
+      pctEl.value = annual > 0 ? ((amt / annual) * 100).toFixed(2) : '0';
+    }
+    syncing = false;
+  }
+
+  function renderChart(current: number, next: number, raiseAmt: number) {
+    const max = Math.max(current, next, 1);
+    const setBar = (id: string, valId: string, value: number) => {
+      const bar = document.getElementById(id) as HTMLElement | null;
+      const label = document.getElementById(valId) as HTMLElement | null;
+      if (bar) bar.style.width = `${Math.max(2, (value / max) * 100)}%`;
+      if (label) label.textContent = formatMoney(value);
+    };
+    setBar('bar-before', 'bar-before-val', current);
+    setBar('bar-after', 'bar-after-val', next);
+    setBar('bar-raise', 'bar-raise-val', raiseAmt);
+  }
+
+  function renderCompare(currentAnnual: number, yourPct: number, yourRaise: number) {
+    const presets = [3, 5, 7, 10];
+    const pcts = [...new Set([...presets, Math.round(yourPct * 100) / 100])].sort((a, b) => a - b);
+    const rows = pcts.map((pct) => {
+      const raiseAmount = currentAnnual * (pct / 100);
+      const newAnnual = currentAnnual + raiseAmount;
+      const delta = raiseAmount - yourRaise;
+      const deltaLabel =
+        Math.abs(delta) < 0.005 ? 'Current' : delta > 0 ? `+${formatMoney(delta)}` : formatMoney(delta);
+      const isCurrent = Math.abs(pct - yourPct) < 0.005;
+      return {
+        pct,
+        raiseAmount,
+        newAnnual,
+        newMonthly: newAnnual / 12,
+        deltaLabel,
+        isCurrent,
+      };
+    });
+
+    lastExport.compareRows = rows;
+
+    const body = document.getElementById('compare-body');
+    if (!body) return;
+    body.innerHTML = rows
+      .map(
+        (r) => `<tr class="${r.isCurrent ? 'is-current' : ''}">
+        <td>${formatPct(r.pct)}</td>
+        <td class="num">${formatMoney(r.raiseAmount)}</td>
+        <td class="num">${formatMoney(r.newAnnual)}</td>
+        <td class="num">${formatMoney(r.newMonthly)}</td>
+        <td class="num">${r.deltaLabel}</td>
+      </tr>`,
+      )
+      .join('');
+  }
+
+  function render() {
+    syncLinkedFields(lastDriver);
+    const input = readInputs();
+    const r = calculateRaise(input);
+
+    (document.getElementById('out-new-annual') as HTMLElement).textContent = formatMoney(r.newAnnual);
+    (document.getElementById('out-raise-amount') as HTMLElement).textContent = formatMoney(r.raiseAmountAnnual);
+    (document.getElementById('out-raise-pct') as HTMLElement).textContent = formatPct(r.raisePercent);
+    (document.getElementById('out-current-annual') as HTMLElement).textContent = formatMoney(r.currentAnnual);
+    (document.getElementById('out-new-monthly') as HTMLElement).textContent = formatMoney(r.newMonthly);
+
+    const rows: { label: string; before: number; after: number; diff: number }[] = [
+      { label: 'Annual', before: r.currentAnnual, after: r.newAnnual, diff: r.newAnnual - r.currentAnnual },
+      { label: 'Monthly', before: r.currentMonthly, after: r.newMonthly, diff: r.newMonthly - r.currentMonthly },
+      {
+        label: 'Biweekly',
+        before: r.currentBiweekly,
+        after: r.newBiweekly,
+        diff: r.newBiweekly - r.currentBiweekly,
+      },
+      { label: 'Weekly', before: r.currentWeekly, after: r.newWeekly, diff: r.newWeekly - r.currentWeekly },
+    ];
+    if (r.currentHourly > 0 || r.newHourly > 0) {
+      rows.push({
+        label: 'Hourly (approx.)',
+        before: r.currentHourly,
+        after: r.newHourly,
+        diff: r.newHourly - r.currentHourly,
+      });
+    }
+
+    (document.getElementById('freq-body') as HTMLElement).innerHTML = rows
+      .map(
+        (row) => `<tr>
+        <td>${row.label}</td>
+        <td class="num">${formatMoney(row.before)}</td>
+        <td class="num">${formatMoney(row.after)}</td>
+        <td class="num">${formatMoney(row.diff)}</td>
+      </tr>`,
+      )
+      .join('');
+
+    const netBlock = document.getElementById('net-block');
+    if (netBlock) {
+      if (r.roughNet) {
+        netBlock.hidden = false;
+        (document.getElementById('out-new-net') as HTMLElement).textContent = formatMoney(r.roughNet.newAnnualNet);
+        (document.getElementById('out-raise-net') as HTMLElement).textContent = formatMoney(
+          r.roughNet.raiseAnnualNet,
+        );
+      } else {
+        netBlock.hidden = true;
+      }
+    }
+
+    const cd = document.getElementById('save-cd-link') as HTMLAnchorElement | null;
+    if (cd) {
+      const principal = Math.round(r.raiseAmountAnnual);
+      cd.href = `/cd-calculator/?principal=${principal}&rate=4.5&rateType=apy&term=12&termUnit=months&compounding=daily`;
+      cd.textContent =
+        principal > 0 ? `Model $${principal.toLocaleString('en-US')} raise in CD calculator` : 'Open CD calculator';
+    }
+
+    lastExport = {
+      ...lastExport,
+      inputMode: input.inputMode,
+      annualSalary: input.annualSalary,
+      hourlyRate: input.hourlyRate,
+      hoursPerWeek: input.hoursPerWeek,
+      weeksPerYear: input.weeksPerYear,
+      raisePercent: r.raisePercent,
+      raiseAmountAnnual: r.raiseAmountAnnual,
+      currentAnnual: r.currentAnnual,
+      newAnnual: r.newAnnual,
+      currentMonthly: r.currentMonthly,
+      newMonthly: r.newMonthly,
+      currentBiweekly: r.currentBiweekly,
+      newBiweekly: r.newBiweekly,
+      currentWeekly: r.currentWeekly,
+      newWeekly: r.newWeekly,
+      currentHourly: r.currentHourly,
+      newHourly: r.newHourly,
+      taxRatePercent: input.optionalTaxRatePercent,
+      roughNet: r.roughNet,
+      freqRows: rows,
+    };
+
+    renderChart(r.currentAnnual, r.newAnnual, r.raiseAmountAnnual);
+    renderCompare(r.currentAnnual, r.raisePercent, r.raiseAmountAnnual);
+  }
+
+  function setActionStatus(message: string, ms = 2000) {
+    const status = document.getElementById('copy-status');
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+    window.setTimeout(() => {
+      status.hidden = true;
+    }, ms);
+  }
+
+  function resultLines(): string[] {
+    const s = lastExport;
+    return [
+      'Nestfigure Raise Calculator results',
+      s.inputMode === 'hourly'
+        ? `Current: ${formatMoney(s.hourlyRate)}/hr · ${s.hoursPerWeek} hrs/wk · ${s.weeksPerYear} wks/yr`
+        : `Current annual: ${formatMoney(s.currentAnnual)}`,
+      `Raise: ${formatPct(s.raisePercent)} (${formatMoney(s.raiseAmountAnnual)} / year)`,
+      `New annual: ${formatMoney(s.newAnnual)}`,
+      `New monthly: ${formatMoney(s.newMonthly)}`,
+      `New biweekly: ${formatMoney(s.newBiweekly)}`,
+      `New weekly: ${formatMoney(s.newWeekly)}`,
+      s.currentHourly > 0 ? `Approx. hourly: ${formatMoney(s.currentHourly)} → ${formatMoney(s.newHourly)}` : '',
+      s.roughNet
+        ? `Rough net at ${formatPct(s.roughNet.taxRatePercent)} effective rate: new annual ${formatMoney(s.roughNet.newAnnualNet)}`
+        : '',
+      'Educational estimate only — not tax or employment advice.',
+      'https://nestfigure.com/raise-calculator/',
+    ].filter((line) => line.length > 0);
+  }
+
+  async function copyResults() {
+    try {
+      await navigator.clipboard.writeText(resultLines().join('\n'));
+      setActionStatus('Copied to clipboard.');
+    } catch {
+      setActionStatus('Could not copy — select and copy manually.', 4000);
+    }
+  }
+
+  function esc(value: string | number): string {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function barChartSvgMarkup(current: number, next: number, raiseAmt: number): string {
+    const max = Math.max(current, next, 1);
+    const W = 720;
+    const rowH = 42;
+    const H = rowH * 3 + 20;
+    const labelW = 70;
+    const valueW = 110;
+    const trackX = labelW;
+    const trackW = W - labelW - valueW - 16;
+    const rows = [
+      { label: 'Before', value: current, color: '#94a3b8' },
+      { label: 'After', value: next, color: '#3e79ea' },
+      { label: 'Raise', value: raiseAmt, color: '#22c55e' },
+    ];
+    const body = rows
+      .map((row, i) => {
+        const y = 16 + i * rowH;
+        const w = Math.max(4, (row.value / max) * trackW);
+        return `
+          <text x="0" y="${y + 14}" fill="#5c6670" font-size="12" font-family="system-ui,sans-serif" font-weight="600">${esc(row.label)}</text>
+          <rect x="${trackX}" y="${y}" width="${trackW}" height="18" rx="9" fill="#f0f5fe" stroke="#e3e8ea"/>
+          <rect x="${trackX}" y="${y}" width="${w.toFixed(1)}" height="18" rx="9" fill="${row.color}"/>
+          <text x="${W}" y="${y + 14}" text-anchor="end" fill="#1a1f24" font-size="12" font-family="ui-monospace,monospace">${esc(formatMoney(row.value))}</text>
+        `;
+      })
+      .join('');
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Before and after annual pay">${body}</svg>`;
+  }
+
+  /**
+   * HTML report printed via the browser ("Save as PDF") — same pattern as CD calculator.
+   */
+  function buildReportHtml(): string {
+    const s = lastExport;
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    const inputs =
+      s.inputMode === 'hourly'
+        ? [
+            `${formatMoney(s.hourlyRate)}/hour`,
+            `${s.hoursPerWeek} hrs/week`,
+            `${s.weeksPerYear} weeks/year`,
+            `${formatPct(s.raisePercent)} raise`,
+          ]
+        : [`Current annual ${formatMoney(s.currentAnnual)}`, `${formatPct(s.raisePercent)} raise`];
+    if (s.taxRatePercent > 0) inputs.push(`${formatPct(s.taxRatePercent)} effective tax (user-entered)`);
+
+    const freqRows = s.freqRows
+      .map(
+        (r) => `<tr>
+        <td>${esc(r.label)}</td>
+        <td class="num">${esc(formatMoney(r.before))}</td>
+        <td class="num">${esc(formatMoney(r.after))}</td>
+        <td class="num">${esc(formatMoney(r.diff))}</td>
+      </tr>`,
+      )
+      .join('');
+
+    const compareRows = s.compareRows
+      .map(
+        (r) => `<tr class="${r.isCurrent ? 'is-current' : ''}">
+        <td>${esc(formatPct(r.pct))}</td>
+        <td class="num">${esc(formatMoney(r.raiseAmount))}</td>
+        <td class="num">${esc(formatMoney(r.newAnnual))}</td>
+        <td class="num">${esc(formatMoney(r.newMonthly))}</td>
+        <td class="num">${esc(r.deltaLabel)}</td>
+      </tr>`,
+      )
+      .join('');
+
+    const netSection = s.roughNet
+      ? `<h2>Rough net (your tax rate)</h2>
+    <p class="sub">Uses only the effective rate you typed — not IRS withholding</p>
+    <div class="metrics three">
+      <div class="metric">
+        <div class="lbl">Tax rate used</div>
+        <div class="val">${esc(formatPct(s.roughNet.taxRatePercent))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">New annual net</div>
+        <div class="val">${esc(formatMoney(s.roughNet.newAnnualNet))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Raise net / year</div>
+        <div class="val">${esc(formatMoney(s.roughNet.raiseAnnualNet))}</div>
+      </div>
+    </div>`
+      : '';
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Nestfigure Raise Calculator Report</title>
+<style>
+  @page { margin: 14mm 12mm; size: letter; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: #1a1f24;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .sheet { max-width: 800px; margin: 0 auto; }
+  .banner {
+    background: #2563eb;
+    color: #fff;
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .banner strong { font-size: 16px; letter-spacing: -0.01em; }
+  .banner span { font-size: 11px; opacity: 0.92; }
+  h1 { font-size: 20px; margin: 0 0 6px; font-weight: 650; letter-spacing: -0.02em; }
+  .meta { color: #5c6670; font-size: 12px; margin: 0 0 16px; }
+  .metrics {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .metrics.three { grid-template-columns: 1fr 1fr 1fr; }
+  .metric {
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+  }
+  .metric.hero {
+    background: #f0f5fe;
+    border-color: #d7e4fb;
+  }
+  .metric .lbl {
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5c6670;
+    margin-bottom: 4px;
+  }
+  .metric .val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1f24;
+  }
+  .metric.hero .val {
+    font-size: 22px;
+    color: #2563eb;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 14px;
+    margin: 22px 0 4px;
+    font-weight: 650;
+  }
+  .sub { color: #5c6670; font-size: 11px; margin: 0 0 10px; }
+  .chart {
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    margin-bottom: 8px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  thead th {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 9px 12px;
+  }
+  thead th.num, td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e8eef3;
+    color: #1a1f24;
+  }
+  tbody tr:nth-child(even) td { background: #fafbfc; }
+  tbody tr.is-current td {
+    background: #eef4ff;
+    font-weight: 600;
+  }
+  .disclaimer {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: #f0f5fe;
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #334048;
+  }
+  .footer {
+    margin-top: 12px;
+    font-size: 10px;
+    color: #5c6670;
+  }
+  @media print {
+    .banner { break-inside: avoid; }
+    .metrics { break-inside: avoid; }
+    .chart { break-inside: avoid; }
+    table { break-inside: auto; }
+    tr { break-inside: avoid; break-after: auto; }
+    thead { display: table-header-group; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="banner">
+      <div>
+        <strong>Nestfigure</strong><br/>
+        <span>Raise Calculator Report</span>
+      </div>
+      <span>${esc(dateStr)}</span>
+    </div>
+
+    <h1>Your raise estimate</h1>
+    <p class="meta">${esc(inputs.join('  ·  '))}</p>
+
+    <div class="metrics">
+      <div class="metric hero">
+        <div class="lbl">New annual pay</div>
+        <div class="val">${esc(formatMoney(s.newAnnual))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Raise amount</div>
+        <div class="val">${esc(formatMoney(s.raiseAmountAnnual))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">Raise percent</div>
+        <div class="val">${esc(formatPct(s.raisePercent))}</div>
+      </div>
+      <div class="metric">
+        <div class="lbl">New monthly</div>
+        <div class="val">${esc(formatMoney(s.newMonthly))}</div>
+      </div>
+    </div>
+
+    <h2>Before vs after (annual)</h2>
+    <p class="sub">Educational comparison from your inputs only</p>
+    <div class="chart">
+      ${barChartSvgMarkup(s.currentAnnual, s.newAnnual, s.raiseAmountAnnual)}
+    </div>
+
+    <h2>Pay by period</h2>
+    <p class="sub">Monthly ÷12 · biweekly ÷26 · weekly ÷52</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th class="num">Before</th>
+          <th class="num">After</th>
+          <th class="num">Difference</th>
+        </tr>
+      </thead>
+      <tbody>${freqRows}</tbody>
+    </table>
+
+    <h2>Compare raise percents</h2>
+    <p class="sub">Same current pay, different raise percentages</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Raise</th>
+          <th class="num">Raise / year</th>
+          <th class="num">New annual</th>
+          <th class="num">New monthly</th>
+          <th class="num">vs your raise</th>
+        </tr>
+      </thead>
+      <tbody>${compareRows}</tbody>
+    </table>
+
+    ${netSection}
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> Educational arithmetic only. Not an offer of employment, payroll calculation, tax
+      advice, or career advice. Optional tax figures use only the effective rate you typed—not IRS Publication 15-T.
+      Employer policies and actual paychecks vary.
+    </div>
+    <p class="footer">Generated by Nestfigure Raise Calculator · nestfigure.com</p>
+  </div>
+</body>
+</html>`;
+  }
+
+  function exportPdf() {
+    try {
+      const html = buildReportHtml();
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute('title', 'PDF export');
+      iframe.style.cssText =
+        'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(iframe);
+
+      const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!frameDoc || !iframe.contentWindow) {
+        iframe.remove();
+        throw new Error('iframe unavailable');
+      }
+
+      frameDoc.open();
+      frameDoc.write(html);
+      frameDoc.close();
+
+      const runPrint = () => {
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+          setActionStatus('Use “Save as PDF” in the print dialog.', 5000);
+        } catch {
+          setActionStatus('Could not open print dialog. Try Copy results instead.', 4000);
+        }
+        window.setTimeout(() => iframe.remove(), 2000);
+      };
+
+      window.setTimeout(runPrint, 250);
+    } catch {
+      setActionStatus('Could not create PDF. Try Copy results instead.', 4000);
+    }
+  }
+
+  function applyQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (![...params.keys()].length) return;
+    const num = (k: string) => {
+      const v = parseFloat(params.get(k) || '');
+      return Number.isFinite(v) && v >= 0 ? v : null;
+    };
+    const mode = params.get('mode');
+    if (mode === 'annual' || mode === 'hourly') {
+      (document.getElementById('payMode') as HTMLSelectElement).value = mode;
+    }
+    const annual = num('annual') ?? num('current');
+    if (annual != null) (document.getElementById('annualSalary') as HTMLInputElement).value = String(annual);
+    const hourly = num('hourly');
+    if (hourly != null) (document.getElementById('hourlyRate') as HTMLInputElement).value = String(hourly);
+    const hpw = num('hoursPerWeek');
+    if (hpw != null) (document.getElementById('hoursPerWeek') as HTMLInputElement).value = String(hpw);
+    const wpy = num('weeksPerYear');
+    if (wpy != null) (document.getElementById('weeksPerYear') as HTMLInputElement).value = String(wpy);
+    const pct = num('raisePercent');
+    const amt = num('raiseAmount');
+    if (pct != null) {
+      (document.getElementById('raisePercent') as HTMLInputElement).value = String(pct);
+      lastDriver = 'percent';
+    } else if (amt != null) {
+      (document.getElementById('raiseAmount') as HTMLInputElement).value = String(amt);
+      lastDriver = 'amount';
+    }
+    const tax = num('taxRate');
+    if (tax != null) (document.getElementById('taxRate') as HTMLInputElement).value = String(tax);
+  }
+
+  function bind() {
+    const form = document.getElementById('raise-form');
+    if (!form) return;
+    applyQueryParams();
+    toggleModeUi();
+
+    form.addEventListener('input', (e) => {
+      const t = e.target as HTMLElement;
+      if (t && t.id === 'raiseAmount') lastDriver = 'amount';
+      else if (t && t.id === 'raisePercent') lastDriver = 'percent';
+      else if (t && (t.id === 'annualSalary' || t.id === 'hourlyRate' || t.id === 'hoursPerWeek' || t.id === 'weeksPerYear')) {
+        /* keep lastDriver */
+      }
+      render();
+    });
+    form.addEventListener('change', (e) => {
+      const t = e.target as HTMLElement;
+      if (t && t.id === 'payMode') toggleModeUi();
+      render();
+    });
+
+    document.querySelectorAll('.preset').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pct = (btn as HTMLElement).dataset.pct || '5';
+        (document.getElementById('raisePercent') as HTMLInputElement).value = pct;
+        lastDriver = 'percent';
+        render();
+      });
+    });
+
+    document.getElementById('copy-raise')?.addEventListener('click', copyResults);
+    document.getElementById('export-pdf')?.addEventListener('click', exportPdf);
+    render();
+  }
+
+  bind();
+</script>

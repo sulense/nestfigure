@@ -1,0 +1,260 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import { calculateRaise, annualFromHourly } from '../../lib/raiseMath';
+import { raiseCalculatorUrl } from '../../lib/raiseLinks';
+
+const title = 'Hourly to Annual Raise: Convert Pay & Calculate Increases | Nestfigure';
+const description =
+  'Convert hourly pay to annual salary math, apply raise percents, and see new rates with worked tables. Educational schedule assumptions only—not payroll advice.';
+
+function money(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+function moneyHr(n: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
+const hours = 40;
+const weeks = 52;
+const hourly = 20;
+const pct = 5;
+const annual = annualFromHourly(hourly, hours, weeks);
+const r = calculateRaise({
+  inputMode: 'hourly',
+  annualSalary: 0,
+  hourlyRate: hourly,
+  hoursPerWeek: hours,
+  weeksPerYear: weeks,
+  raisePercent: pct,
+  optionalTaxRatePercent: 0,
+});
+
+const rows = [2, 3, 5, 10].map((p) => {
+  const res = calculateRaise({
+    inputMode: 'hourly',
+    annualSalary: 0,
+    hourlyRate: hourly,
+    hoursPerWeek: hours,
+    weeksPerYear: weeks,
+    raisePercent: p,
+    optionalTaxRatePercent: 0,
+  });
+  return { p, res };
+});
+
+const salaryEq = calculateRaise({
+  inputMode: 'annual',
+  annualSalary: 70000,
+  hourlyRate: 0,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: 0,
+  optionalTaxRatePercent: 0,
+});
+const hourlyFrom70k = 70000 / (40 * 52);
+
+const calcUrl = raiseCalculatorUrl({
+  mode: 'hourly',
+  hourly,
+  hoursPerWeek: hours,
+  weeksPerYear: weeks,
+  raisePercent: pct,
+});
+
+const BLS_ECI = 'https://www.bls.gov/eci/';
+const IRS_15T = 'https://www.irs.gov/publications/p15t';
+
+const faqs = [
+  {
+    question: 'How do I convert hourly pay to annual?',
+    answer: `Multiply hourly rate × hours per week × weeks per year. Stated example only: ${moneyHr(hourly)} × ${hours} × ${weeks} = ${money(annual)}. Different schedules change the result.`,
+  },
+  {
+    question: 'How do I convert annual salary to an approximate hourly rate?',
+    answer: `Divide annual pay by (hours per week × weeks per year). Stated example: ${money(70000)} ÷ (40 × 52) ≈ ${moneyHr(hourlyFrom70k)} per hour. This is an illustration—not your payroll definition.`,
+  },
+  {
+    question: 'How do I apply a raise to hourly pay?',
+    answer:
+      'New hourly = current hourly × (1 + raise % ÷ 100), or add a dollar raise then recompute percent as (dollar raise ÷ current hourly) × 100. Nestfigure’s raise calculator links percent and annual dollars when you enter hours and weeks.',
+  },
+  {
+    question: 'Is 40 × 52 the legal definition of full time?',
+    answer:
+      'No. Nestfigure uses hours and weeks you enter for annualization. 40×52 is a common illustration only—not a legal full-time standard on this site.',
+  },
+  {
+    question: 'Does converting hourly to annual include taxes?',
+    answer:
+      'Not by default. Optional effective tax rate on the raise calculator is user-typed only. Official federal withholding methods for employers are in IRS Publication 15-T on irs.gov.',
+  },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  canonicalPath="/guides/hourly-to-salary-raise/"
+  eyebrow="Pay & raises · Educational"
+  headline="Hourly to annual raise math"
+  updated="July 22, 2026"
+  datePublished="2026-07-21"
+  dateModified="2026-07-22"
+  readMinutes={12}
+  ogImage="/images/og-raise-calculator.webp"
+  faqs={faqs}
+  toolHref="/raise-calculator/"
+  toolTitle="Convert hourly pay in the free raise calculator"
+  toolBlurb="Enter hourly rate, hours per week, weeks per year, and a raise percent or dollar amount. Educational estimates only—not payroll."
+  toolCta="Open Raise Calculator"
+>
+  <p>
+    <strong>Direct answer:</strong> Annualize hourly pay with
+    <strong>hourly × hours/week × weeks/year</strong>, then apply the same raise formulas as salary: raise amount =
+    current × (raise % ÷ 100). Nestfigure’s
+    <a href="/raise-calculator/">raise calculator</a> accepts hourly or annual mode and shows both rate and annualized
+    dollars. This page is education only—not payroll, tax, or career advice.
+  </p>
+
+  <div class="key-takeaways card">
+    <h2 class="takeaways-title">Key takeaways</h2>
+    <ul>
+      <li>
+        <strong>Annualize:</strong> {moneyHr(hourly)} × {hours} × {weeks} = {money(annual)} under that stated schedule.
+      </li>
+      <li>
+        <strong>5% sample:</strong> new hourly ≈ {moneyHr(r.newHourly)}; raise ≈ {money(r.raiseAmountAnnual)}/year.
+      </li>
+      <li>
+        <strong>40×52 is not a legal full-time rule</strong> on Nestfigure—enter your own hours and weeks.
+      </li>
+      <li>
+        <strong>Taxes:</strong> optional user rate only; see{' '}
+        <a href={IRS_15T} rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a> for federal withholding
+        methods.
+      </li>
+    </ul>
+  </div>
+
+  <nav class="guide-toc card" aria-label="On this page">
+    <p>On this page</p>
+    <ul>
+      <li><a href="#formulas">Formulas</a></li>
+      <li><a href="#worked">Worked hourly example</a></li>
+      <li><a href="#table">Raise percent table</a></li>
+      <li><a href="#salary-to-hourly">Salary to hourly</a></li>
+      <li><a href="#limits">What this does not mean</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="formulas">Formulas</h2>
+  <ul>
+    <li><strong>Annualized current</strong> = hourly × hours/week × weeks/year</li>
+    <li><strong>New hourly</strong> = current hourly × (1 + raise % ÷ 100)</li>
+    <li><strong>Raise amount (annual)</strong> = annualized current × (raise % ÷ 100)</li>
+    <li><strong>Raise % from dollar raise</strong> = (dollar raise ÷ current hourly) × 100</li>
+    <li><strong>Approximate hourly from annual</strong> = annual ÷ (hours/week × weeks/year)</li>
+  </ul>
+  <p>
+    Nestfigure’s period columns still use annual ÷ 12 / 26 / 52 after annualization. Details:
+    <a href="/methodology/raise-calculator/">raise methodology</a>.
+  </p>
+
+  <h2 id="worked">Worked example (stated schedule only)</h2>
+  <p>
+    Inputs: <strong>{moneyHr(hourly)}/hour</strong>, <strong>{hours}</strong> hours/week, <strong>{weeks}</strong>{' '}
+    weeks/year, raise <strong>{pct}%</strong>:
+  </p>
+  <ul>
+    <li>Annualized current = {moneyHr(hourly)} × {hours} × {weeks} = <strong>{money(annual)}</strong></li>
+    <li>New hourly = {moneyHr(hourly)} × 1.05 = <strong>{moneyHr(r.newHourly)}</strong></li>
+    <li>Raise per year ≈ <strong>{money(r.raiseAmountAnnual)}</strong></li>
+    <li>New annual ≈ <strong>{money(r.newAnnual)}</strong></li>
+    <li>New monthly ≈ <strong>{money(r.newMonthly)}</strong> (annual ÷ 12)</li>
+  </ul>
+  <p>
+    <a class="btn btn-primary" href={calcUrl}>Open raise calculator with these inputs</a>
+  </p>
+  <p>
+    Scenario page:
+    <a href="/guides/raise-20-hour-5-percent/">What is a 5% raise on $20 an hour?</a>
+  </p>
+
+  <h2 id="table">Raise percent table (same $20 / 40×52 sample)</h2>
+  <p>Pure arithmetic on the labeled inputs above—not market rates or offers.</p>
+  <div class="table-wrap" style="margin-bottom:24px;">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Raise %</th>
+          <th class="num">New hourly</th>
+          <th class="num">Raise / year</th>
+          <th class="num">New annual</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map(({ p, res }) => (
+            <tr>
+              <td>
+                {p}%{p === pct ? ' (primary)' : ''}
+              </td>
+              <td class="num">{moneyHr(res.newHourly)}</td>
+              <td class="num">{money(res.raiseAmountAnnual)}</td>
+              <td class="num">{money(res.newAnnual)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="salary-to-hourly">Salary to approximate hourly</h2>
+  <p>
+    Working the other direction (stated 40×52 only): {money(70000)} ÷ (40 × 52) ≈{' '}
+    <strong>{moneyHr(hourlyFrom70k)}</strong> per hour. A raise percent then applies to either the annual or hourly
+    figure consistently. Under those assumptions the annualized current is {money(salaryEq.currentAnnual)}.
+  </p>
+
+  <h2 id="limits">What this does not mean</h2>
+  <ul>
+    <li>Not a legal definition of full-time, overtime eligibility, or exempt status</li>
+    <li>Not your employer’s actual pay calendar, unpaid leave, or shift rules</li>
+    <li>Not a tax, benefits, or overtime premium calculation</li>
+    <li>Not advice to accept or reject any offer</li>
+  </ul>
+  <p>
+    For economy-wide wage trends (not your raise), see the BLS
+    <a href={BLS_ECI} rel="noopener noreferrer" target="_blank">Employment Cost Index</a>.
+  </p>
+
+  <h2 id="sources">Authoritative sources</h2>
+  <ul class="sources">
+    <li>
+      <a href={BLS_ECI} rel="noopener noreferrer" target="_blank">BLS — Employment Cost Index</a>
+    </li>
+    <li>
+      <a href={IRS_15T} rel="noopener noreferrer" target="_blank"
+        >IRS — Publication 15-T, Federal Income Tax Withholding Methods</a
+      >
+    </li>
+    <li>
+      Nestfigure —
+      <a href="/methodology/raise-calculator/">Raise calculator methodology</a>
+    </li>
+  </ul>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/guides/how-to-calculate-a-raise/">How to calculate a raise percentage</a></li>
+    <li><a href="/guides/raise-20-hour-5-percent/">5% on $20/hour scenario</a></li>
+    <li><a href="/guides/raise-vs-bonus/">Raise vs bonus</a></li>
+    <li><a href="/faq/raise-calculator/">Raise FAQ</a></li>
+    <li><a href="/raise-calculator/">Raise calculator</a></li>
+  </ul>
+</GuideLayout>

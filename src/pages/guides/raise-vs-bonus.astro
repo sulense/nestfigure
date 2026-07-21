@@ -1,0 +1,254 @@
+---
+import GuideLayout from '../../layouts/GuideLayout.astro';
+import { calculateRaise } from '../../lib/raiseMath';
+import { raiseCalculatorUrl } from '../../lib/raiseLinks';
+
+const title = 'Raise vs Bonus: Math Differences (Not Negotiation Advice) | Nestfigure';
+const description =
+  'How a base-pay raise differs arithmetically from a one-time bonus, with worked $60,000 samples and IRS Publication 15-T pointers. Educational only—Nestfigure does not choose for you.';
+
+function money(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+
+const current = 60000;
+const raisePct = 5;
+const r = calculateRaise({
+  inputMode: 'annual',
+  annualSalary: current,
+  hourlyRate: 0,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: raisePct,
+  optionalTaxRatePercent: 0,
+});
+const oneTimeBonus = r.raiseAmountAnnual;
+
+const year2RaiseOnNewBase = calculateRaise({
+  inputMode: 'annual',
+  annualSalary: r.newAnnual,
+  hourlyRate: 0,
+  hoursPerWeek: 40,
+  weeksPerYear: 52,
+  raisePercent: raisePct,
+  optionalTaxRatePercent: 0,
+});
+
+const calcUrl = raiseCalculatorUrl({ mode: 'annual', annual: current, raisePercent: raisePct });
+const IRS_15T = 'https://www.irs.gov/publications/p15t';
+const BLS_ECI = 'https://www.bls.gov/eci/';
+
+const faqs = [
+  {
+    question: 'Is a raise better than a bonus?',
+    answer:
+      'Nestfigure does not decide for you. Arithmetically, a raise changes base pay (and often future percent raises if your employer uses percent of base); a bonus is often a one-time amount. Tax treatment can differ—see a tax professional or IRS materials. Not career advice.',
+  },
+  {
+    question: 'How do I model a raise vs a same-dollar bonus?',
+    answer: `Example with stated sample inputs only: a ${raisePct}% raise on ${money(current)} is ${money(r.raiseAmountAnnual)}/year added to base (new annual ${money(r.newAnnual)}). A one-time bonus of ${money(oneTimeBonus)} is the same dollar once, without changing base. Use Nestfigure only for the raise side of that comparison.`,
+  },
+  {
+    question: 'Does Nestfigure calculate bonus taxes?',
+    answer:
+      'No. Optional effective tax rate on the raise calculator is a user-typed percentage for rough net on base-pay changes only—not supplemental wage or bonus withholding. Federal withholding methods for employers are in IRS Publication 15-T on irs.gov.',
+  },
+  {
+    question: 'Why does base pay matter for future raises?',
+    answer: `If a later raise is also a percent of base, the new base compounds. Stated sample: after a 5% raise from ${money(current)} to ${money(r.newAnnual)}, another 5% on the new base is ${money(year2RaiseOnNewBase.raiseAmountAnnual)}—more dollars than 5% of the original base. That is arithmetic only, not a prediction of your employer’s plan.`,
+  },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  canonicalPath="/guides/raise-vs-bonus/"
+  eyebrow="Pay & raises · Educational"
+  headline="Raise vs bonus (math only)"
+  updated="July 22, 2026"
+  datePublished="2026-07-21"
+  dateModified="2026-07-22"
+  readMinutes={11}
+  ogImage="/images/og-raise-calculator.webp"
+  faqs={faqs}
+  toolHref="/raise-calculator/"
+  toolTitle="Model a base-pay raise"
+  toolBlurb="Nestfigure models percent or dollar base-pay changes—not bonus products. Educational arithmetic only."
+  toolCta="Open Raise Calculator"
+>
+  <p>
+    <strong>Direct answer:</strong> Nestfigure will not tell you whether to prefer a raise or a bonus. We only clarify
+    the arithmetic: a <strong>raise</strong> changes ongoing base pay; a <strong>bonus</strong> is often a separate,
+    one-time payment that may leave base unchanged. Use the free
+    <a href="/raise-calculator/">raise calculator</a> for percent or dollar base-pay changes. Not negotiation, tax, or
+    career advice.
+  </p>
+
+  <div class="key-takeaways card">
+    <h2 class="takeaways-title">Key takeaways</h2>
+    <ul>
+      <li>
+        <strong>Raise:</strong> new base = current × (1 + raise % ÷ 100); future percent raises may apply to the new
+        base.
+      </li>
+      <li>
+        <strong>One-time bonus:</strong> same dollars once (as structured by the employer) without necessarily changing
+        base.
+      </li>
+      <li>
+        <strong>Sample only:</strong> 5% of {money(current)} = {money(r.raiseAmountAnnual)}/year added to base → new
+        annual {money(r.newAnnual)}.
+      </li>
+      <li>
+        <strong>Taxes:</strong> Nestfigure does not model bonus withholding; see{' '}
+        <a href={IRS_15T} rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a>.
+      </li>
+    </ul>
+  </div>
+
+  <nav class="guide-toc card" aria-label="On this page">
+    <p>On this page</p>
+    <ul>
+      <li><a href="#difference">Arithmetic difference</a></li>
+      <li><a href="#sample">Stated sample</a></li>
+      <li><a href="#compound">Why base compounds</a></li>
+      <li><a href="#taxes">Taxes (official pointer)</a></li>
+      <li><a href="#limits">What Nestfigure will not do</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="difference">Arithmetic difference</h2>
+  <div class="table-wrap" style="margin-bottom:24px;">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Base-pay raise (modeled here)</th>
+          <th>One-time bonus (conceptual)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>What changes</td>
+          <td>Ongoing base pay</td>
+          <td>Often a separate payment; base may stay the same</td>
+        </tr>
+        <tr>
+          <td>Typical formula</td>
+          <td>new base = current × (1 + raise % ÷ 100)</td>
+          <td>Fixed dollar amount paid once (or on employer schedule)</td>
+        </tr>
+        <tr>
+          <td>Later percent raises</td>
+          <td>Often apply to the new base (if employer uses %)</td>
+          <td>Usually do not change the base for next year</td>
+        </tr>
+        <tr>
+          <td>Nestfigure tool</td>
+          <td>Yes — raise calculator</td>
+          <td>No bonus product model</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Employer plans vary widely. Some “bonuses” are contractual; some raises are merit, COLA, or market adjustments.
+    Nestfigure only documents percentage arithmetic for base pay.
+  </p>
+
+  <h2 id="sample">Stated sample (raise side only)</h2>
+  <p>
+    Current annual <strong>{money(current)}</strong>, raise <strong>{raisePct}%</strong> (illustrative):
+  </p>
+  <ul>
+    <li>Raise amount added to base: <strong>{money(r.raiseAmountAnnual)}</strong> / year</li>
+    <li>New annual base: <strong>{money(r.newAnnual)}</strong></li>
+    <li>New monthly (÷ 12): <strong>{money(r.newMonthly)}</strong></li>
+    <li>
+      Same dollars as a one-time bonus illustration: <strong>{money(oneTimeBonus)}</strong> once—without changing base
+      (conceptual only)
+    </li>
+  </ul>
+  <p>
+    <a class="btn btn-primary" href={calcUrl}>Model the raise in the calculator</a>
+  </p>
+  <p>
+    Related scenario:
+    <a href="/guides/raise-60000-5-percent/">5% on $60,000</a>
+  </p>
+
+  <h2 id="compound">Why base pay can matter for a later percent raise</h2>
+  <p>
+    If a second raise is also a percent of base, dollars grow with the new base. Stated sample only: after moving from{' '}
+    {money(current)} to {money(r.newAnnual)} via 5%, another 5% on the new base is{' '}
+    <strong>{money(year2RaiseOnNewBase.raiseAmountAnnual)}</strong> (new annual{' '}
+    <strong>{money(year2RaiseOnNewBase.newAnnual)}</strong>). That is not a forecast of your employer’s budget—only
+    arithmetic if both steps are percent-of-base raises on those numbers.
+  </p>
+
+  <h2 id="taxes">Taxes (official pointer only)</h2>
+  <p>
+    Gross raise math is separate from withholding. Federal income tax withholding methods for employers are described
+    in
+    <a href={IRS_15T} rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a>
+    (Federal Income Tax Withholding Methods). Supplemental wages, bonuses, and commissions can follow different
+    withholding practices described in IRS materials—Nestfigure does not implement those tables and does not give tax
+    advice.
+  </p>
+
+  <h2 id="limits">What Nestfigure will not do</h2>
+  <ul>
+    <li>Say whether a raise or bonus is “better” for you</li>
+    <li>Model benefits, equity, overtime premiums, or total rewards</li>
+    <li>Provide negotiation scripts or legal rights determinations</li>
+    <li>Compute IRS or state tax on bonuses automatically</li>
+  </ul>
+  <p>
+    For national wage-and-salary trends (not your offer), see the BLS
+    <a href={BLS_ECI} rel="noopener noreferrer" target="_blank">Employment Cost Index</a>.
+  </p>
+
+  <h2>Saving part of a raise</h2>
+  <p>
+    If you want educational compound-interest math on a principal you choose, open the
+    <a href="/cd-calculator/">CD calculator</a>—not a bank quote. Product structure and early-withdrawal context:
+    <a
+      href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+      rel="noopener noreferrer"
+      target="_blank">CFPB — What is a CD?</a
+    >.
+  </p>
+
+  <h2 id="sources">Authoritative sources</h2>
+  <ul class="sources">
+    <li>
+      <a href={IRS_15T} rel="noopener noreferrer" target="_blank"
+        >IRS — Publication 15-T, Federal Income Tax Withholding Methods</a
+      >
+    </li>
+    <li>
+      <a href={BLS_ECI} rel="noopener noreferrer" target="_blank">BLS — Employment Cost Index</a>
+    </li>
+    <li>
+      <a
+        href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
+        rel="noopener noreferrer"
+        target="_blank">CFPB — What is a certificate of deposit (CD)?</a
+      >
+    </li>
+    <li>
+      Nestfigure —
+      <a href="/methodology/raise-calculator/">Raise calculator methodology</a>
+    </li>
+  </ul>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/guides/how-to-calculate-a-raise/">How to calculate a raise percentage</a></li>
+    <li><a href="/guides/hourly-to-salary-raise/">Hourly to annual raise math</a></li>
+    <li><a href="/faq/raise-calculator/">Raise FAQ</a></li>
+    <li><a href="/raise-calculator/">Raise calculator</a></li>
+  </ul>
+</GuideLayout>

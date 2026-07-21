@@ -28,8 +28,8 @@ const path = `/guides/${s.slug}/`;
 const pageUrl = `https://nestfigure.com${path}`;
 const termText = termLabel(s.termMonths);
 const otherScenarios = CD_SCENARIOS.filter((x) => x.slug !== s.slug);
-const dateModified = '2026-07-17';
-const dateLabel = 'July 17, 2026';
+const dateModified = '2026-07-22';
+const dateLabel = 'July 22, 2026';
 
 /** Real, public sources only (searchable). */
 const SOURCES = {
@@ -54,8 +54,8 @@ const SOURCES = {
     url: 'https://ncua.gov/consumers/share-insurance-coverage',
   },
   methodology: {
-    name: 'Nestfigure — calculator methodology',
-    url: 'https://nestfigure.com/about/',
+    name: 'Nestfigure — CD calculator methodology',
+    url: '/methodology/cd-calculator/',
   },
 } as const;
 
@@ -81,7 +81,7 @@ const faqs = [
   },
   {
     question: 'How do I estimate a different APY or term?',
-    answer: `Open Nestfigure’s CD calculator prefilled for ${money(s.principal)} and ${termText} (${calcUrl} on this site), then change the rate or term. You can also use the embedded calculator on this page. Methodology is documented at /about/.`,
+    answer: `Open Nestfigure’s CD calculator prefilled for ${money(s.principal)} and ${termText}, then change the rate or term. You can also use the embedded calculator on this page. Full assumptions are on Nestfigure’s CD calculator methodology page.`,
   },
   {
     question: 'Does Nestfigure include early-withdrawal penalties?',
@@ -135,7 +135,7 @@ const jsonLd = [
   title={s.title}
   description={s.description}
   canonicalPath={path}
-  ogImage="/images/og-default.webp"
+  ogImage="/images/feature-cd-calculator.webp"
   jsonLd={jsonLd}
 >
   <article>
@@ -151,7 +151,7 @@ const jsonLd = [
         </p>
         <p class="muted" style="font-size: 13px; margin-top: 8px;">
           Reviewed <time datetime={dateModified}>{dateLabel}</time> ·
-          <a href="/about/">Methodology</a> ·
+          <a href="/methodology/cd-calculator/">Methodology</a> ·
           <a href="/faq/certificate-of-deposit/">CD FAQ</a>
         </p>
         <AuthorByline variant="compact" />
@@ -246,7 +246,7 @@ const jsonLd = [
         <p>
           Each interest and balance figure is computed at build time with the same engine as the
           <a href="/cd-calculator/">CD calculator</a>
-          (<a href="/about/"> (methodology)</a>. Columns are labeled sample APYs—not market surveys.
+          (<a href="/methodology/cd-calculator/">methodology</a>). Columns are labeled sample APYs—not market surveys.
         </p>
         <div class="table-wrap">
           <table class="data">

@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
+
+const title = 'Raise Calculator Methodology — Nestfigure';
+const description =
+  'How Nestfigure’s free raise calculator works: percent and dollar formulas, period splits, hourly annualization, optional tax rate, and limits.';
+const canonicalPath = '/methodology/raise-calculator/';
+const dateLabel = 'July 22, 2026';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Raise Calculator Methodology',
+  description,
+  dateModified: '2026-07-22',
+  author: {
+    '@type': 'Person',
+    name: 'John Rey Balais',
+    url: 'https://nestfigure.com/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Nestfigure',
+    url: 'https://nestfigure.com/',
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage="/images/og-raise-calculator.webp"
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Methodology · Raise</p>
+      <h1 class="display" style="font-size:clamp(32px,4.5vw,48px);">Raise calculator methodology</h1>
+      <p class="lead">Transparent percentage arithmetic for educational salary-increase estimates.</p>
+      <AuthorByline variant="compact" />
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container prose" style="max-width:720px;">
+      <p>
+        Tool: <a href="/raise-calculator/">Raise calculator</a> · Embed:
+        <a href="/embed/raise-calculator/">Embeddable raise calculator</a> · Hub:
+        <a href="/methodology/">All methodology</a> · FAQ:
+        <a href="/faq/raise-calculator/">Raise FAQ</a>
+      </p>
+
+      <h2>Purpose</h2>
+      <p>
+        The raise calculator converts a raise <strong>percent</strong> or <strong>dollar amount</strong> into new pay
+        figures by period. It is not an employer offer, payroll system, tax return, or negotiation coach.
+      </p>
+
+      <h2>Core formulas</h2>
+      <ul>
+        <li><strong>Raise amount</strong> = current pay × (raise % ÷ 100)</li>
+        <li><strong>New pay</strong> = current pay + raise amount</li>
+        <li><strong>Raise %</strong> = (new pay − current pay) ÷ current pay × 100</li>
+      </ul>
+      <p>
+        Percent and dollar fields stay linked to current annual pay as you type.
+      </p>
+
+      <h2>Period views</h2>
+      <ul>
+        <li>Monthly = annual ÷ 12</li>
+        <li>Biweekly = annual ÷ 26</li>
+        <li>Weekly = annual ÷ 52</li>
+      </ul>
+      <p>These divisors are display conventions only—not a claim about your employer’s pay calendar.</p>
+
+      <h2>Hourly mode</h2>
+      <p>
+        Annualized current pay = hourly rate × hours per week × weeks per year (values you enter). New hourly = current
+        hourly × (1 + raise % ÷ 100) when raise is driven by percent. Common full-time illustration is 40 × 52; that is
+        not a legal full-time definition on this site.
+      </p>
+
+      <h2>Optional effective tax rate</h2>
+      <p>
+        If you type an effective tax rate percentage, Nestfigure multiplies gross figures by (1 − rate/100) for a
+        <strong>rough net</strong> view only. This is not IRS Publication 15-T withholding, not state tax, and not Form
+        W-4 logic. Official federal income tax withholding methods for employers:
+        <a href="https://www.irs.gov/publications/p15t" rel="noopener noreferrer" target="_blank"
+          >IRS Publication 15-T</a
+        >.
+      </p>
+
+      <h2>Outputs</h2>
+      <ul>
+        <li>New annual, raise amount, raise percent, period table</li>
+        <li>Before/after annual chart and compare raise percents table</li>
+        <li>Copy results and browser PDF export</li>
+        <li>Share, embed, URL prefills, link into CD calculator with raise dollars as principal</li>
+      </ul>
+
+      <h2>What we intentionally omit</h2>
+      <ul>
+        <li>Employer budget, market rates, or “good raise” judgments</li>
+        <li>Overtime premiums, shift differentials, benefits valuation</li>
+        <li>Automatic IRS/state tax tables</li>
+        <li>Negotiation scripts or legal rights determinations</li>
+      </ul>
+
+      <h2>National wage context (optional reading)</h2>
+      <p>
+        For economy-wide wages and salaries—not your individual raise—see the BLS
+        <a href="https://www.bls.gov/eci/" rel="noopener noreferrer" target="_blank">Employment Cost Index</a>. Per
+        BLS USDL-26-0669 (April 30, 2026), wages and salaries for civilian workers increased 3.4 percent for the
+        12-month period ending in March 2026 (not seasonally adjusted). Re-check
+        <a href="https://www.bls.gov/news.release/eci.nr0.htm" rel="noopener noreferrer" target="_blank"
+          >the live release</a
+        > for newer periods.
+      </p>
+
+      <h2>Related content</h2>
+      <ul>
+        <li><a href="/guides/how-to-calculate-a-raise/">How to calculate a raise</a></li>
+        <li><a href="/guides/hourly-to-salary-raise/">Hourly to annual raise</a></li>
+        <li><a href="/guides/raise-vs-bonus/">Raise vs bonus</a></li>
+        <li><a href="/faq/raise-calculator/">Raise FAQ</a></li>
+        <li><a href="/guides/">All guides & scenarios</a></li>
+      </ul>
+
+      <AuthorByline variant="card" />
+      <p class="disclaimer">Last reviewed: {dateLabel}.</p>
+    </div>
+  </section>
+</BaseLayout>

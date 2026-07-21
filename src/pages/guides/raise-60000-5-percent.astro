@@ -1,0 +1,8 @@
+---
+import RaiseScenarioPage from '../../components/RaiseScenarioPage.astro';
+import { getRaiseScenario } from '../../lib/raiseScenarios';
+
+const scenario = getRaiseScenario('raise-60000-5-percent')!;
+---
+
+<RaiseScenarioPage scenario={scenario} />

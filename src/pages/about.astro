@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'About & Methodology — Nestfigure';
+const title = 'About Nestfigure — Who Builds These Calculators';
 const description =
-  'Meet John Rey Balais, the developer behind Nestfigure. How our CD calculator math works, what we omit, and YMYL disclaimers.';
+  'Meet John Rey Balais, the developer behind Nestfigure. Who we are, how we publish educational finance tools, and where to find methodology and sources.';
 
 const personLd = {
   '@context': 'https://schema.org',
@@ -11,7 +11,7 @@ const personLd = {
   name: 'John Rey Balais',
   jobTitle: 'Developer',
   description:
-    'Developer building Nestfigure—free personal finance calculators and educational guides, starting with certificates of deposit.',
+    'Developer building Nestfigure—free personal finance calculators and educational guides.',
   image: 'https://nestfigure.com/images/john-rey-balais.webp',
   url: 'https://nestfigure.com/about/',
   worksFor: {
@@ -44,9 +44,11 @@ const orgLd = {
 >
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-      <p class="eyebrow">Trust & methodology</p>
+      <p class="eyebrow">Trust &amp; authorship</p>
       <h1 class="display" style="font-size:clamp(36px,5vw,56px);">About Nestfigure</h1>
-      <p class="lead">Transparent math. Personal finance education. Estimates—not advice or bank quotes.</p>
+      <p class="lead">
+        Who builds Nestfigure, how we publish, and how to find transparent calculator methodology.
+      </p>
     </div>
   </section>
 
@@ -70,13 +72,13 @@ const orgLd = {
           <p class="founder-name">John Rey Balais</p>
           <p class="founder-role">Developer · Nestfigure</p>
           <p>
-            I’m a developer building Nestfigure—free personal finance calculators and educational guides, starting with
-            certificates of deposit. I focus on clear math, transparent assumptions, and tools you can use without
-            signing up.
+            I’m a developer building Nestfigure—free personal finance calculators and educational guides. I focus on
+            clear math, transparent assumptions, official U.S. source citations where claims need them, and tools you
+            can use without signing up.
           </p>
           <p>
-            Nestfigure is not a bank, broker, or adviser. Calculator results are educational estimates under documented
-            formulas—not offers, rate quotes, or personalized advice. Report factual errors via the
+            Nestfigure is not a bank, broker, employer, or adviser. Calculator results are educational estimates under
+            documented formulas—not offers, rate quotes, payroll, or personalized advice. Report factual errors via the
             <a href="/contact/">contact form</a>.
           </p>
         </div>
@@ -84,85 +86,49 @@ const orgLd = {
 
       <h2>What we build</h2>
       <p>
-        Nestfigure focuses on personal finance calculators and related guides (starting with certificates of deposit).
-        We stay in one niche so explanations and tools can stay consistent. Future tools may include paycheck, raise,
-        overtime, and debt payoff calculators—still educational estimators.
+        Nestfigure stays in personal finance: free calculators, guides, scenarios, and FAQs. Live tools include the
+        <a href="/cd-calculator/">CD calculator</a> and <a href="/raise-calculator/">raise calculator</a>, each with
+        share/embed, copy results, PDF export, and deep-link prefills. Future tools may include paycheck, overtime, and
+        debt payoff—still educational estimators with the same product pattern.
+      </p>
+      <p>
+        Browse the <a href="/calculators/">calculators hub</a> or the <a href="/guides/">guides hub</a> (content is
+        grouped by tool).
       </p>
 
       <h2>Who authors this content</h2>
       <p>
         Content is published by <strong>Nestfigure</strong> and written or reviewed by
-        <strong>John Rey Balais</strong>. We do not invent guest “expert” personas or fabricated credentials. Guides
-        and FAQs cite public U.S. sources (for example CFPB, FDIC, and NCUA materials) where deposit concepts are
-        discussed.
+        <strong>John Rey Balais</strong>. We do not invent guest “expert” personas or fabricated credentials. Deposit
+        topics cite CFPB, FDIC, and NCUA materials; wage and price context cites BLS; federal withholding context cites
+        IRS Publication 15-T. We do not invent live bank rates or personal “good raise” judgments.
       </p>
 
-      <h2>CD calculator methodology</h2>
+      <h2>Where methodology lives</h2>
       <p>
-        The <a href="/cd-calculator/">CD calculator</a> estimates maturity value using standard compound-interest
-        formulas for education. U.S. deposit products must follow Truth in Savings disclosures (Regulation DD / 12 CFR
-        Part 1030) when offered by covered institutions; our tool does not replace those disclosures.
-      </p>
-
-      <h3>Discrete compounding</h3>
-      <p>
-        <code style="font-family:var(--font-mono);font-size:13px;background:#f0f5fe;padding:4px 8px;border-radius:6px;">
-          A = P × (1 + r/n)^(n×t)
-        </code>
+        <strong>This About page is for people and publishing standards</strong>—not full formula documentation.
+        Calculator math, conversions, and intentional omissions live on dedicated methodology pages so every tool can
+        have its own transparent assumptions:
       </p>
       <ul>
-        <li><strong>P</strong> — principal</li>
-        <li><strong>r</strong> — annual nominal rate (decimal)</li>
-        <li><strong>n</strong> — periods per year (365 daily, 12 monthly, 4 quarterly, 2 semi-annual, 1 annual)</li>
-        <li><strong>t</strong> — years (term months ÷ 12)</li>
+        <li><a href="/methodology/">Methodology hub</a></li>
+        <li><a href="/methodology/cd-calculator/">CD calculator methodology</a></li>
+        <li><a href="/methodology/raise-calculator/">Raise calculator methodology</a></li>
       </ul>
 
-      <h3>Continuous compounding</h3>
-      <p>
-        <code style="font-family:var(--font-mono);font-size:13px;background:#f0f5fe;padding:4px 8px;border-radius:6px;">
-          A = P × e^(r×t)
-        </code>
-      </p>
-      <p>
-        Continuous compounding is the mathematical limit of more frequent discrete compounding. It is included for
-        completeness; many retail CDs use discrete schedules.
-      </p>
-
-      <h3>APY input conversion</h3>
-      <p>
-        When you enter APY, we convert it to a nominal rate consistent with the selected compounding choice so that,
-        under this model, a one-year horizon matches the entered APY:
-      </p>
+      <h2>Guides, scenarios &amp; FAQ</h2>
       <ul>
-        <li>Discrete: <code>r = n × ((1 + APY)^(1/n) − 1)</code></li>
-        <li>Continuous: <code>r = ln(1 + APY)</code></li>
-      </ul>
-      <p>
-        Example: at 4.50% APY for one year with no fees, $10,000 grows by $450 to $10,450 under a pure 4.50% effective
-        annual yield. That is arithmetic under stated assumptions—not a claim about any bank’s current rates.
-      </p>
-
-      <h3>Optional monthly deposits</h3>
-      <p>
-        If you add a monthly deposit, we simulate month-by-month growth then add the deposit. Many traditional CDs do
-        not allow add-on deposits; treat this mode as a planning illustration only.
-      </p>
-
-      <h3>What we intentionally omit</h3>
-      <ul>
-        <li>Early withdrawal penalties</li>
-        <li>Promotional or step-up rates</li>
-        <li>Account fees and minimums</li>
-        <li>Tax withholding or tax advice</li>
-        <li>Issuer-specific day-count rules</li>
+        <li><a href="/guides/">All guides &amp; scenarios</a></li>
+        <li><a href="/faq/">FAQ hub</a></li>
+        <li><a href="/faq/certificate-of-deposit/">CD FAQ</a></li>
+        <li><a href="/faq/raise-calculator/">Raise FAQ</a></li>
       </ul>
 
-      <h2>Guides & FAQ</h2>
+      <h2>Calculators</h2>
       <ul>
-        <li><a href="/guides/how-cd-interest-works/">How CD interest works</a> (cites CFPB / Regulation DD)</li>
-        <li><a href="/guides/cd-vs-savings/">CD vs high-yield savings</a> (cites CFPB, FDIC, NCUA)</li>
-        <li><a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a></li>
-        <li><a href="/guides/">All guides</a></li>
+        <li><a href="/cd-calculator/">CD calculator</a></li>
+        <li><a href="/raise-calculator/">Raise calculator</a></li>
+        <li><a href="/calculators/">All calculators</a></li>
       </ul>
 
       <h2>Primary external references we rely on</h2>
@@ -191,6 +157,16 @@ const orgLd = {
             >NCUA — Share insurance coverage</a
           >
         </li>
+        <li>
+          <a href="https://www.bls.gov/eci/" rel="noopener noreferrer" target="_blank"
+            >BLS — Employment Cost Index (wages &amp; salaries)</a
+          >
+        </li>
+        <li>
+          <a href="https://www.irs.gov/publications/p15t" rel="noopener noreferrer" target="_blank"
+            >IRS — Publication 15-T (federal income tax withholding methods)</a
+          >
+        </li>
       </ul>
 
       <h2>Contact</h2>
@@ -199,7 +175,7 @@ const orgLd = {
         calculators and guides.
       </p>
 
-      <p class="disclaimer">Last reviewed: July 17, 2026.</p>
+      <p class="disclaimer">Last reviewed: July 22, 2026.</p>
     </div>
   </section>
 </BaseLayout>

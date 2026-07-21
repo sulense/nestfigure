@@ -8,8 +8,8 @@ const title = 'CD FAQ: How Much Interest, Rates, Terms & Safety | Nestfigure';
 const description =
   'Factual CD FAQ with transparent sample math: $10k–$100k earnings examples, term length, downsides, FDIC/NCUA basics, and rate myths. Not bank quotes or advice.';
 const canonicalPath = '/faq/certificate-of-deposit/';
-const dateModified = '2026-07-17';
-const updatedLabel = 'July 17, 2026';
+const dateModified = '2026-07-22';
+const updatedLabel = 'July 22, 2026';
 const pageUrl = 'https://nestfigure.com/faq/certificate-of-deposit/';
 
 /** Format USD for display (build-time, deterministic). */
@@ -380,7 +380,7 @@ const webPageLd = {
   title={title}
   description={description}
   canonicalPath={canonicalPath}
-  ogImage="/images/og-default.webp"
+  ogImage="/images/feature-cd-calculator.webp"
   jsonLd={[webPageLd, breadcrumbLd, faqLd]}
 >
   <article itemscope itemtype="https://schema.org/FAQPage">
@@ -396,7 +396,7 @@ const webPageLd = {
         </p>
         <p class="muted" style="font-size: 13px; margin-top: 8px;">
           Reviewed <time datetime={dateModified}>{updatedLabel}</time> · {allFaqs.length} questions ·
-          <a href="/about/">Methodology</a>
+          <a href="/methodology/cd-calculator/">Methodology</a>
         </p>
         <AuthorByline variant="compact" />
       </div>
@@ -447,7 +447,7 @@ const webPageLd = {
           <h2 id="method-heading">Illustrative earnings table (verified sample APYs)</h2>
           <p class="method-note">
             Every figure below is computed at build time with Nestfigure’s
-            <a href="/about/">published CD methodology</a>
+            <a href="/methodology/cd-calculator/">published CD methodology</a>
             (APY → daily compounding model, no add-on deposits). Replace the sample APY with your institution’s
             disclosed APY for a realistic estimate.
           </p>
@@ -548,7 +548,7 @@ const webPageLd = {
               >
             </li>
             <li>
-              <a href="/about/">Nestfigure — calculator methodology</a>
+              <a href="/methodology/cd-calculator/">Nestfigure — CD calculator methodology</a>
             </li>
           </ul>
         </section>

@@ -1,0 +1,366 @@
+---
+/**
+ * GEO/SEO raise scenario: answer-first, stated sample inputs, BLS/IRS only for context.
+ * Sample percents are labeled illustrations—not offers or market averages.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RaiseCalculator from './RaiseCalculator.astro';
+import AuthorByline from './AuthorByline.astro';
+import TextToSpeech from './TextToSpeech.astro';
+import {
+  type RaiseScenario,
+  money,
+  moneyHr,
+  scenarioCalcUrl,
+  scenarioRows,
+  scenarioResult,
+  basePayLabel,
+  RAISE_SCENARIOS,
+} from '../lib/raiseScenarios';
+
+interface Props {
+  scenario: RaiseScenario;
+}
+
+const { scenario: s } = Astro.props;
+const rows = scenarioRows(s);
+const primary = rows.find((r) => r.pct === s.defaultPercent) ?? rows[0];
+const primaryResult = scenarioResult(s, s.defaultPercent);
+const calcUrl = scenarioCalcUrl(s);
+const path = `/guides/${s.slug}/`;
+const pageUrl = `https://nestfigure.com${path}`;
+const otherScenarios = RAISE_SCENARIOS.filter((x) => x.slug !== s.slug);
+const dateModified = '2026-07-22';
+const dateLabel = 'July 22, 2026';
+const baseLabel = basePayLabel(s);
+
+const SOURCES = {
+  blsEci: {
+    name: 'BLS — Employment Cost Index',
+    url: 'https://www.bls.gov/eci/',
+  },
+  blsRelease: {
+    name: 'BLS — ECI summary (USDL-26-0669, April 30, 2026)',
+    url: 'https://www.bls.gov/news.release/eci.nr0.htm',
+  },
+  irs15t: {
+    name: 'IRS — Publication 15-T, Federal Income Tax Withholding Methods',
+    url: 'https://www.irs.gov/publications/p15t',
+  },
+  methodology: {
+    name: 'Nestfigure — raise calculator methodology',
+    url: '/methodology/raise-calculator/',
+  },
+} as const;
+
+const directAnswer =
+  s.mode === 'hourly'
+    ? `Direct answer: At the stated sample inputs only (${baseLabel}), a ${s.defaultPercent}% raise is about ${moneyHr(primaryResult.newHourly - primaryResult.currentHourly)} more per hour (new rate ${primary.newHourlyStr}), or about ${primary.raiseAmountStr} more per year (new annual ≈ ${primary.newAnnualStr}). Not a job offer—change hours, weeks, or percent in the free raise calculator.`
+    : `Direct answer: At the stated sample input only (${baseLabel}), a ${s.defaultPercent}% raise is ${primary.raiseAmountStr} more per year and a new annual pay of ${primary.newAnnualStr} (about ${primary.newMonthlyStr}/month before taxes). Pure arithmetic on those inputs—not an employer offer or U.S. average.`;
+
+const faqs: { question: string; answer: string; answerHtml?: string }[] = [
+  {
+    question: s.primaryQuestion,
+    answer: directAnswer,
+  },
+  {
+    question: 'How is this raise calculated?',
+    answer:
+      'Raise amount = current pay × (raise % ÷ 100); new pay = current + raise amount. Monthly, biweekly, and weekly views divide annual pay by 12, 26, or 52. Hourly annualization uses hours/week × weeks/year that you enter. See Nestfigure’s raise calculator methodology for full assumptions.',
+    answerHtml:
+      'Raise amount = current pay × (raise % ÷ 100); new pay = current + raise amount. Monthly, biweekly, and weekly views divide annual pay by 12, 26, or 52. Hourly annualization uses hours/week × weeks/year that you enter. See the <a href="/methodology/raise-calculator/">raise calculator methodology</a> for full assumptions.',
+  },
+  {
+    question: 'Are these dollar amounts a real raise offer?',
+    answer:
+      'No. Every dollar figure on this page follows only from labeled sample inputs chosen so the math is transparent. Nestfigure does not know your employer’s budget, market rate, or offer. Enter your real numbers in the free raise calculator.',
+    answerHtml:
+      'No. Every dollar figure on this page follows only from labeled sample inputs chosen so the math is transparent. Nestfigure does not know your employer’s budget, market rate, or offer. Enter your real numbers in the <a href="/raise-calculator/">raise calculator</a>.',
+  },
+  {
+    question: 'Does this include taxes?',
+    answer:
+      'Not by default. Nestfigure’s raise calculator can apply an optional effective tax rate only if you type one. It does not implement IRS Publication 15-T withholding tables. Official federal income tax withholding methods for employers are in IRS Publication 15-T.',
+    answerHtml:
+      'Not by default. Nestfigure’s raise calculator can apply an optional effective tax rate only if you type one. It does not implement IRS Publication 15-T withholding tables. Official federal income tax withholding methods for employers are in <a href="https://www.irs.gov/publications/p15t" rel="noopener noreferrer" target="_blank">IRS Publication 15-T</a>.',
+  },
+  {
+    question: 'Is this the average raise in the U.S.?',
+    answer:
+      'No. Sample percents on this page are not national averages. For economy-wide wage-and-salary trends (not your individual raise), see the BLS Employment Cost Index and re-check live releases.',
+    answerHtml:
+      'No. Sample percents on this page are not national averages. For economy-wide wage-and-salary trends (not your individual raise), see the <a href="https://www.bls.gov/eci/" rel="noopener noreferrer" target="_blank">BLS Employment Cost Index</a> and re-check live releases.',
+  },
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: s.headline,
+    description: s.description,
+    datePublished: dateModified,
+    dateModified,
+    author: {
+      '@type': 'Person',
+      name: 'John Rey Balais',
+      url: 'https://nestfigure.com/about/',
+      jobTitle: 'Developer',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Nestfigure',
+      url: 'https://nestfigure.com/',
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={s.title}
+  description={s.description}
+  canonicalPath={path}
+  ogImage="/images/og-raise-calculator.webp"
+  jsonLd={jsonLd}
+>
+  <article>
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow">Raise scenario · Educational</p>
+        <h1 class="display" style="font-size:clamp(32px,4.5vw,48px); max-width: 20ch;">{s.headline}</h1>
+        <p class="lead" style="max-width: 52ch;">
+          Stated sample inputs only. Nestfigure math—not a job offer, payroll file, or market average.
+        </p>
+        <AuthorByline variant="compact" />
+        <TextToSpeech />
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div class="container prose">
+        <div class="key-takeaways card">
+          <h2 class="takeaways-title">Direct answer</h2>
+          <p style="margin:0; font-size:15px; line-height:1.55; color:var(--color-iron);">{directAnswer}</p>
+        </div>
+
+        <h2>Stated sample inputs</h2>
+        <ul>
+          <li><strong>Base pay:</strong> {baseLabel}</li>
+          <li><strong>Primary raise shown:</strong> {s.defaultPercent}%</li>
+          {
+            s.mode === 'hourly' && (
+              <li>
+                <strong>Schedule assumption:</strong> hours and weeks are user-chosen inputs (here {s.hoursPerWeek} ×{' '}
+                {s.weeksPerYear})—not a legal full-time definition.
+              </li>
+            )
+          }
+        </ul>
+
+        <h2>Sample raise table</h2>
+        <p>Same base pay; different raise percents. Pure arithmetic on the inputs above.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Raise %</th>
+                <th class="num">Raise / year</th>
+                <th class="num">New annual</th>
+                <th class="num">New monthly</th>
+                {s.mode === 'hourly' && <th class="num">New hourly</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {
+                rows.map((r) => (
+                  <tr class={r.pct === s.defaultPercent ? 'is-current' : undefined}>
+                    <td>
+                      {r.pct}%
+                      {r.pct === s.defaultPercent ? ' (primary)' : ''}
+                    </td>
+                    <td class="num">{r.raiseAmountStr}</td>
+                    <td class="num">{r.newAnnualStr}</td>
+                    <td class="num">{r.newMonthlyStr}</td>
+                    {s.mode === 'hourly' && <td class="num">{r.newHourlyStr}</td>}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <a class="btn btn-primary" href={calcUrl}>Open raise calculator with these inputs</a>
+        </p>
+
+        <h2>Period breakdown (primary sample)</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th class="num">Before</th>
+                <th class="num">After ({s.defaultPercent}%)</th>
+                <th class="num">Difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Annual</td>
+                <td class="num">{money(primaryResult.currentAnnual)}</td>
+                <td class="num">{money(primaryResult.newAnnual)}</td>
+                <td class="num">{money(primaryResult.raiseAmountAnnual)}</td>
+              </tr>
+              <tr>
+                <td>Monthly (÷ 12)</td>
+                <td class="num">{money(primaryResult.currentMonthly)}</td>
+                <td class="num">{money(primaryResult.newMonthly)}</td>
+                <td class="num">{money(primaryResult.newMonthly - primaryResult.currentMonthly)}</td>
+              </tr>
+              <tr>
+                <td>Biweekly (÷ 26)</td>
+                <td class="num">{money(primaryResult.currentBiweekly)}</td>
+                <td class="num">{money(primaryResult.newBiweekly)}</td>
+                <td class="num">{money(primaryResult.newBiweekly - primaryResult.currentBiweekly)}</td>
+              </tr>
+              <tr>
+                <td>Weekly (÷ 52)</td>
+                <td class="num">{money(primaryResult.currentWeekly)}</td>
+                <td class="num">{money(primaryResult.newWeekly)}</td>
+                <td class="num">{money(primaryResult.newWeekly - primaryResult.currentWeekly)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Try your own numbers</h2>
+        <RaiseCalculator
+          inputMode={s.mode}
+          annualSalary={s.mode === 'annual' ? s.annualSalary : 60000}
+          hourlyRate={s.mode === 'hourly' ? s.hourlyRate : 28.85}
+          hoursPerWeek={s.hoursPerWeek}
+          weeksPerYear={s.weeksPerYear}
+          raisePercent={s.defaultPercent}
+        />
+
+        <h2>National wage context (not this sample)</h2>
+        <p>
+          For <strong>economy-wide</strong> wage-and-salary trends—not your individual raise—see the U.S. Bureau of
+          Labor Statistics
+          <a href={SOURCES.blsEci.url} rel="noopener noreferrer" target="_blank">{SOURCES.blsEci.name}</a>. Per BLS
+          news release USDL-26-0669 (April 30, 2026), wages and salaries for civilian workers increased 3.4 percent for
+          the 12-month period ending in March 2026 (not seasonally adjusted). Full release:
+          <a href={SOURCES.blsRelease.url} rel="noopener noreferrer" target="_blank">{SOURCES.blsRelease.name}</a>.
+          Re-check live BLS pages for newer periods.
+        </p>
+
+        <h2>Taxes</h2>
+        <p>
+          This scenario is <strong>gross</strong> arithmetic. Optional rough net on the calculator uses only a rate
+          <strong>you type</strong>. Official federal income tax withholding methods for employers:
+          <a href={SOURCES.irs15t.url} rel="noopener noreferrer" target="_blank">{SOURCES.irs15t.name}</a>.
+        </p>
+
+        <h2>Related scenarios</h2>
+        <ul>
+          {
+            otherScenarios.map((o) => (
+              <li>
+                <a href={`/guides/${o.slug}/`}>{o.headline}</a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2>Related</h2>
+        <ul>
+          <li><a href="/raise-calculator/">Raise calculator</a></li>
+          <li><a href="/guides/how-to-calculate-a-raise/">How to calculate a raise percentage</a></li>
+          <li><a href="/faq/raise-calculator/">Raise calculator FAQ</a></li>
+          <li><a href="/methodology/raise-calculator/">Raise methodology</a></li>
+          <li><a href="/cd-calculator/">CD calculator</a> (model saving part of a raise)</li>
+        </ul>
+
+        <h2>Authoritative sources</h2>
+        <ul>
+          <li>
+            <a href={SOURCES.blsEci.url} rel="noopener noreferrer" target="_blank">{SOURCES.blsEci.name}</a>
+          </li>
+          <li>
+            <a href={SOURCES.blsRelease.url} rel="noopener noreferrer" target="_blank">{SOURCES.blsRelease.name}</a>
+          </li>
+          <li>
+            <a href={SOURCES.irs15t.url} rel="noopener noreferrer" target="_blank">{SOURCES.irs15t.name}</a>
+          </li>
+          <li>
+            <a href={SOURCES.methodology.url}>{SOURCES.methodology.name}</a>
+          </li>
+        </ul>
+
+        <div class="faq" style="margin-top: 28px;">
+          <h2>FAQ</h2>
+          {
+            faqs.map((f, i) => (
+              <details open={i === 0}>
+                <summary>
+                  <h3 style="display:inline;margin:0;font-size:15px;font-weight:600;">{f.question}</h3>
+                </summary>
+                {f.answerHtml ? <p set:html={f.answerHtml} /> : <p>{f.answer}</p>}
+              </details>
+            ))
+          }
+        </div>
+
+        <AuthorByline variant="card" />
+        <p class="disclaimer">
+          <strong>Disclaimer:</strong> Educational arithmetic only. Updated {dateLabel}. Not tax, legal, or career
+          advice.
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .hero-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .key-takeaways {
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
+  }
+
+  .takeaways-title {
+    font-size: 15px;
+    margin: 0 0 10px;
+    font-weight: 650;
+  }
+
+  .table-wrap .num,
+  table.data td.num,
+  table.data th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  table.data tr.is-current td {
+    background: #eef4ff;
+    font-weight: 600;
+  }
+</style>

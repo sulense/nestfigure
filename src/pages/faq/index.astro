@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'FAQ Hub — Nestfigure Calculators';
+const description =
+  'Frequently asked questions for Nestfigure personal finance calculators: certificates of deposit and salary raises. Educational answers with official U.S. source links.';
+
+const hubs = [
+  {
+    href: '/faq/certificate-of-deposit/',
+    title: 'Certificate of deposit (CD) FAQ',
+    blurb:
+      'How much sample math can show at labeled APYs, term length, early withdrawal, FDIC/NCUA basics, and rate myths.',
+    tool: 'CD Calculator',
+    toolHref: '/cd-calculator/',
+  },
+  {
+    href: '/faq/raise-calculator/',
+    title: 'Raise calculator FAQ',
+    blurb:
+      'Percent and dollar raise math, hourly examples, BLS wage-index context, and what Nestfigure will not answer.',
+    tool: 'Raise Calculator',
+    toolHref: '/raise-calculator/',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/faq/" ogImage="/images/og-default.webp">
+  <section class="hero">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <p class="eyebrow">Help & answers</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">FAQ</h1>
+      <p class="lead">
+        Educational Q&amp;A for each Nestfigure calculator. Not bank quotes, tax advice, or career coaching.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container faq-hub-grid">
+      {
+        hubs.map((h) => (
+          <a class="card faq-hub-card" href={h.href}>
+            <span class="pill">FAQ</span>
+            <h2 class="heading-sm" style="margin-top:12px;">
+              {h.title}
+            </h2>
+            <p>{h.blurb}</p>
+            <span class="linkish">Open FAQ →</span>
+            <span class="tool-line">
+              Tool: <span class="tool-name">{h.tool}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+    <div class="container" style="max-width:720px;margin-top:28px;">
+      <p class="muted" style="font-size:14px;line-height:1.5;">
+        Also see <a href="/methodology/">methodology</a> for exact formulas, and <a href="/guides/">guides</a> for
+        longer explainers and scenarios.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .faq-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 900px;
+  }
+
+  .faq-hub-card {
+    text-decoration: none;
+    color: inherit;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.15s ease;
+  }
+
+  .faq-hub-card:hover {
+    text-decoration: none;
+    border-color: var(--color-dove-gray);
+  }
+
+  .faq-hub-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-iron);
+    flex: 1;
+  }
+
+  .linkish {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-cobalt);
+  }
+
+  .tool-line {
+    font-size: 12px;
+    color: var(--color-graphite);
+    margin-top: 4px;
+  }
+
+  .tool-name {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+</style>

@@ -25,7 +25,7 @@ const description =
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
-        <a class="btn btn-secondary" href="/about/">How we calculate</a>
+        <a class="btn btn-secondary" href="/raise-calculator/">Open Raise Calculator</a>
       </div>
       <div class="hero-visual">
         <img
@@ -44,28 +44,50 @@ const description =
   <section class="section">
     <div class="container">
       <p class="eyebrow" style="text-align:center;">Live now</p>
-      <h2 class="heading" style="text-align:center;">Flagship tool</h2>
-      <a class="tool-card card-elevated" href="/cd-calculator/">
-        <div class="tool-media data-card">
-          <p class="data-card-label">Example · 12 mo CD</p>
-          <p class="data-card-line"><span>Deposit</span><strong>$10,000</strong></p>
-          <p class="data-card-line"><span>APY</span><strong>4.50%</strong></p>
-          <p class="data-card-line"><span>Interest</span><strong>+$450</strong></p>
-          <p class="data-card-line total"><span>Maturity</span><strong>$10,450</strong></p>
-        </div>
-        <div class="tool-body">
-          <div class="tool-card-top">
-            <span class="pill">Live</span>
-            <span class="muted" style="font-size:12px;">Certificate of deposit</span>
+      <h2 class="heading" style="text-align:center;">Free calculators</h2>
+      <div class="tools-live-grid">
+        <a class="tool-card card-elevated" href="/cd-calculator/">
+          <div class="tool-media data-card">
+            <p class="data-card-label">Example · 12 mo CD</p>
+            <p class="data-card-line"><span>Deposit</span><strong>$10,000</strong></p>
+            <p class="data-card-line"><span>APY</span><strong>4.50%</strong></p>
+            <p class="data-card-line"><span>Interest</span><strong>+$450</strong></p>
+            <p class="data-card-line total"><span>Maturity</span><strong>$10,450</strong></p>
           </div>
-          <h3 class="heading-sm">CD Calculator</h3>
-          <p>
-            Estimate certificate of deposit interest and maturity value. APY or APR, any term, flexible compounding,
-            optional monthly deposits, and a full growth schedule.
-          </p>
-          <span class="tool-link">Open free CD calculator →</span>
-        </div>
-      </a>
+          <div class="tool-body">
+            <div class="tool-card-top">
+              <span class="pill">Live</span>
+              <span class="muted" style="font-size:12px;">Certificate of deposit</span>
+            </div>
+            <h3 class="heading-sm">CD Calculator</h3>
+            <p>
+              Estimate certificate of deposit interest and maturity value. APY or APR, any term, flexible compounding,
+              optional monthly deposits, and a full growth schedule.
+            </p>
+            <span class="tool-link">Open free CD calculator →</span>
+          </div>
+        </a>
+        <a class="tool-card card-elevated" href="/raise-calculator/">
+          <div class="tool-media data-card raise-card">
+            <p class="data-card-label">Example · 5% raise</p>
+            <p class="data-card-line"><span>Current</span><strong>$60,000</strong></p>
+            <p class="data-card-line"><span>Raise</span><strong>+$3,000</strong></p>
+            <p class="data-card-line total"><span>New annual</span><strong>$63,000</strong></p>
+          </div>
+          <div class="tool-body">
+            <div class="tool-card-top">
+              <span class="pill">Live</span>
+              <span class="muted" style="font-size:12px;">Salary increase</span>
+            </div>
+            <h3 class="heading-sm">Raise Calculator</h3>
+            <p>
+              Estimate a percent or dollar pay raise and see new annual, monthly, biweekly, and weekly amounts. Simple
+              arithmetic you can verify.
+            </p>
+            <span class="tool-link">Open free raise calculator →</span>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -81,8 +103,8 @@ const description =
         </div>
         <div class="card">
           <span class="pill pill-neutral">Soon</span>
-          <h3 class="heading-sm" style="margin-top:12px;">Raise & overtime</h3>
-          <p class="muted">See how a raise or OT hours change your net pay.</p>
+          <h3 class="heading-sm" style="margin-top:12px;">Overtime calculator</h3>
+          <p class="muted">See how OT hours change gross pay alongside a raise.</p>
         </div>
         <div class="card">
           <span class="pill pill-neutral">Soon</span>
@@ -118,6 +140,17 @@ const description =
             <span class="pill pill-neutral">Guide</span>
             <h3 class="heading-sm" style="margin-top:12px;">CD vs savings</h3>
             <p class="muted">Rate certainty vs liquidity—with a sample term table.</p>
+          </div>
+        </a>
+        <a class="card guide-home-card" href="/guides/how-to-calculate-a-raise/">
+          <div class="guide-home-media">
+            <code>new = current × (1 + r%)</code>
+            <span>Raise % · salary increase</span>
+          </div>
+          <div class="guide-home-body">
+            <span class="pill pill-neutral">Guide</span>
+            <h3 class="heading-sm" style="margin-top:12px;">How to calculate a raise</h3>
+            <p class="muted">Percent formulas and a $60k / 5% worked example.</p>
           </div>
         </a>
       </div>
@@ -164,97 +197,6 @@ const description =
     display: block;
     width: 100%;
     height: auto;
-  }
-
-  .tool-card {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 0;
-    max-width: 880px;
-    margin: 32px auto 0;
-    text-decoration: none;
-    color: inherit;
-    overflow: hidden;
-    padding: 0;
-    transition: transform 0.15s ease;
-  }
-
-  .tool-card:hover {
-    text-decoration: none;
-    transform: translateY(-2px);
-  }
-
-  .tool-media {
-    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 100%);
-    min-height: 200px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-right: 1px solid var(--color-pale-slate);
-  }
-
-  .data-card-label {
-    margin: 0 0 14px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-graphite);
-  }
-
-  .data-card-line {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin: 0 0 10px;
-    font-size: 14px;
-    color: var(--color-iron);
-  }
-
-  .data-card-line strong {
-    font-family: var(--font-mono);
-    font-weight: 500;
-    color: var(--color-ink);
-  }
-
-  .data-card-line.total {
-    margin-top: 8px;
-    padding-top: 12px;
-    border-top: 1px solid var(--color-pale-slate);
-  }
-
-  .data-card-line.total strong {
-    font-size: 18px;
-    color: var(--color-cobalt);
-  }
-
-  .tool-body {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .tool-card p {
-    color: var(--color-iron);
-    font-size: 15px;
-    line-height: 1.5;
-    margin: 0 0 16px;
-  }
-
-  .tool-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .tool-link {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-cobalt);
   }
 
   .grid-3 {
@@ -351,13 +293,8 @@ const description =
 
   @media (max-width: 800px) {
     .grid-3,
-    .guide-home-grid,
-    .tool-card {
+    .guide-home-grid {
       grid-template-columns: 1fr;
-    }
-
-    .tool-media img {
-      height: 200px;
     }
   }
 </style>

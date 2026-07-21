@@ -37,10 +37,11 @@ const faqs = [
   canonicalPath="/guides/cd-vs-savings/"
   eyebrow="CDs & savings · Educational"
   headline="CD vs high-yield savings"
-  updated="July 17, 2026"
+  updated="July 22, 2026"
   datePublished="2026-07-17"
-  dateModified="2026-07-17"
-  ogImage="/images/og-default.webp"
+  dateModified="2026-07-22"
+  readMinutes={13}
+  ogImage="/images/guide-cd-vs-savings.webp"
   faqs={faqs}
 >
   <p>
@@ -51,9 +52,41 @@ const faqs = [
     <a href="/cd-calculator/">CD calculator</a> only to explore math scenarios, not to choose a specific bank product.
   </p>
 
+  <div class="key-takeaways card">
+    <h2 class="takeaways-title">Key takeaways</h2>
+    <ul>
+      <li>
+        <strong>CD (CFPB):</strong> set term; early withdrawal means a penalty fee; compare term, interest rate, and
+        penalty when shopping.
+      </li>
+      <li>
+        <strong>Savings:</strong> typically more liquid; APY may change—confirm product rules in the agreement.
+      </li>
+      <li>
+        <strong>Insurance:</strong> FDIC standard coverage is $250,000 per depositor, per insured bank, per ownership
+        category; credit unions use NCUA share insurance.
+      </li>
+      <li>
+        <strong>Math:</strong> Nestfigure sample tables use labeled APYs only—not live bank offers.
+      </li>
+    </ul>
+  </div>
+
+  <nav class="guide-toc card" aria-label="On this page">
+    <p>On this page</p>
+    <ul>
+      <li><a href="#compare">Side-by-side comparison</a></li>
+      <li><a href="#cfpb">What the CFPB says about CDs</a></li>
+      <li><a href="#insurance">Deposit insurance (FDIC / NCUA)</a></li>
+      <li><a href="#use-cases">When each structure is often considered</a></li>
+      <li><a href="#math">Illustrative growth math</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </nav>
+
   <FigureCdVsSavings />
 
-  <h2>Side-by-side comparison (general features)</h2>
+  <h2 id="compare">Side-by-side comparison (general features)</h2>
   <p>
     The table summarizes common structural differences. Individual products can differ (for example, “no-penalty” CDs
     or savings accounts with transfer limits). Always read the account agreement.
@@ -92,7 +125,7 @@ const faqs = [
     </table>
   </div>
 
-  <h2>What the CFPB says about CDs</h2>
+  <h2 id="cfpb">What the CFPB says about CDs</h2>
   <p>
     The CFPB explains that with a CD you generally agree to keep money deposited for a specified length of time, and
     that withdrawing early means paying a penalty fee to the bank. When shopping, the CFPB suggests comparing the term,
@@ -104,7 +137,7 @@ const faqs = [
     >).
   </p>
 
-  <h2>Deposit insurance basics (FDIC and NCUA)</h2>
+  <h2 id="insurance">Deposit insurance basics (FDIC and NCUA)</h2>
   <p>
     According to the
     <a
@@ -116,7 +149,7 @@ const faqs = [
     include deposit products such as checking, savings, money market deposit accounts, and certificates of deposit when
     held at an insured bank. Ownership categories and trust rules can change how coverage is calculated; the FDIC
     provides the Electronic Deposit Insurance Estimator (EDIE) at
-    <a href="https://edie.fdic.gov/" rel="noopener noreferrer" target="_blank">edie.fdic.gov</a>.
+    <a href="https://edie.fdic.gov/" rel="noopener noreferrer" target="_blank">FDIC EDIE</a>.
   </p>
   <p>
     Share accounts at federally insured credit unions are insured by the National Credit Union Administration (NCUA)
@@ -124,7 +157,7 @@ const faqs = [
     insurance protection.
   </p>
 
-  <h2>When a CD structure is often considered</h2>
+  <h2 id="use-cases">When a CD structure is often considered</h2>
   <p>People sometimes consider a CD when:</p>
   <ul>
     <li>They have a known future date when they expect to need the funds and can leave money untouched until then.</li>
@@ -140,7 +173,7 @@ const faqs = [
     <li>The account holder accepts that the APY may change over time.</li>
   </ul>
 
-  <h2>Illustrative growth at a constant 4.50% effective annual yield</h2>
+  <h2 id="math">Illustrative growth at a constant 4.50% effective annual yield</h2>
   <p>
     The table below is a <strong>mathematical illustration only</strong>. It assumes principal of $10,000 grows at a
     constant effective annual rate of 4.50% (balance = 10000 × 1.045<sup>t</sup>, with <em>t</em> in years). It does
@@ -162,51 +195,51 @@ const faqs = [
     <li>Confirm insurance status (FDIC or NCUA) and ownership-category limits for your balances.</li>
   </ol>
 
-  <h2>Sources</h2>
+  <h2 id="sources">Authoritative sources</h2>
   <ul class="sources">
     <li>
-      CFPB — What is a certificate of deposit (CD)? —
       <a
         href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-certificate-of-deposit-cd-en-917/"
         rel="noopener noreferrer"
-        target="_blank">consumerfinance.gov</a
+        target="_blank">CFPB — What is a certificate of deposit (CD)?</a
       >
     </li>
     <li>
-      FDIC — Understanding Deposit Insurance —
       <a
         href="https://www.fdic.gov/resources/deposit-insurance/understanding-deposit-insurance"
         rel="noopener noreferrer"
-        target="_blank">fdic.gov</a
+        target="_blank">FDIC — Understanding deposit insurance</a
       >
     </li>
     <li>
-      FDIC — Deposit Insurance At A Glance / coverage limits —
       <a
         href="https://www.fdic.gov/resources/deposit-insurance/brochures/deposits-at-a-glance"
         rel="noopener noreferrer"
-        target="_blank">fdic.gov</a
+        target="_blank">FDIC — Deposit insurance at a glance</a
       >
     </li>
     <li>
-      FDIC Electronic Deposit Insurance Estimator —
-      <a href="https://edie.fdic.gov/" rel="noopener noreferrer" target="_blank">edie.fdic.gov</a>
-    </li>
-    <li>
-      NCUA — Share Insurance (for credit unions) —
-      <a href="https://www.ncua.gov/support-services/share-insurance-fund" rel="noopener noreferrer" target="_blank"
-        >ncua.gov</a
+      <a href="https://edie.fdic.gov/" rel="noopener noreferrer" target="_blank"
+        >FDIC Electronic Deposit Insurance Estimator (EDIE)</a
       >
     </li>
     <li>
-      Nestfigure methodology —
-      <a href="/about/">About</a>
+      <a href="https://ncua.gov/consumers/share-insurance-coverage" rel="noopener noreferrer" target="_blank"
+        >NCUA — Share insurance coverage</a
+      >
+    </li>
+    <li>
+      Nestfigure —
+      <a href="/methodology/cd-calculator/">CD calculator methodology</a>
     </li>
   </ul>
 
   <h2>Related Nestfigure pages</h2>
   <ul>
     <li><a href="/guides/how-cd-interest-works/">How CD interest works</a></li>
+    <li><a href="/guides/cd-early-withdrawal/">CD early withdrawal</a></li>
+    <li><a href="/faq/certificate-of-deposit/">CD FAQ</a></li>
     <li><a href="/cd-calculator/">Free CD calculator</a></li>
+    <li><a href="/methodology/cd-calculator/">CD methodology</a></li>
   </ul>
 </GuideLayout>
