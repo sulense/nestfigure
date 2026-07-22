@@ -1,24 +1,24 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const title = 'Methodology Hub — Nestfigure Calculators';
+const title = 'How We Calculate — Nestfigure Calculators';
 const description =
-  'How Nestfigure personal finance calculators work: transparent formulas, assumptions, and intentional omissions for the CD and raise tools.';
+  'How Nestfigure personal finance calculators work: clear formulas, assumptions, and what we leave out for the CD and raise tools.';
 
 const tools = [
   {
     href: '/methodology/cd-calculator/',
-    title: 'CD calculator methodology',
+    title: 'How the CD calculator works',
     blurb:
-      'Compound-interest formulas, APY conversion, compounding choices, optional monthly deposits, and what we omit (penalties, fees, taxes).',
+      'How we estimate CD interest, what APY means in the tool, compounding choices, optional monthly deposits, and what we leave out (penalties, fees, taxes).',
     toolHref: '/cd-calculator/',
     tool: 'CD Calculator',
   },
   {
     href: '/methodology/raise-calculator/',
-    title: 'Raise calculator methodology',
+    title: 'How the raise calculator works',
     blurb:
-      'Percent and dollar raise arithmetic, period splits, hourly annualization, optional user tax rate, and limits.',
+      'How we turn a raise percent or dollar amount into new annual, monthly, biweekly, and weekly pay—and optional rough tax views.',
     toolHref: '/raise-calculator/',
     tool: 'Raise Calculator',
   },
@@ -28,10 +28,10 @@ const tools = [
 <BaseLayout title={title} description={description} canonicalPath="/methodology/" ogImage="/images/og-default.webp">
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-      <p class="eyebrow">Transparency</p>
-      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Methodology</h1>
+      <p class="eyebrow">How the numbers work</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">How we calculate</h1>
       <p class="lead">
-        Exact assumptions for every Nestfigure calculator. Estimates for education—not bank quotes or advice.
+        Clear assumptions for every Nestfigure calculator. Estimates for learning—not bank quotes or advice.
       </p>
     </div>
   </section>
@@ -41,12 +41,12 @@ const tools = [
       {
         tools.map((t) => (
           <a class="card method-card" href={t.href}>
-            <span class="pill">Methodology</span>
+            <span class="pill">How we calculate</span>
             <h2 class="heading-sm" style="margin-top:12px;">
               {t.title}
             </h2>
             <p>{t.blurb}</p>
-            <span class="linkish">Read methodology →</span>
+            <span class="linkish">Read how it works →</span>
             <span class="tool-line">
               Open tool: <span class="tool-name">{t.tool}</span>
             </span>
@@ -61,7 +61,7 @@ const tools = [
         <strong>John Rey Balais</strong>. Full bio:
         <a href="/about/">About Nestfigure</a>.
       </p>
-      <h2>YMYL stance</h2>
+      <h2>Important note</h2>
       <p>
         Nestfigure is not a bank, broker, employer, or adviser. Calculator results are educational estimates under
         documented formulas. Deposit topics cite CFPB, FDIC, and NCUA materials where relevant; wage context cites BLS;

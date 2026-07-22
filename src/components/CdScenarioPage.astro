@@ -54,7 +54,7 @@ const SOURCES = {
     url: 'https://ncua.gov/consumers/share-insurance-coverage',
   },
   methodology: {
-    name: 'Nestfigure — CD calculator methodology',
+    name: 'Nestfigure — how the CD calculator works',
     url: '/methodology/cd-calculator/',
   },
 } as const;
@@ -81,7 +81,7 @@ const faqs = [
   },
   {
     question: 'How do I estimate a different APY or term?',
-    answer: `Open Nestfigure’s CD calculator prefilled for ${money(s.principal)} and ${termText}, then change the rate or term. You can also use the embedded calculator on this page. Full assumptions are on Nestfigure’s CD calculator methodology page.`,
+    answer: `Open Nestfigure’s CD calculator prefilled for ${money(s.principal)} and ${termText}, then change the rate or term. You can also use the embedded calculator on this page. Full assumptions are on Nestfigure’s “how the CD calculator works” page.`,
   },
   {
     question: 'Does Nestfigure include early-withdrawal penalties?',
@@ -141,7 +141,7 @@ const jsonLd = [
   <article>
     <section class="hero">
       <div class="container hero-inner">
-        <p class="eyebrow">CD scenario · Educational math</p>
+        <p class="eyebrow">CD example · Educational math</p>
         <h1 class="display" style="font-size: clamp(32px, 5vw, 48px); max-width: 22ch;">
           {s.headline}
         </h1>
@@ -151,8 +151,8 @@ const jsonLd = [
         </p>
         <p class="muted" style="font-size: 13px; margin-top: 8px;">
           Reviewed <time datetime={dateModified}>{dateLabel}</time> ·
-          <a href="/methodology/cd-calculator/">Methodology</a> ·
-          <a href="/faq/certificate-of-deposit/">CD FAQ</a>
+          <a href="/methodology/cd-calculator/">How we calculate</a> ·
+          <a href="/faq/certificate-of-deposit/">CD questions</a>
         </p>
         <AuthorByline variant="compact" />
       </div>
@@ -199,7 +199,7 @@ const jsonLd = [
             scrape or list live CD rates.
           </p>
           <p>
-            Using Nestfigure’s calculator methodology (APY input, <strong>{s.compounding}</strong> compounding, no
+            Using Nestfigure’s calculator math (APY input, <strong>{s.compounding}</strong> compounding, no
             monthly add-on deposits) at a <strong>sample {s.defaultApy.toFixed(2)}% APY</strong> for
             <strong> {termText}</strong>:
           </p>
@@ -246,7 +246,7 @@ const jsonLd = [
         <p>
           Each interest and balance figure is computed at build time with the same engine as the
           <a href="/cd-calculator/">CD calculator</a>
-          (<a href="/methodology/cd-calculator/">methodology</a>). Columns are labeled sample APYs—not market surveys.
+          (<a href="/methodology/cd-calculator/">how we calculate</a>). Columns are labeled sample APYs—not market surveys.
         </p>
         <div class="table-wrap">
           <table class="data">
@@ -295,7 +295,7 @@ const jsonLd = [
 
         <h2>Try the calculator (prefilled)</h2>
         <p>
-          Defaults match this scenario: {money(s.principal)}, sample {s.defaultApy.toFixed(2)}% APY, {termText},
+          Defaults match this example: {money(s.principal)}, sample {s.defaultApy.toFixed(2)}% APY, {termText},
           {` ${s.compounding}`} compounding. Change any field to match a real offer.
           <a href={calcUrl}> Full calculator URL with query parameters</a>.
         </p>
@@ -313,7 +313,7 @@ const jsonLd = [
       </div>
 
       <div class="container prose scenario-body">
-        <h2>FAQ</h2>
+        <h2>Common questions</h2>
         <div class="faq">
           {
             faqs.map((f) => (
@@ -337,7 +337,7 @@ const jsonLd = [
             ))
           }
           <li>
-            <a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a>
+            <a href="/faq/certificate-of-deposit/">Certificate of deposit questions</a>
           </li>
           <li>
             <a href="/guides/how-cd-interest-works/">How CD interest works</a>

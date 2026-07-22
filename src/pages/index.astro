@@ -20,8 +20,8 @@ const description =
         <span class="grad">money decisions</span>
       </h1>
       <p class="lead">
-        Free tools to estimate CD growth, take-home pay, raises, and debt payoff. Fast, mobile-friendly, no signup —
-        built to rank on usefulness.
+        Free tools to estimate CD growth, take-home pay, raises, and debt payoff. Fast, easy to use on your phone, and
+        free to try—no account needed.
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/cd-calculator/">Open CD Calculator</a>
@@ -41,7 +41,7 @@ const description =
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="calculators">
     <div class="container">
       <p class="eyebrow" style="text-align:center;">Live now</p>
       <h2 class="heading" style="text-align:center;">Free calculators</h2>
@@ -91,25 +91,138 @@ const description =
     </div>
   </section>
 
-  <section class="section section-soft">
-    <div class="container">
-      <p class="eyebrow" style="text-align:center;">Roadmap</p>
-      <h2 class="heading" style="text-align:center;">Same niche, next tools</h2>
-      <div class="grid-3">
-        <div class="card">
-          <span class="pill pill-neutral">Soon</span>
-          <h3 class="heading-sm" style="margin-top:12px;">Paycheck calculator</h3>
-          <p class="muted">State-by-state take-home pay estimates — high intent, high CPC.</p>
+  <section class="hub-band" id="guides" aria-labelledby="home-guides-heading">
+    <div class="container hub-panel hub-panel--flip">
+      <div class="hub-copy">
+        <p class="eyebrow">Learn</p>
+        <h2 id="home-guides-heading" class="heading hub-title">Guides</h2>
+        <p class="hub-text">
+          Short articles that explain CD interest and pay raises in plain language—with worked examples you can open in
+          our free calculators.
+        </p>
+        <ul class="hub-points">
+          <li>Step-by-step how-tos</li>
+          <li>Example pages with sample numbers</li>
+          <li>Links that open the calculator ready to use</li>
+        </ul>
+        <div class="hub-actions">
+          <a class="btn btn-primary" href="/guides/">Browse all guides</a>
+          <a class="btn btn-secondary" href="/guides/how-cd-interest-works/">How CD interest works</a>
+          <a class="btn btn-secondary" href="/guides/how-to-calculate-a-raise/">How to calculate a raise</a>
         </div>
-        <div class="card">
-          <span class="pill pill-neutral">Soon</span>
-          <h3 class="heading-sm" style="margin-top:12px;">Overtime calculator</h3>
-          <p class="muted">See how OT hours change gross pay alongside a raise.</p>
+      </div>
+      <div class="hub-visual" aria-hidden="true">
+        <div class="hub-visual-card hub-visual-card--mint">
+          <div class="hub-chip-stack">
+            <span class="hub-chip">CD guides</span>
+            <span class="hub-chip hub-chip--soft">Raise guides</span>
+            <span class="hub-chip">Examples</span>
+            <span class="hub-chip hub-chip--soft">Open in calculator</span>
+          </div>
+          <p class="hub-visual-quote">
+            <code>new pay = current pay + raise</code>
+          </p>
+          <p class="hub-visual-note">Clear math · for learning only</p>
         </div>
-        <div class="card">
-          <span class="pill pill-neutral">Soon</span>
-          <h3 class="heading-sm" style="margin-top:12px;">Credit card payoff</h3>
-          <p class="muted">Plan payoff timelines and interest costs after you grow savings.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="hub-band hub-band--soft" id="faq" aria-labelledby="home-faq-heading">
+    <div class="container hub-panel">
+      <div class="hub-copy">
+        <p class="eyebrow">Answers</p>
+        <h2 id="home-faq-heading" class="heading hub-title">Common questions</h2>
+        <p class="hub-text">
+          Straight answers about our calculators—plus links to official U.S. government pages when we mention insurance,
+          taxes, or wage data.
+        </p>
+        <ul class="hub-points">
+          <li>Questions about CDs and raises in one place</li>
+          <li>Links to example pages and how we calculate</li>
+          <li>No made-up bank rates or “good raise” advice</li>
+        </ul>
+        <div class="hub-actions">
+          <a class="btn btn-primary" href="/faq/">Browse all questions</a>
+          <a class="btn btn-secondary" href="/faq/certificate-of-deposit/">CD questions</a>
+          <a class="btn btn-secondary" href="/faq/raise-calculator/">Raise questions</a>
+        </div>
+      </div>
+      <div class="hub-visual" aria-hidden="true">
+        <div class="hub-visual-card">
+          <div class="hub-qa">
+            <span class="hub-q">Q</span>
+            <span>How does a CD calculator work?</span>
+          </div>
+          <div class="hub-qa hub-qa--dim">
+            <span class="hub-q">Q</span>
+            <span>What is a 5% raise on $60,000?</span>
+          </div>
+          <div class="hub-qa hub-qa--dim">
+            <span class="hub-q">Q</span>
+            <span>Are CDs FDIC-insured?</span>
+          </div>
+          <p class="hub-visual-note">Plain answers · real sources when needed</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hub-band" id="methodology" aria-labelledby="home-methodology-heading">
+    <div class="container hub-panel hub-panel--flip">
+      <div class="hub-copy">
+        <p class="eyebrow">How the numbers work</p>
+        <h2 id="home-methodology-heading" class="heading hub-title">How we calculate</h2>
+        <p class="hub-text">
+          We show the math behind each tool—what we include, what we leave out, and why results are learning estimates,
+          not bank quotes or job offers.
+        </p>
+        <ul class="hub-points">
+          <li>How CD interest is estimated</li>
+          <li>How raise percents turn into new pay</li>
+          <li>What we do not try to model (and why)</li>
+        </ul>
+        <div class="hub-actions">
+          <a class="btn btn-primary" href="/methodology/">See how we calculate</a>
+          <a class="btn btn-secondary" href="/methodology/cd-calculator/">CD math</a>
+          <a class="btn btn-secondary" href="/methodology/raise-calculator/">Raise math</a>
+        </div>
+      </div>
+      <div class="hub-visual" aria-hidden="true">
+        <div class="hub-visual-card hub-visual-card--ink">
+          <p class="hub-formula">Balance grows with interest</p>
+          <p class="hub-formula hub-formula--sm">New pay = current pay + raise amount</p>
+          <p class="hub-visual-note hub-visual-note--light">For learning · not bank quotes or advice</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hub-band hub-band--soft" id="about" aria-labelledby="home-about-heading">
+    <div class="container hub-panel">
+      <div class="hub-copy">
+        <p class="eyebrow">Trust</p>
+        <h2 id="home-about-heading" class="heading hub-title">About</h2>
+        <p class="hub-text">
+          Meet the person behind Nestfigure, learn how we write our tools and guides, and get in touch if something looks
+          wrong.
+        </p>
+        <ul class="hub-points">
+          <li>Who builds and reviews the site</li>
+          <li>Where to find our math and answers</li>
+          <li>How to report a mistake</li>
+        </ul>
+        <div class="hub-actions">
+          <a class="btn btn-primary" href="/about/">About Nestfigure</a>
+          <a class="btn btn-secondary" href="/contact/">Contact us</a>
+        </div>
+      </div>
+      <div class="hub-visual" aria-hidden="true">
+        <div class="hub-visual-card hub-visual-card--about">
+          <div class="hub-avatar"></div>
+          <p class="hub-about-name">John Rey Balais</p>
+          <p class="hub-about-role">Developer · Nestfigure</p>
+          <p class="hub-visual-note">Real author · free learning tools</p>
         </div>
       </div>
     </div>
@@ -117,8 +230,32 @@ const description =
 
   <section class="section">
     <div class="container">
-      <p class="eyebrow" style="text-align:center;">Guides</p>
-      <h2 class="heading" style="text-align:center;">Learn the money basics</h2>
+      <p class="eyebrow" style="text-align:center;">Coming next</p>
+      <h2 class="heading" style="text-align:center;">More tools on the way</h2>
+      <div class="grid-3">
+        <div class="card">
+          <span class="pill pill-neutral">Soon</span>
+          <h3 class="heading-sm" style="margin-top:12px;">Paycheck calculator</h3>
+          <p class="muted">Estimate take-home pay by state after taxes and common deductions.</p>
+        </div>
+        <div class="card">
+          <span class="pill pill-neutral">Soon</span>
+          <h3 class="heading-sm" style="margin-top:12px;">Overtime calculator</h3>
+          <p class="muted">See how overtime hours change your gross pay next to a raise.</p>
+        </div>
+        <div class="card">
+          <span class="pill pill-neutral">Soon</span>
+          <h3 class="heading-sm" style="margin-top:12px;">Credit card payoff</h3>
+          <p class="muted">Plan how long payoff takes and what interest may cost.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <p class="eyebrow" style="text-align:center;">Featured reading</p>
+      <h2 class="heading" style="text-align:center;">Start with these guides</h2>
       <div class="guide-home-grid">
         <a class="card guide-home-card" href="/guides/how-cd-interest-works/">
           <div class="guide-home-media">
@@ -157,7 +294,7 @@ const description =
     </div>
   </section>
 
-  <section class="section section-soft">
+  <section class="section">
     <div class="container prose" style="margin: 0 auto; text-align: center;">
       <h2 style="text-align:center;">Why Nestfigure</h2>
       <p style="margin-left:auto;margin-right:auto;">
@@ -210,6 +347,304 @@ const description =
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
+  }
+
+  .hub-band {
+    padding: clamp(48px, 8vw, 88px) 0;
+    border-top: 1px solid var(--color-pale-slate);
+  }
+
+  .hub-band--soft {
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 55%),
+      linear-gradient(180deg, #f7faff 0%, #ffffff 100%);
+  }
+
+  .hub-panel {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(28px, 5vw, 56px);
+    align-items: center;
+    max-width: 1100px;
+  }
+
+  .hub-panel--flip .hub-copy {
+    order: 2;
+  }
+
+  .hub-panel--flip .hub-visual {
+    order: 1;
+  }
+
+  .hub-title {
+    margin: 0 0 14px;
+    letter-spacing: -0.03em;
+    font-size: clamp(32px, 4vw, 44px);
+  }
+
+  .hub-text {
+    margin: 0 0 18px;
+    max-width: 46ch;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--color-iron);
+  }
+
+  .hub-points {
+    margin: 0 0 28px;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+
+  .hub-points li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--color-graphite);
+  }
+
+  .hub-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-cobalt);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .hub-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hub-visual-card {
+    border: 1px solid var(--color-pale-slate);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--shadow-card);
+    padding: 24px 26px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    justify-content: center;
+  }
+
+  .hub-visual-card--mint {
+    background: linear-gradient(165deg, #f0fdf6 0%, #ffffff 55%);
+  }
+
+  .hub-visual-card--ink {
+    background: linear-gradient(160deg, #0f172a 0%, #1e3a8a 100%);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  .hub-visual-card--about {
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(180deg, #f0f5fe 0%, #ffffff 70%);
+  }
+
+  .hub-visual-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .hub-visual-meta {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-graphite);
+  }
+
+  .hub-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid var(--color-pale-slate);
+  }
+
+  .hub-metric span {
+    font-size: 13px;
+    color: var(--color-graphite);
+  }
+
+  .hub-metric strong {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .hub-bars {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .hub-bar {
+    display: block;
+    height: 10px;
+    border-radius: 999px;
+    background: #e8eef3;
+  }
+
+  .hub-bar--a {
+    background: #94a3b8;
+  }
+
+  .hub-bar--b {
+    background: linear-gradient(90deg, #3e79ea, #2563eb);
+  }
+
+  .hub-bar--c {
+    background: #22c55e;
+  }
+
+  .hub-chip-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hub-chip {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid #c9daf8;
+    background: #fff;
+    color: var(--color-iron);
+  }
+
+  .hub-chip--soft {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+  }
+
+  .hub-visual-quote {
+    margin: 8px 0 0;
+  }
+
+  .hub-visual-quote code {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid var(--color-pale-slate);
+    color: var(--color-ink);
+  }
+
+  .hub-visual-note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-graphite);
+  }
+
+  .hub-visual-note--light {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .hub-qa {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid var(--color-pale-slate);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+
+  .hub-qa--dim {
+    opacity: 0.72;
+  }
+
+  .hub-q {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hub-formula {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .hub-formula--sm {
+    font-size: clamp(14px, 2vw, 16px);
+    opacity: 0.88;
+  }
+
+  .hub-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 30% 30%, #93c5fd 0%, #2563eb 55%, #1e3a8a 100%);
+    border: 3px solid #fff;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+  }
+
+  .hub-about-name {
+    margin: 4px 0 0;
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+
+  .hub-about-role {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-graphite);
+  }
+
+  @media (max-width: 860px) {
+    .hub-panel,
+    .hub-panel--flip {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .hub-panel--flip .hub-copy,
+    .hub-panel--flip .hub-visual {
+      order: initial;
+    }
+
+    .hub-visual-card {
+      min-height: 0;
+    }
   }
 
   .guide-home-grid {

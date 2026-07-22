@@ -1,26 +1,24 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const title = 'FAQ Hub — Nestfigure Calculators';
+const title = 'Common Questions — Nestfigure Calculators';
 const description =
-  'Frequently asked questions for Nestfigure personal finance calculators: certificates of deposit and salary raises. Educational answers with official U.S. source links.';
+  'Common questions about Nestfigure personal finance calculators: certificates of deposit and salary raises. Educational answers with official U.S. source links.';
 
-const hubs = [
+const topics = [
   {
     href: '/faq/certificate-of-deposit/',
-    title: 'Certificate of deposit (CD) FAQ',
+    title: 'CD questions',
     blurb:
-      'How much sample math can show at labeled APYs, term length, early withdrawal, FDIC/NCUA basics, and rate myths.',
+      'Sample earnings at labeled APYs, term length, early withdrawal, deposit insurance basics, and common rate myths.',
     tool: 'CD Calculator',
-    toolHref: '/cd-calculator/',
   },
   {
     href: '/faq/raise-calculator/',
-    title: 'Raise calculator FAQ',
+    title: 'Raise questions',
     blurb:
-      'Percent and dollar raise math, hourly examples, BLS wage-index context, and what Nestfigure will not answer.',
+      'Percent and dollar raise math, hourly examples, national wage context from BLS, and what Nestfigure will not answer.',
     tool: 'Raise Calculator',
-    toolHref: '/raise-calculator/',
   },
 ];
 ---
@@ -28,10 +26,10 @@ const hubs = [
 <BaseLayout title={title} description={description} canonicalPath="/faq/" ogImage="/images/og-default.webp">
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-      <p class="eyebrow">Help & answers</p>
-      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">FAQ</h1>
+      <p class="eyebrow">Help &amp; answers</p>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Common questions</h1>
       <p class="lead">
-        Educational Q&amp;A for each Nestfigure calculator. Not bank quotes, tax advice, or career coaching.
+        Simple answers for each Nestfigure calculator. Not bank quotes, tax advice, or career coaching.
       </p>
     </div>
   </section>
@@ -39,16 +37,16 @@ const hubs = [
   <section class="section" style="padding-top:0;">
     <div class="container faq-hub-grid">
       {
-        hubs.map((h) => (
+        topics.map((h) => (
           <a class="card faq-hub-card" href={h.href}>
-            <span class="pill">FAQ</span>
+            <span class="pill">Questions</span>
             <h2 class="heading-sm" style="margin-top:12px;">
               {h.title}
             </h2>
             <p>{h.blurb}</p>
-            <span class="linkish">Open FAQ →</span>
+            <span class="linkish">Read questions →</span>
             <span class="tool-line">
-              Tool: <span class="tool-name">{h.tool}</span>
+              Calculator: <span class="tool-name">{h.tool}</span>
             </span>
           </a>
         ))
@@ -56,8 +54,8 @@ const hubs = [
     </div>
     <div class="container" style="max-width:720px;margin-top:28px;">
       <p class="muted" style="font-size:14px;line-height:1.5;">
-        Also see <a href="/methodology/">methodology</a> for exact formulas, and <a href="/guides/">guides</a> for
-        longer explainers and scenarios.
+        Also see <a href="/methodology/">how we calculate</a> for exact formulas, and <a href="/guides/">guides</a> for
+        longer explainers and examples.
       </p>
     </div>
   </section>

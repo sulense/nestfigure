@@ -5,7 +5,7 @@ import { RAISE_SCENARIOS } from '../../lib/raiseScenarios';
 
 const title = 'Guides — Nestfigure Personal Finance';
 const description =
-  'Educational guides and scenarios organized by calculator: CD interest and salary raises, with CFPB, FDIC, NCUA, BLS, and IRS citations where relevant.';
+  'Guides and worked examples for Nestfigure calculators: CD interest and salary raises, with links to official U.S. sources when needed.';
 
 type Card = {
   href: string;
@@ -33,19 +33,19 @@ const cdGuides: Card[] = [
     href: '/guides/how-cd-interest-works/',
     title: 'How CD interest works',
     blurb:
-      'Truth in Savings APY vs interest rate, compounding, compound-interest math, and a transparent $10,000 example.',
+      'APY vs interest rate in plain words, how compounding works, and a clear $10,000 example.',
     kind: 'Guide',
   },
   {
     href: '/guides/cd-vs-savings/',
     title: 'CD vs high-yield savings',
-    blurb: 'Liquidity vs term deposits, FDIC/NCUA insurance basics, and how to run your own numbers.',
+    blurb: 'Easy access vs locking money for a term, insurance basics, and how to run your own numbers.',
     kind: 'Guide',
   },
   {
     href: '/guides/cd-early-withdrawal/',
     title: 'CD early withdrawal & penalties',
-    blurb: 'What the CFPB says about early withdrawal penalties and what Nestfigure’s calculator omits.',
+    blurb: 'What the CFPB says about cashing out early—and what Nestfigure’s calculator does not include.',
     kind: 'Guide',
   },
 ];
@@ -54,19 +54,19 @@ const raiseGuides: Card[] = [
   {
     href: '/guides/how-to-calculate-a-raise/',
     title: 'How to calculate a raise percentage',
-    blurb: 'Raise formulas, a worked $60,000 / 5% example, and the free raise calculator.',
+    blurb: 'Simple raise formulas, a worked $60,000 / 5% example, and the free raise calculator.',
     kind: 'Guide',
   },
   {
     href: '/guides/hourly-to-salary-raise/',
     title: 'Hourly to annual raise math',
-    blurb: 'Convert hourly × hours × weeks, apply a raise percent, and link percent to annual dollars.',
+    blurb: 'Turn hourly pay into yearly pay, then apply a raise percent to see the new amounts.',
     kind: 'Guide',
   },
   {
     href: '/guides/raise-vs-bonus/',
     title: 'Raise vs bonus (math only)',
-    blurb: 'Base-pay raise vs one-time bonus arithmetic—Nestfigure does not choose for you.',
+    blurb: 'Base-pay raise vs one-time bonus numbers—Nestfigure does not choose for you.',
     kind: 'Guide',
   },
 ];
@@ -77,7 +77,7 @@ const categories: Category[] = [
     eyebrow: 'Certificate of deposit',
     title: 'CD Calculator',
     intro:
-      'Compound-interest explainers, worked deposit scenarios, FAQ, and methodology for Nestfigure’s free CD tool.',
+      'Plain-language guides, worked deposit examples, common questions, and the math behind Nestfigure’s free CD tool.',
     toolHref: '/cd-calculator/',
     toolLabel: 'Open CD Calculator',
     methodHref: '/methodology/cd-calculator/',
@@ -87,21 +87,21 @@ const categories: Category[] = [
       href: `/guides/${s.slug}/`,
       title: s.cardTitle,
       blurb: s.cardBlurb,
-      kind: 'Scenario',
+      kind: 'Example',
     })),
     extras: [
       {
         href: '/faq/certificate-of-deposit/',
-        title: 'CD FAQ',
+        title: 'CD questions',
         blurb:
-          'Sample earnings at labeled APYs, term length, early withdrawal, FDIC/NCUA basics, and rate myths.',
-        kind: 'FAQ',
+          'Sample earnings at labeled rates, term length, early withdrawal, insurance basics, and common rate myths.',
+        kind: 'Questions',
       },
       {
         href: '/methodology/cd-calculator/',
-        title: 'CD methodology',
-        blurb: 'Formulas, APY conversion, compounding options, and intentional omissions.',
-        kind: 'Methodology',
+        title: 'How the CD calculator works',
+        blurb: 'The formulas we use, how APY is handled, compounding choices, and what we leave out.',
+        kind: 'How we calculate',
       },
     ],
   },
@@ -110,7 +110,7 @@ const categories: Category[] = [
     eyebrow: 'Salary increase',
     title: 'Raise Calculator',
     intro:
-      'Percent and hourly raise explainers, stated-sample scenarios, FAQ, and methodology for Nestfigure’s free raise tool.',
+      'Percent and hourly raise guides, sample examples, common questions, and the math behind Nestfigure’s free raise tool.',
     toolHref: '/raise-calculator/',
     toolLabel: 'Open Raise Calculator',
     methodHref: '/methodology/raise-calculator/',
@@ -120,20 +120,20 @@ const categories: Category[] = [
       href: `/guides/${s.slug}/`,
       title: s.cardTitle,
       blurb: s.cardBlurb,
-      kind: 'Scenario',
+      kind: 'Example',
     })),
     extras: [
       {
         href: '/faq/raise-calculator/',
-        title: 'Raise calculator FAQ',
-        blurb: 'Percent math, hourly examples, BLS context, taxes, and product limits.',
-        kind: 'FAQ',
+        title: 'Raise questions',
+        blurb: 'Percent math, hourly examples, national wage context, taxes, and what the tool will not answer.',
+        kind: 'Questions',
       },
       {
         href: '/methodology/raise-calculator/',
-        title: 'Raise methodology',
-        blurb: 'Raise formulas, period splits, hourly annualization, and optional tax rate limits.',
-        kind: 'Methodology',
+        title: 'How the raise calculator works',
+        blurb: 'Raise formulas, monthly and weekly pay views, hourly annual pay, and optional tax percent limits.',
+        kind: 'How we calculate',
       },
     ],
   },
@@ -149,9 +149,9 @@ const categories: Category[] = [
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
       <p class="eyebrow">Learn</p>
-      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Guides & scenarios</h1>
+      <h1 class="display" style="font-size:clamp(36px,5vw,56px);">Guides & examples</h1>
       <p class="lead">
-        Educational content grouped by calculator — transparent math and official source links.
+        Short articles and worked examples for each calculator—with clear math and official source links when needed.
       </p>
       <nav class="cat-jump" aria-label="Jump to calculator">
         {
@@ -161,8 +161,8 @@ const categories: Category[] = [
             </a>
           ))
         }
-        <a class="btn btn-secondary" href="/faq/">FAQ hub</a>
-        <a class="btn btn-secondary" href="/methodology/">Methodology</a>
+        <a class="btn btn-secondary" href="/faq/">Common questions</a>
+        <a class="btn btn-secondary" href="/methodology/">How we calculate</a>
       </nav>
     </div>
   </section>
@@ -184,10 +184,10 @@ const categories: Category[] = [
                 {cat.toolLabel}
               </a>
               <a class="btn btn-secondary" href={cat.methodHref}>
-                Methodology
+                How we calculate
               </a>
               <a class="btn btn-secondary" href={cat.faqHref}>
-                FAQ
+                Questions
               </a>
             </div>
           </header>
@@ -208,7 +208,7 @@ const categories: Category[] = [
             ))}
           </div>
 
-          <h3 class="subhead">Scenarios</h3>
+          <h3 class="subhead">Worked examples</h3>
           <div class="guide-grid">
             {cat.scenarios.map((g) => (
               <a class="card guide-card" href={g.href}>
@@ -224,7 +224,7 @@ const categories: Category[] = [
             ))}
           </div>
 
-          <h3 class="subhead">FAQ & methodology</h3>
+          <h3 class="subhead">Questions & how we calculate</h3>
           <div class="guide-grid">
             {cat.extras.map((g) => (
               <a class="card guide-card" href={g.href}>

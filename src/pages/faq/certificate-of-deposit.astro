@@ -4,9 +4,9 @@ import AuthorByline from '../../components/AuthorByline.astro';
 import TextToSpeech from '../../components/TextToSpeech.astro';
 import { calculateCd } from '../../lib/cdMath';
 
-const title = 'CD FAQ: How Much Interest, Rates, Terms & Safety | Nestfigure';
+const title = 'CD Questions: How Much Interest, Rates, Terms & Safety | Nestfigure';
 const description =
-  'Factual CD FAQ with transparent sample math: $10k–$100k earnings examples, term length, downsides, FDIC/NCUA basics, and rate myths. Not bank quotes or advice.';
+  'Common CD questions with clear sample math: $10k–$100k earnings examples, term length, downsides, FDIC/NCUA basics, and rate myths. Not bank quotes or advice.';
 const canonicalPath = '/faq/certificate-of-deposit/';
 const dateModified = '2026-07-22';
 const updatedLabel = 'July 22, 2026';
@@ -327,7 +327,7 @@ const breadcrumbLd = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nestfigure.com/' },
-    { '@type': 'ListItem', position: 2, name: 'Certificate of deposit FAQ', item: pageUrl },
+    { '@type': 'ListItem', position: 2, name: 'Certificate of deposit questions', item: pageUrl },
   ],
 };
 
@@ -386,9 +386,9 @@ const webPageLd = {
   <article itemscope itemtype="https://schema.org/FAQPage">
     <section class="hero">
       <div class="container hero-inner">
-        <p class="eyebrow">CDs · FAQ · Educational</p>
+        <p class="eyebrow">CDs · Questions · For learning</p>
         <h1 class="display" style="font-size: clamp(34px, 5vw, 52px); max-width: 20ch;">
-          CD FAQ: interest examples, rates, terms & safety
+          CD questions: interest examples, rates, terms & safety
         </h1>
         <p class="lead" style="max-width: 54ch;">
           Answer-first explanations for common certificate of deposit questions. Sample dollar figures use Nestfigure’s
@@ -396,7 +396,7 @@ const webPageLd = {
         </p>
         <p class="muted" style="font-size: 13px; margin-top: 8px;">
           Reviewed <time datetime={dateModified}>{updatedLabel}</time> · {allFaqs.length} questions ·
-          <a href="/methodology/cd-calculator/">Methodology</a>
+          <a href="/methodology/cd-calculator/">How we calculate</a>
         </p>
         <AuthorByline variant="compact" />
       </div>
@@ -447,7 +447,7 @@ const webPageLd = {
           <h2 id="method-heading">Illustrative earnings table (verified sample APYs)</h2>
           <p class="method-note">
             Every figure below is computed at build time with Nestfigure’s
-            <a href="/methodology/cd-calculator/">published CD methodology</a>
+            <a href="/methodology/cd-calculator/">how the CD calculator works</a>
             (APY → daily compounding model, no add-on deposits). Replace the sample APY with your institution’s
             disclosed APY for a realistic estimate.
           </p>
@@ -548,7 +548,7 @@ const webPageLd = {
               >
             </li>
             <li>
-              <a href="/methodology/cd-calculator/">Nestfigure — CD calculator methodology</a>
+              <a href="/methodology/cd-calculator/">How the CD calculator works</a>
             </li>
           </ul>
         </section>
@@ -572,7 +572,7 @@ const webPageLd = {
         </div>
 
         <p class="disclaimer">
-          Sample balances assume a constant APY input and Nestfigure’s educational compound-interest methodology with
+          Sample balances assume a constant APY input and Nestfigure’s educational compound-interest math with
           no monthly add-on deposits. Banks and credit unions may use different day-count conventions. Last reviewed:
           {updatedLabel}.
         </p>

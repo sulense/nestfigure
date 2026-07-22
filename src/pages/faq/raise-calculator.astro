@@ -4,9 +4,9 @@ import AuthorByline from '../../components/AuthorByline.astro';
 import TextToSpeech from '../../components/TextToSpeech.astro';
 import { calculateRaise, annualFromHourly } from '../../lib/raiseMath';
 
-const title = 'Raise Calculator FAQ: Percent, Hourly & Salary Increase | Nestfigure';
+const title = 'Raise Calculator Questions: Percent, Hourly & Salary Increase | Nestfigure';
 const description =
-  'Raise calculator FAQ with transparent sample math: percent formulas, hourly examples, BLS ECI context, and taxes. Educational only—not career advice.';
+  'Common raise calculator questions with clear sample math: percent formulas, hourly examples, wage context, and taxes. For learning only—not career advice.';
 const canonicalPath = '/faq/raise-calculator/';
 const dateModified = '2026-07-22';
 const updatedLabel = 'July 22, 2026';
@@ -66,8 +66,8 @@ const sections: Section[] = [
         id: 'how-works',
         question: 'How does Nestfigure’s raise calculator work?',
         answer:
-          'It applies raise amount = current × (raise % ÷ 100) and new pay = current + raise amount, then shows annual, monthly (÷12), biweekly (÷26), and weekly (÷52) views, a before/after chart, a percent comparison table, copy results, and PDF export. Educational estimates only—not payroll. See Nestfigure’s raise calculator methodology for full assumptions.',
-        answerHtml: `It applies raise amount = current × (raise % ÷ 100) and new pay = current + raise amount, then shows annual, monthly (÷12), biweekly (÷26), and weekly (÷52) views, a before/after chart, a percent comparison table, copy results, and PDF export. Educational estimates only—not payroll. See the <a href="/methodology/raise-calculator/">raise calculator methodology</a> for full assumptions.`,
+          'It applies raise amount = current × (raise % ÷ 100) and new pay = current + raise amount, then shows annual, monthly (÷12), biweekly (÷26), and weekly (÷52) views, a before/after chart, a percent comparison table, copy results, and PDF export. Educational estimates only—not payroll. See how Nestfigure’s raise calculator works for full assumptions.',
+        answerHtml: `It applies raise amount = current × (raise % ÷ 100) and new pay = current + raise amount, then shows annual, monthly (÷12), biweekly (÷26), and weekly (÷52) views, a before/after chart, a percent comparison table, copy results, and PDF export. Educational estimates only—not payroll. See <a href="/methodology/raise-calculator/">how the raise calculator works</a> for full assumptions.`,
       },
       {
         id: '5pct-60k',
@@ -207,8 +207,8 @@ const jsonLd = [
 >
   <section class="hero">
     <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-      <p class="eyebrow">FAQ · Raise calculator</p>
-      <h1 class="display" style="font-size:clamp(32px,4.5vw,48px); max-width: 18ch;">Raise calculator FAQ</h1>
+      <p class="eyebrow">Questions · Raise calculator</p>
+      <h1 class="display" style="font-size:clamp(32px,4.5vw,48px); max-width: 18ch;">Raise calculator questions</h1>
       <p class="lead">Sample math, formulas, and official context links. Not career or tax advice.</p>
       <AuthorByline variant="compact" />
       <TextToSpeech />
@@ -220,7 +220,7 @@ const jsonLd = [
       <p>
         Use the free <a href="/raise-calculator/">raise calculator</a> for live numbers.
         <a href="/faq/">All FAQs</a> ·
-        <a href="/methodology/raise-calculator/">Methodology</a> ·
+        <a href="/methodology/raise-calculator/">How we calculate</a> ·
         <a href="/guides/how-to-calculate-a-raise/">How-to guide</a>.
       </p>
 

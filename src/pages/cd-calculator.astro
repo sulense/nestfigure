@@ -31,11 +31,11 @@ const calcFaqs = [
   {
     question: 'How does a CD calculator work?',
     answer:
-      'A CD calculator estimates certificate of deposit maturity value from deposit amount, interest rate or APY, term length, and compounding frequency using standard compound-interest formulas. Nestfigure’s tool shows interest earned, final balance, a period schedule, a term comparison table, and optional PDF export. Results are educational estimates only—not bank quotes or personalized advice. See Nestfigure’s CD calculator methodology for full assumptions.',
+      'A CD calculator estimates certificate of deposit maturity value from deposit amount, interest rate or APY, term length, and compounding frequency using standard compound-interest formulas. Nestfigure’s tool shows interest earned, final balance, a period schedule, a term comparison table, and optional PDF export. Results are educational estimates only—not bank quotes or personalized advice. See how Nestfigure’s CD calculator works for full assumptions.',
   },
   {
     question: 'How much will a $10,000 CD make in one year?',
-    answer: `Direct answer: It depends on the APY on your disclosure—not a single fixed amount. Nestfigure does not list live bank rates. For education only, Nestfigure’s model at a sample 4.50% APY for 12 months (daily compounding, no add-on deposits) shows ${money(sample10k1y.totalInterest)} of interest (balance ${money(sample10k1y.finalBalance)}). See the scenario guide “How much will a $10,000 CD make in one year?” for more sample APYs.`,
+    answer: `Direct answer: It depends on the APY on your disclosure—not a single fixed amount. Nestfigure does not list live bank rates. For education only, Nestfigure’s model at a sample 4.50% APY for 12 months (daily compounding, no add-on deposits) shows ${money(sample10k1y.totalInterest)} of interest (balance ${money(sample10k1y.finalBalance)}). See the example guide “How much will a $10,000 CD make in one year?” for more sample APYs.`,
   },
   {
     question: 'What is the difference between APY and interest rate on a CD?',
@@ -75,7 +75,7 @@ const calcFaqs = [
   {
     question: 'How accurate is this certificate of deposit calculator?',
     answer:
-      'Formulas are standard compound-interest identities documented in Nestfigure’s CD calculator methodology. Real accounts may differ because of day-count methods, fees, tiered rates, compounding rules, or promotions. Always verify with your financial institution’s disclosures.',
+      'Formulas are standard compound-interest identities documented in how Nestfigure’s CD calculator works. Real accounts may differ because of day-count methods, fees, tiered rates, compounding rules, or promotions. Always verify with your financial institution’s disclosures.',
   },
   {
     question: 'Should I use a CD or a high-yield savings account?',
@@ -210,7 +210,7 @@ const jsonLd = [
       </ul>
       <FigureCdVsSavings />
 
-      <h2>Worked scenarios</h2>
+      <h2>Worked examples</h2>
       <p>Step-by-step pages with sample-APY tables and prefilled calculator links:</p>
       <ul>
         <li>
@@ -232,8 +232,8 @@ const jsonLd = [
         <li><a href="/guides/how-cd-interest-works/">How CD interest works</a> — APY, compounding, and formulas</li>
         <li><a href="/guides/cd-vs-savings/">CD vs savings</a> — liquidity vs locked rates</li>
         <li><a href="/guides/cd-early-withdrawal/">Early withdrawal</a> — CFPB penalty context</li>
-        <li><a href="/faq/certificate-of-deposit/">CD FAQ</a> — rates, terms, safety, myths</li>
-        <li><a href="/methodology/cd-calculator/">CD methodology</a> — exact assumptions we use</li>
+        <li><a href="/faq/certificate-of-deposit/">CD questions</a> — rates, terms, safety, myths</li>
+        <li><a href="/methodology/cd-calculator/">How the CD calculator works</a> — exact assumptions we use</li>
         <li><a href="/raise-calculator/">Raise calculator</a> — percent or dollar salary increase</li>
       </ul>
     </div>
@@ -241,7 +241,7 @@ const jsonLd = [
 
   <section class="section">
     <div class="container">
-      <p class="eyebrow" style="text-align:center;">FAQ</p>
+      <p class="eyebrow" style="text-align:center;">Common questions</p>
       <h2 class="heading" style="text-align:center; margin-bottom: 32px;">CD calculator questions</h2>
       <div class="faq" style="max-width: 720px; margin: 0 auto;">
         {
@@ -257,9 +257,9 @@ const jsonLd = [
       </div>
       <p style="text-align:center; margin-top: 20px; font-size: 14px;">
         More questions:
-        <a href="/faq/certificate-of-deposit/">Certificate of deposit FAQ</a>
+        <a href="/faq/certificate-of-deposit/">Certificate of deposit questions</a>
         ·
-        <a href="/methodology/cd-calculator/">CD methodology</a>
+        <a href="/methodology/cd-calculator/">How the CD calculator works</a>
       </p>
 
       <div style="max-width: 720px; margin: 28px auto 0;">

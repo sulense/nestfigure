@@ -48,7 +48,7 @@ const SOURCES = {
     url: 'https://www.irs.gov/publications/p15t',
   },
   methodology: {
-    name: 'Nestfigure — raise calculator methodology',
+    name: 'Nestfigure — how the raise calculator works',
     url: '/methodology/raise-calculator/',
   },
 } as const;
@@ -66,9 +66,9 @@ const faqs: { question: string; answer: string; answerHtml?: string }[] = [
   {
     question: 'How is this raise calculated?',
     answer:
-      'Raise amount = current pay × (raise % ÷ 100); new pay = current + raise amount. Monthly, biweekly, and weekly views divide annual pay by 12, 26, or 52. Hourly annualization uses hours/week × weeks/year that you enter. See Nestfigure’s raise calculator methodology for full assumptions.',
+      'Raise amount = current pay × (raise % ÷ 100); new pay = current + raise amount. Monthly, biweekly, and weekly views divide annual pay by 12, 26, or 52. Hourly annualization uses hours/week × weeks/year that you enter. See Nestfigure’s “how the raise calculator works” page for full assumptions.',
     answerHtml:
-      'Raise amount = current pay × (raise % ÷ 100); new pay = current + raise amount. Monthly, biweekly, and weekly views divide annual pay by 12, 26, or 52. Hourly annualization uses hours/week × weeks/year that you enter. See the <a href="/methodology/raise-calculator/">raise calculator methodology</a> for full assumptions.',
+      'Raise amount = current pay × (raise % ÷ 100); new pay = current + raise amount. Monthly, biweekly, and weekly views divide annual pay by 12, 26, or 52. Hourly annualization uses hours/week × weeks/year that you enter. See <a href="/methodology/raise-calculator/">how the raise calculator works</a> for full assumptions.',
   },
   {
     question: 'Are these dollar amounts a real raise offer?',
@@ -136,7 +136,7 @@ const jsonLd = [
   <article>
     <section class="hero">
       <div class="container hero-inner">
-        <p class="eyebrow">Raise scenario · Educational</p>
+        <p class="eyebrow">Raise example · For learning</p>
         <h1 class="display" style="font-size:clamp(32px,4.5vw,48px); max-width: 20ch;">{s.headline}</h1>
         <p class="lead" style="max-width: 52ch;">
           Stated sample inputs only. Nestfigure math—not a job offer, payroll file, or market average.
@@ -265,12 +265,12 @@ const jsonLd = [
 
         <h2>Taxes</h2>
         <p>
-          This scenario is <strong>gross</strong> arithmetic. Optional rough net on the calculator uses only a rate
+          This example is <strong>gross</strong> pay math (before taxes). Optional rough take-home on the calculator uses only a rate
           <strong>you type</strong>. Official federal income tax withholding methods for employers:
           <a href={SOURCES.irs15t.url} rel="noopener noreferrer" target="_blank">{SOURCES.irs15t.name}</a>.
         </p>
 
-        <h2>Related scenarios</h2>
+        <h2>Related examples</h2>
         <ul>
           {
             otherScenarios.map((o) => (
@@ -285,8 +285,8 @@ const jsonLd = [
         <ul>
           <li><a href="/raise-calculator/">Raise calculator</a></li>
           <li><a href="/guides/how-to-calculate-a-raise/">How to calculate a raise percentage</a></li>
-          <li><a href="/faq/raise-calculator/">Raise calculator FAQ</a></li>
-          <li><a href="/methodology/raise-calculator/">Raise methodology</a></li>
+          <li><a href="/faq/raise-calculator/">Raise questions</a></li>
+          <li><a href="/methodology/raise-calculator/">How the raise calculator works</a></li>
           <li><a href="/cd-calculator/">CD calculator</a> (model saving part of a raise)</li>
         </ul>
 
@@ -307,7 +307,7 @@ const jsonLd = [
         </ul>
 
         <div class="faq" style="margin-top: 28px;">
-          <h2>FAQ</h2>
+          <h2>Common questions</h2>
           {
             faqs.map((f, i) => (
               <details open={i === 0}>
